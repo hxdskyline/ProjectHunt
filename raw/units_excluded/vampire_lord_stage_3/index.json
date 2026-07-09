@@ -1,0 +1,88 @@
+{
+  "unit": "vampire_lord_stage_3",
+  "actions": {
+    "attack": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 8,
+      "frames": [
+        "image_20803_tex020_60x60.png",
+        "image_20001_tex020_60x60.png",
+        "image_19539_tex020_60x60.png",
+        "image_18032_tex020_60x60.png",
+        "image_17648_tex020_60x60.png",
+        "image_19869_tex020_60x60.png",
+        "image_20654_tex018_60x60.png",
+        "image_21182_tex020_60x60.png"
+      ]
+    },
+    "attack_2": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 13,
+      "frames": [
+        "image_20802_tex020_60x60.png",
+        "image_20751_tex020_60x60.png",
+        "image_19904_tex020_60x60.png",
+        "image_19897_tex020_60x60.png",
+        "image_20063_tex020_60x60.png",
+        "image_20064_tex020_60x60.png",
+        "image_22408_tex020_60x60.png",
+        "image_22180_tex020_60x60.png",
+        "image_19835_tex020_60x60.png",
+        "image_19571_tex020_60x60.png",
+        "image_19813_tex018_60x60.png",
+        "image_20649_tex020_60x60.png",
+        "image_20566_tex018_60x60.png"
+      ]
+    },
+    "death": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 24,
+      "frames": [
+        "image_20805_tex020_60x60.png",
+        "image_20937_tex020_60x60.png",
+        "image_21677_tex020_60x60.png",
+        "image_23530_tex020_60x60.png",
+        "image_23303_tex020_60x60.png",
+        "image_23301_tex020_60x60.png",
+        "image_23306_tex020_60x60.png",
+        "image_23304_tex020_60x60.png",
+        "image_23302_tex020_60x60.png",
+        "image_23305_tex020_60x60.png",
+        "image_23428_tex020_60x60.png",
+        "image_23430_tex020_60x60.png",
+        "image_23431_tex020_60x60.png",
+        "image_23433_tex020_60x60.png",
+        "image_23432_tex020_60x60.png",
+        "image_23429_tex020_60x60.png",
+        "image_23434_tex020_60x60.png",
+        "image_23650_tex020_60x60.png",
+        "image_23850_tex020_60x60.png",
+        "image_25113_tex020_60x60.png",
+        "image_25112_tex020_60x60.png",
+        "image_25111_tex020_60x60.png",
+        "image_25110_tex020_60x60.png",
+        "image_25114_tex020_60x60.png"
+      ]
+    },
+    "walk": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 10,
+      "frames": [
+        "image_20807_tex020_60x60.png",
+        "image_20939_tex020_60x60.png",
+        "image_21079_tex020_60x60.png",
+        "image_20940_tex020_60x60.png",
+        "image_22281_tex020_60x60.png",
+        "image_23815_tex020_60x60.png",
+        "image_23969_tex020_60x60.png",
+        "image_22648_tex020_60x60.png",
+        "image_20941_tex020_60x60.png",
+        "image_20808_tex020_60x60.png"
+      ]
+    }
+  }
+}

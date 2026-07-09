@@ -1,0 +1,20 @@
+{
+  "unit": "goblin_boss_prevention",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 8,
+      "frames": [
+        "image_23283_tex020_60x60.png",
+        "image_23984_tex017_60x60.png",
+        "image_24604_tex006_60x60.png",
+        "image_24030_tex013_60x60.png",
+        "image_24029_tex013_60x60.png",
+        "image_24031_tex013_60x60.png",
+        "image_25468_tex018_60x60.png",
+        "image_23037_tex020_60x60.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "unit": "goblin_spitter_boss_spit",
+  "actions": {
+    "idle": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 23,
+      "frames": [
+        "image_13066_tex018_120x120.png",
+        "image_13128_tex018_120x120.png",
+        "image_13255_tex018_120x120.png",
+        "image_18061_tex016_120x120.png",
+        "image_17676_tex017_120x120.png",
+        "image_17675_tex017_120x120.png",
+        "image_17679_tex017_120x120.png",
+        "image_17678_tex017_120x120.png",
+        "image_17363_tex017_120x120.png",
+        "image_17354_tex017_120x120.png",
+        "image_16934_tex018_120x120.png",
+        "image_15688_tex018_120x120.png",
+        "image_17649_tex017_120x120.png",
+        "image_17664_tex016_120x120.png",
+        "image_17650_tex017_120x120.png",
+        "image_17680_tex017_120x120.png",
+        "image_17672_tex017_120x120.png",
+        "image_17677_tex017_120x120.png",
+        "image_17673_tex017_120x120.png",
+        "image_17674_tex017_120x120.png",
+        "image_17178_tex015_120x120.png",
+        "image_13297_tex018_120x120.png",
+        "image_13127_tex018_120x120.png"
+      ]
+    }
+  }
+}

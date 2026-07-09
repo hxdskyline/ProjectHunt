@@ -1,0 +1,27 @@
+{
+  "unit": "vampire_lord_transform_to_stage_2",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 15,
+      "frames": [
+        "image_26834_tex020_60x60.png",
+        "image_28912_tex020_60x60.png",
+        "image_29238_tex020_60x60.png",
+        "image_29606_tex018_60x60.png",
+        "image_29741_tex017_60x60.png",
+        "image_28988_tex015_60x60.png",
+        "image_25850_tex020_60x60.png",
+        "image_24687_tex020_60x60.png",
+        "image_23722_tex018_60x60.png",
+        "image_23716_tex020_60x60.png",
+        "image_23715_tex020_60x60.png",
+        "image_23595_tex020_60x60.png",
+        "image_24065_tex020_60x60.png",
+        "image_24384_tex020_60x60.png",
+        "image_24385_tex020_60x60.png"
+      ]
+    }
+  }
+}

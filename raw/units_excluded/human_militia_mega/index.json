@@ -1,0 +1,32 @@
+{
+  "unit": "human_militia_mega",
+  "actions": {
+    "attack": {
+      "width": 64,
+      "height": 64,
+      "frameCount": 7,
+      "frames": [
+        "image_31204_tex014_64x64.png",
+        "image_30409_tex016_64x64.png",
+        "image_30122_tex016_64x64.png",
+        "image_31202_tex014_64x64.png",
+        "image_31203_tex014_64x64.png",
+        "image_30971_tex015_64x64.png",
+        "image_30929_tex018_64x64.png"
+      ]
+    },
+    "walk": {
+      "width": 64,
+      "height": 64,
+      "frameCount": 6,
+      "frames": [
+        "image_30410_tex016_64x64.png",
+        "image_30484_tex015_64x64.png",
+        "image_31258_tex014_64x64.png",
+        "image_31457_tex014_64x64.png",
+        "image_31018_tex014_64x64.png",
+        "image_30485_tex015_64x64.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "unit": "goblin_boss_intro",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 18,
+      "frames": [
+        "image_23281_tex020_60x60.png",
+        "image_23492_tex020_60x60.png",
+        "image_25413_tex018_60x60.png",
+        "image_25834_tex020_60x60.png",
+        "image_25348_tex020_60x60.png",
+        "image_21655_tex016_60x60.png",
+        "image_24491_tex020_60x60.png",
+        "image_21757_tex013_60x60.png",
+        "image_24490_tex020_60x60.png",
+        "image_21758_tex013_60x60.png",
+        "image_24803_tex013_60x60.png",
+        "image_21144_tex020_60x60.png",
+        "image_23935_tex016_60x60.png",
+        "image_23036_tex020_60x60.png",
+        "image_22915_tex015_60x60.png",
+        "image_22916_tex017_60x60.png",
+        "image_24462_tex020_60x60.png",
+        "image_23282_tex020_60x60.png"
+      ]
+    }
+  }
+}

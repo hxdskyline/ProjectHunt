@@ -1,0 +1,27 @@
+{
+  "unit": "demon_boss_fire",
+  "actions": {
+    "slam": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 15,
+      "frames": [
+        "image_13009_tex018_95x95.png",
+        "image_13000_tex018_95x95.png",
+        "image_13778_tex018_95x95.png",
+        "image_13779_tex018_95x95.png",
+        "image_13797_tex018_95x95.png",
+        "image_13827_tex018_95x95.png",
+        "image_13828_tex018_95x95.png",
+        "image_13861_tex018_95x95.png",
+        "image_12741_tex014_95x95.png",
+        "image_12761_tex018_95x95.png",
+        "image_12715_tex018_95x95.png",
+        "image_12755_tex017_95x95.png",
+        "image_13422_tex018_95x95.png",
+        "image_13254_tex018_95x95.png",
+        "image_13008_tex018_95x95.png"
+      ]
+    }
+  }
+}

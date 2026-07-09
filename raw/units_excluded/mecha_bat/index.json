@@ -1,0 +1,32 @@
+{
+  "unit": "mecha_bat",
+  "actions": {
+    "attack": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 7,
+      "frames": [
+        "image_13290_tex018_120x120.png",
+        "image_13117_tex018_120x120.png",
+        "image_13303_tex018_120x120.png",
+        "image_15095_tex017_120x120.png",
+        "image_16371_tex017_120x120.png",
+        "image_16075_tex018_120x120.png",
+        "image_13035_tex018_120x120.png"
+      ]
+    },
+    "walk": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 6,
+      "frames": [
+        "image_13292_tex018_120x120.png",
+        "image_13118_tex018_120x120.png",
+        "image_13304_tex018_120x120.png",
+        "image_15689_tex018_120x120.png",
+        "image_16076_tex018_120x120.png",
+        "image_13036_tex018_120x120.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "unit": "goblin_boss",
+  "actions": {
+    "attack": {
+      "width": 51,
+      "height": 51,
+      "frameCount": 8,
+      "frames": [
+        "image_23277_tex020_51x51.png",
+        "image_22703_tex020_51x51.png",
+        "image_21143_tex020_51x51.png",
+        "image_20830_tex020_51x51.png",
+        "image_19903_tex020_51x51.png",
+        "image_20775_tex020_51x51.png",
+        "image_21654_tex020_51x51.png",
+        "image_22868_tex020_51x51.png"
+      ]
+    },
+    "death": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 41,
+      "frames": [
+        "image_23278_tex020_60x60.png",
+        "image_22275_tex020_60x60.png",
+        "image_22632_tex020_60x60.png",
+        "image_22973_tex020_60x60.png",
+        "image_22964_tex020_60x60.png",
+        "image_22969_tex020_60x60.png",
+        "image_22966_tex020_60x60.png",
+        "image_22968_tex020_60x60.png",
+        "image_22967_tex020_60x60.png",
+        "image_22972_tex020_60x60.png",
+        "image_22965_tex020_60x60.png",
+        "image_22971_tex020_60x60.png",
+        "image_22970_tex020_60x60.png",
+        "image_22761_tex020_60x60.png",
+        "image_23279_tex020_60x60.png",
+        "image_24010_tex013_60x60.png",
+        "image_24129_tex020_60x60.png",
+        "image_23026_tex018_60x60.png",
+        "image_23548_tex020_60x60.png",
+        "image_23472_tex020_60x60.png",
+        "image_23586_tex020_60x60.png",
+        "image_23584_tex020_60x60.png",
+        "image_23577_tex020_60x60.png",
+        "image_23583_tex020_60x60.png",
+        "image_23574_tex020_60x60.png",
+        "image_23582_tex020_60x60.png",
+        "image_23579_tex020_60x60.png",
+        "image_23580_tex020_60x60.png",
+        "image_23589_tex020_60x60.png",
+        "image_23575_tex020_60x60.png",
+        "image_23585_tex020_60x60.png",
+        "image_23576_tex020_60x60.png",
+        "image_23581_tex020_60x60.png",
+        "image_23588_tex020_60x60.png",
+        "image_23578_tex020_60x60.png",
+        "image_23587_tex020_60x60.png",
+        "image_23799_tex020_60x60.png",
+        "image_24511_tex020_60x60.png",
+        "image_25188_tex018_60x60.png",
+        "image_25187_tex018_60x60.png",
+        "image_25497_tex017_60x60.png"
+      ]
+    },
+    "hit_around": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 14,
+      "frames": [
+        "image_23280_tex020_60x60.png",
+        "image_23035_tex020_60x60.png",
+        "image_22235_tex018_60x60.png",
+        "image_22318_tex020_60x60.png",
+        "image_21773_tex020_60x60.png",
+        "image_21774_tex020_60x60.png",
+        "image_21775_tex020_60x60.png",
+        "image_22650_tex018_60x60.png",
+        "image_20894_tex018_60x60.png",
+        "image_22326_tex020_60x60.png",
+        "image_22470_tex013_60x60.png",
+        "image_21121_tex018_60x60.png",
+        "image_21012_tex013_60x60.png",
+        "image_21627_tex018_60x60.png"
+      ]
+    },
+    "slam": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 19,
+      "frames": [
+        "image_23284_tex020_60x60.png",
+        "image_23985_tex017_60x60.png",
+        "image_24605_tex006_60x60.png",
+        "image_24032_tex013_60x60.png",
+        "image_21764_tex017_60x60.png",
+        "image_21789_tex016_60x60.png",
+        "image_22917_tex020_60x60.png",
+        "image_23038_tex020_60x60.png",
+        "image_23257_tex020_60x60.png",
+        "image_22669_tex017_60x60.png",
+        "image_17181_tex018_60x60.png",
+        "image_20009_tex020_60x60.png",
+        "image_20577_tex020_60x60.png",
+        "image_20647_tex020_60x60.png",
+        "image_21656_tex020_60x60.png",
+        "image_23536_tex020_60x60.png",
+        "image_25469_tex018_60x60.png",
+        "image_25470_tex018_60x60.png",
+        "image_23039_tex020_60x60.png"
+      ]
+    },
+    "walk": {
+      "width": 30,
+      "height": 30,
+      "frameCount": 8,
+      "frames": [
+        "image_23285_tex020_30x30.png",
+        "image_23320_tex020_30x30.png",
+        "image_23510_tex020_30x30.png",
+        "image_23987_tex020_30x30.png",
+        "image_23829_tex020_30x30.png",
+        "image_23710_tex020_30x30.png",
+        "image_23511_tex020_30x30.png",
+        "image_23626_tex020_30x30.png"
+      ]
+    }
+  }
+}

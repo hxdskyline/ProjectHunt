@@ -1,0 +1,114 @@
+{
+  "unit": "monkey_king",
+  "actions": {
+    "attack": {
+      "width": 105,
+      "height": 77,
+      "frameCount": 9,
+      "frames": [
+        "image_21610_tex020_105x77.png",
+        "image_19809_tex020_105x77.png",
+        "image_20049_tex020_105x77.png",
+        "image_20974_tex020_105x77.png",
+        "image_19921_tex020_105x77.png",
+        "image_19795_tex020_105x77.png",
+        "image_19804_tex020_105x77.png",
+        "image_13520_tex015_105x77.png",
+        "image_14221_tex018_105x77.png"
+      ]
+    },
+    "attack_power": {
+      "width": 126,
+      "height": 77,
+      "frameCount": 14,
+      "frames": [
+        "image_21609_tex020_126x77.png",
+        "image_19599_tex016_126x77.png",
+        "image_19355_tex020_126x77.png",
+        "image_20800_tex013_126x77.png",
+        "image_20536_tex018_126x77.png",
+        "image_13805_tex018_126x77.png",
+        "image_12697_tex018_126x77.png",
+        "image_12341_tex018_126x77.png",
+        "image_12152_tex018_126x77.png",
+        "image_12315_tex015_126x77.png",
+        "image_12142_tex018_126x77.png",
+        "image_19627_tex013_126x77.png",
+        "image_19927_tex017_126x77.png",
+        "image_20553_tex020_126x77.png"
+      ]
+    },
+    "cast": {
+      "width": 126,
+      "height": 77,
+      "frameCount": 14,
+      "frames": [
+        "image_21612_tex020_126x77.png",
+        "image_20403_tex020_126x77.png",
+        "image_21663_tex018_126x77.png",
+        "image_21660_tex018_126x77.png",
+        "image_21661_tex018_126x77.png",
+        "image_21662_tex018_126x77.png",
+        "image_21169_tex018_126x77.png",
+        "image_21170_tex018_126x77.png",
+        "image_20854_tex020_126x77.png",
+        "image_20502_tex020_126x77.png",
+        "image_20853_tex020_126x77.png",
+        "image_21074_tex018_126x77.png",
+        "image_20636_tex020_126x77.png",
+        "image_21613_tex020_126x77.png"
+      ]
+    },
+    "death": {
+      "width": 126,
+      "height": 77,
+      "frameCount": 27,
+      "frames": [
+        "image_21616_tex020_126x77.png",
+        "image_21790_tex018_126x77.png",
+        "image_21664_tex018_126x77.png",
+        "image_21173_tex018_126x77.png",
+        "image_21172_tex018_126x77.png",
+        "image_21665_tex018_126x77.png",
+        "image_22333_tex017_126x77.png",
+        "image_21791_tex018_126x77.png",
+        "image_21174_tex018_126x77.png",
+        "image_21171_tex018_126x77.png",
+        "image_20855_tex020_126x77.png",
+        "image_21804_tex017_126x77.png",
+        "image_24390_tex007_126x77.png",
+        "image_26360_tex002_126x77.png",
+        "image_26046_tex006_126x77.png",
+        "image_27278_tex002_126x77.png",
+        "image_27279_tex002_126x77.png",
+        "image_27280_tex006_126x77.png",
+        "image_25975_tex006_126x77.png",
+        "image_25284_tex007_126x77.png",
+        "image_24902_tex017_126x77.png",
+        "image_24304_tex007_126x77.png",
+        "image_23820_tex018_126x77.png",
+        "image_23597_tex017_126x77.png",
+        "image_24560_tex016_126x77.png",
+        "image_24642_tex017_126x77.png",
+        "image_26969_tex002_126x77.png"
+      ]
+    },
+    "walk": {
+      "width": 105,
+      "height": 77,
+      "frameCount": 10,
+      "frames": [
+        "image_20936_tex020_105x77.png",
+        "image_21145_tex020_105x77.png",
+        "image_21060_tex020_105x77.png",
+        "image_21037_tex020_105x77.png",
+        "image_21754_tex020_105x77.png",
+        "image_22611_tex020_105x77.png",
+        "image_22358_tex020_105x77.png",
+        "image_21123_tex020_105x77.png",
+        "image_20901_tex020_105x77.png",
+        "image_20831_tex020_105x77.png"
+      ]
+    }
+  }
+}

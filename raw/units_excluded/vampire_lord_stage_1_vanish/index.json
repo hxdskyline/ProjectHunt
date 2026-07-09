@@ -1,0 +1,25 @@
+{
+  "unit": "vampire_lord_stage_1_vanish",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 13,
+      "frames": [
+        "image_26833_tex020_60x60.png",
+        "image_25232_tex020_60x60.png",
+        "image_25479_tex018_60x60.png",
+        "image_25480_tex018_60x60.png",
+        "image_25481_tex018_60x60.png",
+        "image_26899_tex017_60x60.png",
+        "image_29493_tex020_60x60.png",
+        "image_29563_tex013_60x60.png",
+        "image_29915_tex007_60x60.png",
+        "image_29613_tex013_60x60.png",
+        "image_29494_tex013_60x60.png",
+        "image_34010_tex006_60x60.png",
+        "image_34302_tex002_60x60.png"
+      ]
+    }
+  }
+}

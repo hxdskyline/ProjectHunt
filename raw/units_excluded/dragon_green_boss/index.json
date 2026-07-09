@@ -1,0 +1,106 @@
+{
+  "unit": "dragon_green_boss",
+  "actions": {
+    "attack": {
+      "width": 200,
+      "height": 200,
+      "frameCount": 11,
+      "frames": [
+        "image_07282_tex016_200x200.png",
+        "image_09761_tex017_200x200.png",
+        "image_03188_tex014_200x200.png",
+        "image_02103_tex013_200x200.png",
+        "image_01066_tex013_200x200.png",
+        "image_02648_tex014_200x200.png",
+        "image_06267_tex015_200x200.png",
+        "image_07659_tex016_200x200.png",
+        "image_06616_tex016_200x200.png",
+        "image_08198_tex017_200x200.png",
+        "image_08062_tex017_200x200.png"
+      ]
+    },
+    "death": {
+      "width": 300,
+      "height": 300,
+      "frameCount": 26,
+      "frames": [
+        "image_08063_tex017_300x300.png",
+        "image_08443_tex017_300x300.png",
+        "image_05565_tex013_300x300.png",
+        "image_04485_tex015_300x300.png",
+        "image_05590_tex015_300x300.png",
+        "image_06515_tex016_300x300.png",
+        "image_08574_tex017_300x300.png",
+        "image_08881_tex017_300x300.png",
+        "image_09323_tex017_300x300.png",
+        "image_09322_tex017_300x300.png",
+        "image_09863_tex017_300x300.png",
+        "image_09862_tex017_300x300.png",
+        "image_10562_tex018_300x300.png",
+        "image_10988_tex015_300x300.png",
+        "image_11549_tex018_300x300.png",
+        "image_12014_tex018_300x300.png",
+        "image_12732_tex018_300x300.png",
+        "image_12265_tex018_300x300.png",
+        "image_10483_tex017_300x300.png",
+        "image_10448_tex013_300x300.png",
+        "image_07827_tex016_300x300.png",
+        "image_07094_tex016_300x300.png",
+        "image_11721_tex018_300x300.png",
+        "image_11720_tex018_300x300.png",
+        "image_11722_tex018_300x300.png",
+        "image_11719_tex017_300x300.png"
+      ]
+    },
+    "fly": {
+      "width": 250,
+      "height": 250,
+      "frameCount": 7,
+      "frames": [
+        "image_00724_tex013_250x250.png",
+        "image_00786_tex013_250x250.png",
+        "image_00801_tex013_250x250.png",
+        "image_01983_tex013_250x250.png",
+        "image_00828_tex013_250x250.png",
+        "image_00689_tex013_250x250.png",
+        "image_00800_tex013_250x250.png"
+      ]
+    },
+    "land": {
+      "width": 250,
+      "height": 250,
+      "frameCount": 8,
+      "frames": [
+        "image_02551_tex014_250x250.png",
+        "image_01472_tex007_250x250.png",
+        "image_01555_tex013_250x250.png",
+        "image_00921_tex013_250x250.png",
+        "image_03363_tex014_250x250.png",
+        "image_08067_tex017_250x250.png",
+        "image_07660_tex016_250x250.png",
+        "image_08066_tex017_250x250.png"
+      ]
+    },
+    "walk": {
+      "width": 200,
+      "height": 200,
+      "frameCount": 14,
+      "frames": [
+        "image_08071_tex017_200x200.png",
+        "image_09283_tex017_200x200.png",
+        "image_08073_tex017_200x200.png",
+        "image_08070_tex017_200x200.png",
+        "image_08072_tex017_200x200.png",
+        "image_06427_tex015_200x200.png",
+        "image_06426_tex015_200x200.png",
+        "image_10005_tex017_200x200.png",
+        "image_10616_tex017_200x200.png",
+        "image_10006_tex017_200x200.png",
+        "image_10007_tex017_200x200.png",
+        "image_10290_tex015_200x200.png",
+        "image_07661_tex016_200x200.png",
+        "image_07662_tex016_200x200.png"
+      ]
+    }
+  }
+}

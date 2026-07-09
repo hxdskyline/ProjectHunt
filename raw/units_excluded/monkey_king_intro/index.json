@@ -1,0 +1,26 @@
+{
+  "unit": "monkey_king_intro",
+  "actions": {
+    "idle": {
+      "width": 105,
+      "height": 77,
+      "frameCount": 14,
+      "frames": [
+        "image_20783_tex020_105x77.png",
+        "image_19738_tex018_105x77.png",
+        "image_20784_tex018_105x77.png",
+        "image_20486_tex016_105x77.png",
+        "image_17350_tex018_105x77.png",
+        "image_19322_tex017_105x77.png",
+        "image_19442_tex018_105x77.png",
+        "image_19443_tex018_105x77.png",
+        "image_19441_tex018_105x77.png",
+        "image_20040_tex014_105x77.png",
+        "image_19991_tex020_105x77.png",
+        "image_20655_tex018_105x77.png",
+        "image_20935_tex020_105x77.png",
+        "image_21617_tex020_105x77.png"
+      ]
+    }
+  }
+}

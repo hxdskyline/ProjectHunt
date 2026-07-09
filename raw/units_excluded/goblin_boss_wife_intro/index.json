@@ -1,0 +1,34 @@
+{
+  "unit": "goblin_boss_wife_intro",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 22,
+      "frames": [
+        "image_24041_tex020_60x60.png",
+        "image_23743_tex020_60x60.png",
+        "image_23641_tex020_60x60.png",
+        "image_23524_tex018_60x60.png",
+        "image_23522_tex018_60x60.png",
+        "image_23521_tex018_60x60.png",
+        "image_23526_tex018_60x60.png",
+        "image_23523_tex018_60x60.png",
+        "image_23525_tex018_60x60.png",
+        "image_24164_tex020_60x60.png",
+        "image_24520_tex020_60x60.png",
+        "image_24365_tex020_60x60.png",
+        "image_24163_tex020_60x60.png",
+        "image_24049_tex020_60x60.png",
+        "image_24043_tex020_60x60.png",
+        "image_24045_tex020_60x60.png",
+        "image_24044_tex020_60x60.png",
+        "image_24048_tex020_60x60.png",
+        "image_24046_tex020_60x60.png",
+        "image_24050_tex020_60x60.png",
+        "image_24042_tex020_60x60.png",
+        "image_24047_tex020_60x60.png"
+      ]
+    }
+  }
+}

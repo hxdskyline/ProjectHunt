@@ -1,0 +1,51 @@
+{
+  "unit": "vampire_lord_stage_2",
+  "actions": {
+    "attack_1": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 7,
+      "frames": [
+        "image_24378_tex020_60x60.png",
+        "image_24486_tex020_60x60.png",
+        "image_24317_tex020_60x60.png",
+        "image_24318_tex020_60x60.png",
+        "image_25162_tex020_60x60.png",
+        "image_26958_tex020_60x60.png",
+        "image_25025_tex020_60x60.png"
+      ]
+    },
+    "attack_2": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 10,
+      "frames": [
+        "image_24380_tex020_60x60.png",
+        "image_24617_tex020_60x60.png",
+        "image_24123_tex020_60x60.png",
+        "image_23968_tex020_60x60.png",
+        "image_24508_tex020_60x60.png",
+        "image_24791_tex020_60x60.png",
+        "image_24893_tex020_60x60.png",
+        "image_24571_tex020_60x60.png",
+        "image_24570_tex020_60x60.png",
+        "image_24379_tex020_60x60.png"
+      ]
+    },
+    "walk": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 8,
+      "frames": [
+        "image_27355_tex018_60x60.png",
+        "image_26854_tex020_60x60.png",
+        "image_25213_tex020_60x60.png",
+        "image_25027_tex020_60x60.png",
+        "image_24709_tex020_60x60.png",
+        "image_24894_tex020_60x60.png",
+        "image_24849_tex020_60x60.png",
+        "image_26691_tex020_60x60.png"
+      ]
+    }
+  }
+}

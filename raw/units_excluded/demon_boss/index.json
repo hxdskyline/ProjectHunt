@@ -1,0 +1,129 @@
+{
+  "unit": "demon_boss",
+  "actions": {
+    "attack_1": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 12,
+      "frames": [
+        "image_13005_tex018_95x95.png",
+        "image_12998_tex018_95x95.png",
+        "image_13776_tex018_95x95.png",
+        "image_13777_tex018_95x95.png",
+        "image_13860_tex016_95x95.png",
+        "image_12937_tex018_95x95.png",
+        "image_13059_tex018_95x95.png",
+        "image_12837_tex017_95x95.png",
+        "image_12953_tex018_95x95.png",
+        "image_13421_tex018_95x95.png",
+        "image_13253_tex018_95x95.png",
+        "image_13006_tex018_95x95.png"
+      ]
+    },
+    "death": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 34,
+      "frames": [
+        "image_13007_tex018_95x95.png",
+        "image_12999_tex018_95x95.png",
+        "image_13070_tex018_95x95.png",
+        "image_13069_tex018_95x95.png",
+        "image_12912_tex018_95x95.png",
+        "image_13384_tex018_95x95.png",
+        "image_13517_tex018_95x95.png",
+        "image_13762_tex018_95x95.png",
+        "image_16047_tex018_95x95.png",
+        "image_18044_tex018_95x95.png",
+        "image_16937_tex018_95x95.png",
+        "image_17459_tex018_95x95.png",
+        "image_17192_tex018_95x95.png",
+        "image_18045_tex018_95x95.png",
+        "image_19254_tex020_95x95.png",
+        "image_19567_tex020_95x95.png",
+        "image_19566_tex013_95x95.png",
+        "image_19603_tex020_95x95.png",
+        "image_19606_tex020_95x95.png",
+        "image_19604_tex020_95x95.png",
+        "image_19605_tex020_95x95.png",
+        "image_19601_tex020_95x95.png",
+        "image_19602_tex020_95x95.png",
+        "image_19607_tex020_95x95.png",
+        "image_19600_tex020_95x95.png",
+        "image_19608_tex020_95x95.png",
+        "image_19624_tex020_95x95.png",
+        "image_20893_tex013_95x95.png",
+        "image_20383_tex018_95x95.png",
+        "image_20749_tex018_95x95.png",
+        "image_19834_tex016_95x95.png",
+        "image_19966_tex017_95x95.png",
+        "image_22760_tex017_95x95.png",
+        "image_22759_tex017_95x95.png"
+      ]
+    },
+    "scream": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 18,
+      "frames": [
+        "image_13010_tex018_95x95.png",
+        "image_13071_tex018_95x95.png",
+        "image_13257_tex018_95x95.png",
+        "image_13256_tex018_95x95.png",
+        "image_13549_tex018_95x95.png",
+        "image_13678_tex018_95x95.png",
+        "image_14302_tex018_95x95.png",
+        "image_14822_tex018_95x95.png",
+        "image_14301_tex018_95x95.png",
+        "image_13679_tex018_95x95.png",
+        "image_13548_tex018_95x95.png",
+        "image_13681_tex018_95x95.png",
+        "image_14303_tex018_95x95.png",
+        "image_14821_tex018_95x95.png",
+        "image_14300_tex018_95x95.png",
+        "image_13680_tex018_95x95.png",
+        "image_13540_tex018_95x95.png",
+        "image_12930_tex017_95x95.png"
+      ]
+    },
+    "swipe": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 13,
+      "frames": [
+        "image_13011_tex018_95x95.png",
+        "image_13345_tex018_95x95.png",
+        "image_14849_tex018_95x95.png",
+        "image_15115_tex018_95x95.png",
+        "image_15116_tex018_95x95.png",
+        "image_14823_tex018_95x95.png",
+        "image_13313_tex018_95x95.png",
+        "image_13376_tex018_95x95.png",
+        "image_13241_tex016_95x95.png",
+        "image_13001_tex018_95x95.png",
+        "image_13126_tex018_95x95.png",
+        "image_14321_tex018_95x95.png",
+        "image_12931_tex018_95x95.png"
+      ]
+    },
+    "walk": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 12,
+      "frames": [
+        "image_13343_tex018_95x95.png",
+        "image_13243_tex018_95x95.png",
+        "image_13242_tex018_95x95.png",
+        "image_13166_tex018_95x95.png",
+        "image_13285_tex018_95x95.png",
+        "image_13223_tex018_95x95.png",
+        "image_13222_tex018_95x95.png",
+        "image_13278_tex018_95x95.png",
+        "image_13279_tex018_95x95.png",
+        "image_13213_tex018_95x95.png",
+        "image_13284_tex018_95x95.png",
+        "image_13224_tex018_95x95.png"
+      ]
+    }
+  }
+}

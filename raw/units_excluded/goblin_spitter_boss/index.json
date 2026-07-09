@@ -1,0 +1,97 @@
+{
+  "unit": "goblin_spitter_boss",
+  "actions": {
+    "attack": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 11,
+      "frames": [
+        "image_13062_tex018_120x120.png",
+        "image_12838_tex018_120x120.png",
+        "image_12683_tex018_120x120.png",
+        "image_12566_tex015_120x120.png",
+        "image_12632_tex018_120x120.png",
+        "image_12743_tex018_120x120.png",
+        "image_13378_tex018_120x120.png",
+        "image_13444_tex018_120x120.png",
+        "image_13377_tex018_120x120.png",
+        "image_14216_tex018_120x120.png",
+        "image_12913_tex018_120x120.png"
+      ]
+    },
+    "death": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 31,
+      "frames": [
+        "image_13063_tex018_120x120.png",
+        "image_13172_tex018_120x120.png",
+        "image_13347_tex018_120x120.png",
+        "image_13438_tex018_120x120.png",
+        "image_13672_tex018_120x120.png",
+        "image_17347_tex016_120x120.png",
+        "image_18051_tex018_120x120.png",
+        "image_17348_tex017_120x120.png",
+        "image_19268_tex018_120x120.png",
+        "image_18064_tex018_120x120.png",
+        "image_19426_tex018_120x120.png",
+        "image_19421_tex018_120x120.png",
+        "image_19419_tex018_120x120.png",
+        "image_19423_tex018_120x120.png",
+        "image_19428_tex018_120x120.png",
+        "image_19429_tex018_120x120.png",
+        "image_19420_tex018_120x120.png",
+        "image_19431_tex018_120x120.png",
+        "image_19430_tex018_120x120.png",
+        "image_19427_tex018_120x120.png",
+        "image_19432_tex018_120x120.png",
+        "image_19425_tex018_120x120.png",
+        "image_19417_tex018_120x120.png",
+        "image_19422_tex018_120x120.png",
+        "image_19418_tex018_120x120.png",
+        "image_19424_tex018_120x120.png",
+        "image_19315_tex018_120x120.png",
+        "image_19314_tex018_120x120.png",
+        "image_19806_tex016_120x120.png",
+        "image_19805_tex016_120x120.png",
+        "image_19862_tex017_120x120.png"
+      ]
+    },
+    "slam": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 12,
+      "frames": [
+        "image_13065_tex018_120x120.png",
+        "image_13054_tex018_120x120.png",
+        "image_14046_tex013_120x120.png",
+        "image_15685_tex018_120x120.png",
+        "image_15044_tex014_120x120.png",
+        "image_13575_tex018_120x120.png",
+        "image_12488_tex017_120x120.png",
+        "image_12707_tex018_120x120.png",
+        "image_12642_tex018_120x120.png",
+        "image_12641_tex018_120x120.png",
+        "image_12748_tex018_120x120.png",
+        "image_13024_tex018_120x120.png"
+      ]
+    },
+    "walk": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 10,
+      "frames": [
+        "image_13169_tex018_120x120.png",
+        "image_13244_tex018_120x120.png",
+        "image_13120_tex018_120x120.png",
+        "image_13156_tex018_120x120.png",
+        "image_13155_tex018_120x120.png",
+        "image_13168_tex018_120x120.png",
+        "image_13245_tex018_120x120.png",
+        "image_13119_tex018_120x120.png",
+        "image_12959_tex018_120x120.png",
+        "image_13048_tex018_120x120.png"
+      ]
+    }
+  }
+}

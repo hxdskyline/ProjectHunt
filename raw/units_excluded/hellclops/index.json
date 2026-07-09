@@ -1,0 +1,41 @@
+{
+  "unit": "hellclops",
+  "actions": {
+    "attack": {
+      "width": 127,
+      "height": 81,
+      "frameCount": 12,
+      "frames": [
+        "image_13845_tex018_127x81.png",
+        "image_13980_tex018_127x81.png",
+        "image_14119_tex018_127x81.png",
+        "image_13871_tex018_127x81.png",
+        "image_13365_tex018_127x81.png",
+        "image_13646_tex017_127x81.png",
+        "image_12831_tex018_127x81.png",
+        "image_13125_tex015_127x81.png",
+        "image_13090_tex017_127x81.png",
+        "image_13207_tex015_127x81.png",
+        "image_13555_tex017_127x81.png",
+        "image_14578_tex018_127x81.png"
+      ]
+    },
+    "walk": {
+      "width": 127,
+      "height": 81,
+      "frameCount": 10,
+      "frames": [
+        "image_13983_tex018_127x81.png",
+        "image_14121_tex018_127x81.png",
+        "image_14120_tex018_127x81.png",
+        "image_13847_tex018_127x81.png",
+        "image_13763_tex018_127x81.png",
+        "image_13846_tex018_127x81.png",
+        "image_13924_tex018_127x81.png",
+        "image_13925_tex018_127x81.png",
+        "image_13982_tex018_127x81.png",
+        "image_14090_tex018_127x81.png"
+      ]
+    }
+  }
+}

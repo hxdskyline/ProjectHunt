@@ -1,0 +1,31 @@
+{
+  "unit": "boar_big_boss_intro",
+  "actions": {
+    "idle": {
+      "width": 150,
+      "height": 150,
+      "frameCount": 19,
+      "frames": [
+        "image_13606_tex018_150x150.png",
+        "image_13885_tex018_150x150.png",
+        "image_13977_tex018_150x150.png",
+        "image_14280_tex018_150x150.png",
+        "image_14284_tex018_150x150.png",
+        "image_14281_tex018_150x150.png",
+        "image_14279_tex018_150x150.png",
+        "image_14278_tex018_150x150.png",
+        "image_14282_tex018_150x150.png",
+        "image_14283_tex018_150x150.png",
+        "image_14285_tex018_150x150.png",
+        "image_13884_tex018_150x150.png",
+        "image_13573_tex016_150x150.png",
+        "image_13574_tex018_150x150.png",
+        "image_14088_tex018_150x150.png",
+        "image_14277_tex018_150x150.png",
+        "image_14089_tex018_150x150.png",
+        "image_13976_tex018_150x150.png",
+        "image_13883_tex013_150x150.png"
+      ]
+    }
+  }
+}

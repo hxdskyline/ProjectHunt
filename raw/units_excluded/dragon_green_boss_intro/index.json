@@ -1,0 +1,43 @@
+{
+  "unit": "dragon_green_boss_intro",
+  "actions": {
+    "idle": {
+      "width": 300,
+      "height": 300,
+      "frameCount": 31,
+      "frames": [
+        "image_08065_tex017_300x300.png",
+        "image_08255_tex017_300x300.png",
+        "image_08064_tex017_300x300.png",
+        "image_10118_tex017_300x300.png",
+        "image_08444_tex017_300x300.png",
+        "image_05318_tex014_300x300.png",
+        "image_01467_tex013_300x300.png",
+        "image_00736_tex013_300x300.png",
+        "image_00706_tex007_300x300.png",
+        "image_00715_tex002_300x300.png",
+        "image_00692_tex013_300x300.png",
+        "image_00659_tex013_300x300.png",
+        "image_00650_tex013_300x300.png",
+        "image_00803_tex013_300x300.png",
+        "image_00810_tex013_300x300.png",
+        "image_00741_tex013_300x300.png",
+        "image_00816_tex013_300x300.png",
+        "image_00820_tex013_300x300.png",
+        "image_00851_tex013_300x300.png",
+        "image_00804_tex013_300x300.png",
+        "image_00766_tex013_300x300.png",
+        "image_00764_tex013_300x300.png",
+        "image_00872_tex013_300x300.png",
+        "image_00854_tex013_300x300.png",
+        "image_00929_tex013_300x300.png",
+        "image_00985_tex013_300x300.png",
+        "image_00864_tex013_300x300.png",
+        "image_00812_tex013_300x300.png",
+        "image_00928_tex013_300x300.png",
+        "image_00726_tex013_300x300.png",
+        "image_00914_tex013_300x300.png"
+      ]
+    }
+  }
+}

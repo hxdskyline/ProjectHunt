@@ -1,0 +1,23 @@
+{
+  "unit": "demon_boss_fireball_shot",
+  "actions": {
+    "idle": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 11,
+      "frames": [
+        "image_13340_tex018_95x95.png",
+        "image_13473_tex018_95x95.png",
+        "image_13889_tex017_95x95.png",
+        "image_13675_tex014_95x95.png",
+        "image_13676_tex018_95x95.png",
+        "image_13590_tex015_95x95.png",
+        "image_13978_tex018_95x95.png",
+        "image_14117_tex018_95x95.png",
+        "image_13979_tex018_95x95.png",
+        "image_14197_tex015_95x95.png",
+        "image_13289_tex018_95x95.png"
+      ]
+    }
+  }
+}

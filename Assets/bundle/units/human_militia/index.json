@@ -1,0 +1,27 @@
+{
+  "unit": "human_militia",
+  "actions": {
+    "attack": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 4,
+      "frames": [
+        "image_32878_tex014_45x45.png",
+        "image_32642_tex015_45x45.png",
+        "image_32641_tex015_45x45.png",
+        "image_32877_tex014_45x45.png"
+      ]
+    },
+    "walk": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 4,
+      "frames": [
+        "image_32643_tex015_45x45.png",
+        "image_32880_tex014_45x45.png",
+        "image_32644_tex015_45x45.png",
+        "image_32881_tex014_45x45.png"
+      ]
+    }
+  }
+}

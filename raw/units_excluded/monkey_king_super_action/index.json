@@ -1,0 +1,41 @@
+{
+  "unit": "monkey_king_super_action",
+  "actions": {
+    "idle": {
+      "width": 105,
+      "height": 77,
+      "frameCount": 29,
+      "frames": [
+        "image_22805_tex018_105x77.png",
+        "image_20414_tex020_105x77.png",
+        "image_20050_tex017_105x77.png",
+        "image_22237_tex014_105x77.png",
+        "image_21215_tex018_105x77.png",
+        "image_15682_tex017_105x77.png",
+        "image_13248_tex018_105x77.png",
+        "image_12742_tex018_105x77.png",
+        "image_12556_tex018_105x77.png",
+        "image_12649_tex018_105x77.png",
+        "image_12744_tex018_105x77.png",
+        "image_20457_tex015_105x77.png",
+        "image_20792_tex017_105x77.png",
+        "image_21122_tex020_105x77.png",
+        "image_22803_tex018_105x77.png",
+        "image_21075_tex018_105x77.png",
+        "image_22982_tex014_105x77.png",
+        "image_22983_tex014_105x77.png",
+        "image_22984_tex014_105x77.png",
+        "image_22985_tex014_105x77.png",
+        "image_22770_tex017_105x77.png",
+        "image_22771_tex017_105x77.png",
+        "image_21793_tex018_105x77.png",
+        "image_21175_tex018_105x77.png",
+        "image_21792_tex018_105x77.png",
+        "image_22568_tex015_105x77.png",
+        "image_21618_tex020_105x77.png",
+        "image_22802_tex018_105x77.png",
+        "image_22804_tex018_105x77.png"
+      ]
+    }
+  }
+}

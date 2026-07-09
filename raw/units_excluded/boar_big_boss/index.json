@@ -1,0 +1,99 @@
+{
+  "unit": "boar_big_boss",
+  "actions": {
+    "attack": {
+      "width": 150,
+      "height": 150,
+      "frameCount": 8,
+      "frames": [
+        "image_13603_tex018_150x150.png",
+        "image_13602_tex018_150x150.png",
+        "image_13826_tex018_150x150.png",
+        "image_13824_tex018_150x150.png",
+        "image_13825_tex018_150x150.png",
+        "image_12618_tex018_150x150.png",
+        "image_12941_tex018_150x150.png",
+        "image_13209_tex017_150x150.png"
+      ]
+    },
+    "attack_horns": {
+      "width": 150,
+      "height": 150,
+      "frameCount": 20,
+      "frames": [
+        "image_13600_tex018_150x150.png",
+        "image_13601_tex018_150x150.png",
+        "image_13818_tex018_150x150.png",
+        "image_13821_tex018_150x150.png",
+        "image_13823_tex018_150x150.png",
+        "image_13493_tex018_150x150.png",
+        "image_13943_tex014_150x150.png",
+        "image_14323_tex018_150x150.png",
+        "image_14141_tex017_150x150.png",
+        "image_13305_tex018_150x150.png",
+        "image_14087_tex018_150x150.png",
+        "image_16955_tex020_150x150.png",
+        "image_17209_tex020_150x150.png",
+        "image_14226_tex018_150x150.png",
+        "image_13819_tex007_150x150.png",
+        "image_13820_tex018_150x150.png",
+        "image_13822_tex018_150x150.png",
+        "image_12758_tex016_150x150.png",
+        "image_12940_tex018_150x150.png",
+        "image_13208_tex017_150x150.png"
+      ]
+    },
+    "death": {
+      "width": 150,
+      "height": 150,
+      "frameCount": 32,
+      "frames": [
+        "image_13604_tex018_150x150.png",
+        "image_13216_tex018_150x150.png",
+        "image_13329_tex014_150x150.png",
+        "image_13330_tex018_150x150.png",
+        "image_13557_tex017_150x150.png",
+        "image_13944_tex018_150x150.png",
+        "image_13880_tex018_150x150.png",
+        "image_13686_tex018_150x150.png",
+        "image_13605_tex018_150x150.png",
+        "image_13563_tex018_150x150.png",
+        "image_13564_tex018_150x150.png",
+        "image_13569_tex018_150x150.png",
+        "image_13570_tex018_150x150.png",
+        "image_13837_tex018_150x150.png",
+        "image_15690_tex018_150x150.png",
+        "image_13441_tex007_150x150.png",
+        "image_14019_tex018_150x150.png",
+        "image_15701_tex018_150x150.png",
+        "image_15706_tex018_150x150.png",
+        "image_15702_tex018_150x150.png",
+        "image_15699_tex018_150x150.png",
+        "image_15708_tex018_150x150.png",
+        "image_15709_tex018_150x150.png",
+        "image_15696_tex018_150x150.png",
+        "image_15703_tex018_150x150.png",
+        "image_15698_tex018_150x150.png",
+        "image_15707_tex018_150x150.png",
+        "image_15695_tex018_150x150.png",
+        "image_15705_tex018_150x150.png",
+        "image_15700_tex018_150x150.png",
+        "image_15697_tex018_150x150.png",
+        "image_15704_tex018_150x150.png"
+      ]
+    },
+    "walk": {
+      "width": 150,
+      "height": 150,
+      "frameCount": 6,
+      "frames": [
+        "image_13331_tex018_150x150.png",
+        "image_13363_tex018_150x150.png",
+        "image_13420_tex018_150x150.png",
+        "image_13567_tex018_150x150.png",
+        "image_13419_tex018_150x150.png",
+        "image_13296_tex018_150x150.png"
+      ]
+    }
+  }
+}

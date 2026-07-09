@@ -1,0 +1,27 @@
+{
+  "unit": "human_crossbowman",
+  "actions": {
+    "attack": {
+      "width": 13,
+      "height": 13,
+      "frameCount": 4,
+      "frames": [
+        "image_31956_tex017_13x13.png",
+        "image_31957_tex017_13x13.png",
+        "image_32162_tex015_13x13.png",
+        "image_32163_tex015_13x13.png"
+      ]
+    },
+    "walk": {
+      "width": 13,
+      "height": 13,
+      "frameCount": 4,
+      "frames": [
+        "image_31771_tex018_13x13.png",
+        "image_31960_tex017_13x13.png",
+        "image_31772_tex018_13x13.png",
+        "image_31959_tex017_13x13.png"
+      ]
+    }
+  }
+}

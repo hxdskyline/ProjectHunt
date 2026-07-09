@@ -1,0 +1,34 @@
+{
+  "unit": "masked_boss",
+  "actions": {
+    "death": {
+      "width": 125,
+      "height": 125,
+      "frameCount": 22,
+      "frames": [
+        "image_14627_tex018_125x125.png",
+        "image_14012_tex018_125x125.png",
+        "image_13506_tex018_125x125.png",
+        "image_13423_tex018_125x125.png",
+        "image_13259_tex018_125x125.png",
+        "image_13258_tex018_125x125.png",
+        "image_13349_tex018_125x125.png",
+        "image_13348_tex018_125x125.png",
+        "image_13639_tex018_125x125.png",
+        "image_13640_tex018_125x125.png",
+        "image_13366_tex018_125x125.png",
+        "image_13367_tex018_125x125.png",
+        "image_13576_tex018_125x125.png",
+        "image_19632_tex020_125x125.png",
+        "image_19316_tex018_125x125.png",
+        "image_17376_tex018_125x125.png",
+        "image_14883_tex015_125x125.png",
+        "image_19257_tex018_125x125.png",
+        "image_19839_tex017_125x125.png",
+        "image_19842_tex017_125x125.png",
+        "image_19841_tex017_125x125.png",
+        "image_19840_tex017_125x125.png"
+      ]
+    }
+  }
+}

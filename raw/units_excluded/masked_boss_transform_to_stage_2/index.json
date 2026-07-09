@@ -1,0 +1,35 @@
+{
+  "unit": "masked_boss_transform_to_stage_2",
+  "actions": {
+    "idle": {
+      "width": 125,
+      "height": 125,
+      "frameCount": 23,
+      "frames": [
+        "image_14639_tex018_125x125.png",
+        "image_14013_tex018_125x125.png",
+        "image_13507_tex018_125x125.png",
+        "image_13424_tex018_125x125.png",
+        "image_13261_tex018_125x125.png",
+        "image_13260_tex018_125x125.png",
+        "image_13565_tex017_125x125.png",
+        "image_14641_tex018_125x125.png",
+        "image_14638_tex018_125x125.png",
+        "image_14219_tex017_125x125.png",
+        "image_14059_tex014_125x125.png",
+        "image_15041_tex014_125x125.png",
+        "image_13984_tex013_125x125.png",
+        "image_13787_tex015_125x125.png",
+        "image_13985_tex013_125x125.png",
+        "image_14148_tex013_125x125.png",
+        "image_14768_tex014_125x125.png",
+        "image_14767_tex014_125x125.png",
+        "image_14447_tex013_125x125.png",
+        "image_15040_tex014_125x125.png",
+        "image_14058_tex014_125x125.png",
+        "image_14642_tex018_125x125.png",
+        "image_14640_tex018_125x125.png"
+      ]
+    }
+  }
+}

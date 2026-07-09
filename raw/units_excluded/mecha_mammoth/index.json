@@ -1,0 +1,42 @@
+{
+  "unit": "mecha_mammoth",
+  "actions": {
+    "attack": {
+      "width": 90,
+      "height": 90,
+      "frameCount": 17,
+      "frames": [
+        "image_14073_tex018_90x90.png",
+        "image_13948_tex018_90x90.png",
+        "image_13947_tex018_90x90.png",
+        "image_13949_tex018_90x90.png",
+        "image_13876_tex018_90x90.png",
+        "image_13950_tex018_90x90.png",
+        "image_13790_tex018_90x90.png",
+        "image_13754_tex018_90x90.png",
+        "image_13791_tex018_90x90.png",
+        "image_13756_tex018_90x90.png",
+        "image_13792_tex018_90x90.png",
+        "image_13755_tex018_90x90.png",
+        "image_13789_tex018_90x90.png",
+        "image_13753_tex018_90x90.png",
+        "image_13875_tex018_90x90.png",
+        "image_13951_tex018_90x90.png",
+        "image_13946_tex018_90x90.png"
+      ]
+    },
+    "walk": {
+      "width": 90,
+      "height": 90,
+      "frameCount": 6,
+      "frames": [
+        "image_14075_tex018_90x90.png",
+        "image_13953_tex018_90x90.png",
+        "image_13954_tex018_90x90.png",
+        "image_13877_tex018_90x90.png",
+        "image_13952_tex018_90x90.png",
+        "image_14579_tex018_90x90.png"
+      ]
+    }
+  }
+}

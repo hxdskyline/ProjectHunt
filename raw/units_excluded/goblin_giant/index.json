@@ -1,0 +1,34 @@
+{
+  "unit": "goblin_giant",
+  "actions": {
+    "attack": {
+      "width": 27,
+      "height": 27,
+      "frameCount": 7,
+      "frames": [
+        "image_27585_tex018_27x27.png",
+        "image_26843_tex020_27x27.png",
+        "image_26842_tex020_27x27.png",
+        "image_28570_tex015_27x27.png",
+        "image_27079_tex020_27x27.png",
+        "image_28074_tex017_27x27.png",
+        "image_28390_tex015_27x27.png"
+      ]
+    },
+    "walk": {
+      "width": 20,
+      "height": 20,
+      "frameCount": 8,
+      "frames": [
+        "image_27589_tex018_20x20.png",
+        "image_27332_tex018_20x20.png",
+        "image_27331_tex018_20x20.png",
+        "image_27587_tex018_20x20.png",
+        "image_27590_tex018_20x20.png",
+        "image_27591_tex018_20x20.png",
+        "image_27330_tex018_20x20.png",
+        "image_27588_tex018_20x20.png"
+      ]
+    }
+  }
+}

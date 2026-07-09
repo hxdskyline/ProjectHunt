@@ -1,0 +1,37 @@
+{
+  "unit": "black_swordsman",
+  "actions": {
+    "attack": {
+      "width": 32,
+      "height": 21,
+      "frameCount": 12,
+      "frames": [
+        "image_29895_tex018_32x21.png",
+        "image_29894_tex018_32x21.png",
+        "image_29341_tex017_32x21.png",
+        "image_29620_tex014_32x21.png",
+        "image_29484_tex014_32x21.png",
+        "image_26176_tex017_32x21.png",
+        "image_29085_tex017_32x21.png",
+        "image_29462_tex013_32x21.png",
+        "image_29656_tex014_32x21.png",
+        "image_29673_tex015_32x21.png",
+        "image_31130_tex018_32x21.png",
+        "image_30951_tex018_32x21.png"
+      ]
+    },
+    "walk": {
+      "width": 32,
+      "height": 21,
+      "frameCount": 6,
+      "frames": [
+        "image_30081_tex015_32x21.png",
+        "image_30264_tex020_32x21.png",
+        "image_30263_tex020_32x21.png",
+        "image_30534_tex015_32x21.png",
+        "image_29897_tex018_32x21.png",
+        "image_29896_tex018_32x21.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "unit": "moonfaced",
+  "actions": {
+    "attack": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 14,
+      "frames": [
+        "image_19337_tex020_120x120.png",
+        "image_19538_tex020_120x120.png",
+        "image_19928_tex018_120x120.png",
+        "image_19276_tex007_120x120.png",
+        "image_19739_tex020_120x120.png",
+        "image_19740_tex020_120x120.png",
+        "image_20415_tex020_120x120.png",
+        "image_13974_tex018_120x120.png",
+        "image_14661_tex018_120x120.png",
+        "image_14326_tex018_120x120.png",
+        "image_20526_tex020_120x120.png",
+        "image_20525_tex020_120x120.png",
+        "image_20353_tex018_120x120.png",
+        "image_19959_tex017_120x120.png"
+      ]
+    },
+    "walk": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 6,
+      "frames": [
+        "image_19340_tex020_120x120.png",
+        "image_19259_tex020_120x120.png",
+        "image_18028_tex018_120x120.png",
+        "image_19258_tex020_120x120.png",
+        "image_19480_tex020_120x120.png",
+        "image_19339_tex020_120x120.png"
+      ]
+    }
+  }
+}

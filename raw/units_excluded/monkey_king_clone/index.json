@@ -1,0 +1,22 @@
+{
+  "unit": "monkey_king_clone",
+  "actions": {
+    "death": {
+      "width": 90,
+      "height": 63,
+      "frameCount": 10,
+      "frames": [
+        "image_21615_tex020_90x63.png",
+        "image_21614_tex020_90x63.png",
+        "image_20596_tex020_90x63.png",
+        "image_20554_tex018_90x63.png",
+        "image_15117_tex018_90x63.png",
+        "image_14322_tex018_90x63.png",
+        "image_13891_tex018_90x63.png",
+        "image_15038_tex018_90x63.png",
+        "image_18063_tex018_90x63.png",
+        "image_32928_tex013_90x63.png"
+      ]
+    }
+  }
+}

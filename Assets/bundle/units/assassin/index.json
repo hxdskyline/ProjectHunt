@@ -1,0 +1,37 @@
+{
+  "unit": "assassin",
+  "actions": {
+    "attack": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 10,
+      "frames": [
+        "image_31447_tex014_65x65.png",
+        "image_31448_tex014_65x65.png",
+        "image_32148_tex014_65x65.png",
+        "image_31749_tex018_65x65.png",
+        "image_32401_tex016_65x65.png",
+        "image_31446_tex014_65x65.png",
+        "image_32402_tex016_65x65.png",
+        "image_32621_tex015_65x65.png",
+        "image_31449_tex016_65x65.png",
+        "image_31750_tex018_65x65.png"
+      ]
+    },
+    "walk": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 8,
+      "frames": [
+        "image_31182_tex017_65x65.png",
+        "image_30949_tex016_65x65.png",
+        "image_30950_tex017_65x65.png",
+        "image_31181_tex017_65x65.png",
+        "image_31560_tex016_65x65.png",
+        "image_31294_tex015_65x65.png",
+        "image_31293_tex015_65x65.png",
+        "image_31559_tex016_65x65.png"
+      ]
+    }
+  }
+}

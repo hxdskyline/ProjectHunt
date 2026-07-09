@@ -1,0 +1,45 @@
+{
+  "unit": "sunfaced",
+  "actions": {
+    "attack": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 20,
+      "frames": [
+        "image_18040_tex018_120x120.png",
+        "image_19277_tex018_120x120.png",
+        "image_19714_tex018_120x120.png",
+        "image_19550_tex020_120x120.png",
+        "image_19552_tex020_120x120.png",
+        "image_19551_tex020_120x120.png",
+        "image_19597_tex020_120x120.png",
+        "image_13037_tex018_120x120.png",
+        "image_12956_tex018_120x120.png",
+        "image_12955_tex018_120x120.png",
+        "image_13210_tex015_120x120.png",
+        "image_13368_tex018_120x120.png",
+        "image_14125_tex018_120x120.png",
+        "image_12738_tex017_120x120.png",
+        "image_12737_tex017_120x120.png",
+        "image_12736_tex007_120x120.png",
+        "image_12747_tex018_120x120.png",
+        "image_12769_tex018_120x120.png",
+        "image_20880_tex017_120x120.png",
+        "image_17647_tex018_120x120.png"
+      ]
+    },
+    "walk": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 6,
+      "frames": [
+        "image_18042_tex018_120x120.png",
+        "image_17353_tex018_120x120.png",
+        "image_17352_tex018_120x120.png",
+        "image_17159_tex020_120x120.png",
+        "image_17351_tex018_120x120.png",
+        "image_17655_tex018_120x120.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "unit": "goblin_spitter_boss_intro",
+  "actions": {
+    "idle": {
+      "width": 120,
+      "height": 120,
+      "frameCount": 14,
+      "frames": [
+        "image_13064_tex018_120x120.png",
+        "image_13161_tex018_120x120.png",
+        "image_13047_tex014_120x120.png",
+        "image_12374_tex018_120x120.png",
+        "image_12376_tex018_120x120.png",
+        "image_12387_tex014_120x120.png",
+        "image_12415_tex018_120x120.png",
+        "image_14045_tex018_120x120.png",
+        "image_12771_tex018_120x120.png",
+        "image_12678_tex018_120x120.png",
+        "image_12677_tex018_120x120.png",
+        "image_13280_tex018_120x120.png",
+        "image_13160_tex018_120x120.png",
+        "image_13191_tex018_120x120.png"
+      ]
+    }
+  }
+}

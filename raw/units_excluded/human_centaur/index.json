@@ -1,0 +1,40 @@
+{
+  "unit": "human_centaur",
+  "actions": {
+    "attack_1": {
+      "width": 64,
+      "height": 64,
+      "frameCount": 5,
+      "frames": [
+        "image_30924_tex018_64x64.png",
+        "image_30405_tex016_64x64.png",
+        "image_30406_tex016_64x64.png",
+        "image_30970_tex018_64x64.png",
+        "image_31140_tex018_64x64.png"
+      ]
+    },
+    "attack_2": {
+      "width": 64,
+      "height": 64,
+      "frameCount": 4,
+      "frames": [
+        "image_31141_tex018_64x64.png",
+        "image_31297_tex015_64x64.png",
+        "image_31368_tex018_64x64.png",
+        "image_31585_tex015_64x64.png"
+      ]
+    },
+    "walk": {
+      "width": 64,
+      "height": 64,
+      "frameCount": 5,
+      "frames": [
+        "image_30926_tex018_64x64.png",
+        "image_30407_tex016_64x64.png",
+        "image_30408_tex016_64x64.png",
+        "image_30927_tex018_64x64.png",
+        "image_30928_tex018_64x64.png"
+      ]
+    }
+  }
+}

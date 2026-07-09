@@ -1,0 +1,19 @@
+{
+  "unit": "dragon_green_boss_fly",
+  "actions": {
+    "attack": {
+      "width": 250,
+      "height": 250,
+      "frameCount": 7,
+      "frames": [
+        "image_00723_tex013_250x250.png",
+        "image_00785_tex013_250x250.png",
+        "image_00798_tex013_250x250.png",
+        "image_01982_tex007_250x250.png",
+        "image_00827_tex013_250x250.png",
+        "image_00688_tex013_250x250.png",
+        "image_00799_tex013_250x250.png"
+      ]
+    }
+  }
+}

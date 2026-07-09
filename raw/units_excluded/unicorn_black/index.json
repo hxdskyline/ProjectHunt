@@ -1,0 +1,46 @@
+{
+  "unit": "unicorn_black",
+  "actions": {
+    "attack_1": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 8,
+      "frames": [
+        "image_24842_tex020_65x65.png",
+        "image_25307_tex020_65x65.png",
+        "image_26897_tex020_65x65.png",
+        "image_27204_tex020_65x65.png",
+        "image_26792_tex018_65x65.png",
+        "image_26230_tex018_65x65.png",
+        "image_25765_tex014_65x65.png",
+        "image_24016_tex020_65x65.png"
+      ]
+    },
+    "attack_2": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 7,
+      "frames": [
+        "image_24844_tex020_65x65.png",
+        "image_24646_tex020_65x65.png",
+        "image_24950_tex020_65x65.png",
+        "image_26898_tex020_65x65.png",
+        "image_26216_tex020_65x65.png",
+        "image_24845_tex020_65x65.png",
+        "image_24843_tex020_65x65.png"
+      ]
+    },
+    "walk": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 5,
+      "frames": [
+        "image_24535_tex020_65x65.png",
+        "image_24847_tex020_65x65.png",
+        "image_24559_tex020_65x65.png",
+        "image_24684_tex020_65x65.png",
+        "image_24685_tex020_65x65.png"
+      ]
+    }
+  }
+}

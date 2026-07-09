@@ -1,0 +1,25 @@
+{
+  "unit": "boar_big_boss_stomp",
+  "actions": {
+    "idle": {
+      "width": 150,
+      "height": 150,
+      "frameCount": 13,
+      "frames": [
+        "image_13608_tex018_150x150.png",
+        "image_13607_tex018_150x150.png",
+        "image_13479_tex018_150x150.png",
+        "image_13489_tex018_150x150.png",
+        "image_13587_tex018_150x150.png",
+        "image_13870_tex018_150x150.png",
+        "image_13369_tex006_150x150.png",
+        "image_13294_tex018_150x150.png",
+        "image_13187_tex018_150x150.png",
+        "image_12615_tex018_150x150.png",
+        "image_12499_tex018_150x150.png",
+        "image_12809_tex018_150x150.png",
+        "image_13144_tex018_150x150.png"
+      ]
+    }
+  }
+}

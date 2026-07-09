@@ -1,0 +1,35 @@
+{
+  "unit": "vampire_swordsman",
+  "actions": {
+    "attack": {
+      "width": 75,
+      "height": 75,
+      "frameCount": 10,
+      "frames": [
+        "image_26129_tex020_75x75.png",
+        "image_25971_tex020_75x75.png",
+        "image_25543_tex020_75x75.png",
+        "image_25442_tex020_75x75.png",
+        "image_27173_tex020_75x75.png",
+        "image_25441_tex020_75x75.png",
+        "image_25254_tex020_75x75.png",
+        "image_25252_tex020_75x75.png",
+        "image_25253_tex020_75x75.png",
+        "image_27172_tex020_75x75.png"
+      ]
+    },
+    "walk": {
+      "width": 75,
+      "height": 75,
+      "frameCount": 6,
+      "frames": [
+        "image_26132_tex020_75x75.png",
+        "image_25769_tex020_75x75.png",
+        "image_25770_tex020_75x75.png",
+        "image_26131_tex020_75x75.png",
+        "image_25768_tex020_75x75.png",
+        "image_25767_tex020_75x75.png"
+      ]
+    }
+  }
+}

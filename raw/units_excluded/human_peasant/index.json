@@ -1,0 +1,27 @@
+{
+  "unit": "human_peasant",
+  "actions": {
+    "attack": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 4,
+      "frames": [
+        "image_31880_tex015_45x45.png",
+        "image_32242_tex013_45x45.png",
+        "image_31206_tex017_45x45.png",
+        "image_31879_tex015_45x45.png"
+      ]
+    },
+    "walk": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 4,
+      "frames": [
+        "image_31590_tex016_45x45.png",
+        "image_31588_tex016_45x45.png",
+        "image_31589_tex016_45x45.png",
+        "image_31587_tex016_45x45.png"
+      ]
+    }
+  }
+}

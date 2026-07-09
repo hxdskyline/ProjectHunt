@@ -1,0 +1,41 @@
+{
+  "unit": "human_horseman",
+  "actions": {
+    "attack": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 7,
+      "frames": [
+        "image_27234_tex020_45x45.png",
+        "image_27236_tex020_45x45.png",
+        "image_27235_tex020_45x45.png",
+        "image_27233_tex020_45x45.png",
+        "image_27008_tex020_45x45.png",
+        "image_26923_tex020_45x45.png",
+        "image_27237_tex020_45x45.png"
+      ]
+    },
+    "run": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 4,
+      "frames": [
+        "image_26212_tex020_45x45.png",
+        "image_26213_tex020_45x45.png",
+        "image_26761_tex020_45x45.png",
+        "image_26211_tex020_45x45.png"
+      ]
+    },
+    "walk": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 4,
+      "frames": [
+        "image_26985_tex020_45x45.png",
+        "image_27238_tex020_45x45.png",
+        "image_27081_tex020_45x45.png",
+        "image_26984_tex020_45x45.png"
+      ]
+    }
+  }
+}

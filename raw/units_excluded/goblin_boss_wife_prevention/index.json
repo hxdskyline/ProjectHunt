@@ -1,0 +1,23 @@
+{
+  "unit": "goblin_boss_wife_prevention",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 11,
+      "frames": [
+        "image_24051_tex020_60x60.png",
+        "image_24404_tex020_60x60.png",
+        "image_24676_tex020_60x60.png",
+        "image_24824_tex020_60x60.png",
+        "image_24987_tex020_60x60.png",
+        "image_24989_tex020_60x60.png",
+        "image_24717_tex014_60x60.png",
+        "image_24718_tex014_60x60.png",
+        "image_24988_tex020_60x60.png",
+        "image_23591_tex020_60x60.png",
+        "image_23642_tex020_60x60.png"
+      ]
+    }
+  }
+}

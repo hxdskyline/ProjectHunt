@@ -1,0 +1,23 @@
+{
+  "unit": "vampire_lord_stage_3_charm",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 11,
+      "frames": [
+        "image_20804_tex020_60x60.png",
+        "image_20788_tex020_60x60.png",
+        "image_20787_tex020_60x60.png",
+        "image_19564_tex020_60x60.png",
+        "image_19563_tex020_60x60.png",
+        "image_19294_tex020_60x60.png",
+        "image_20559_tex018_60x60.png",
+        "image_20558_tex018_60x60.png",
+        "image_20488_tex018_60x60.png",
+        "image_20512_tex018_60x60.png",
+        "image_21078_tex020_60x60.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "unit": "minotaur",
+  "actions": {
+    "attack": {
+      "width": 69,
+      "height": 53,
+      "frameCount": 9,
+      "frames": [
+        "image_25032_tex020_69x53.png",
+        "image_24872_tex020_69x53.png",
+        "image_23596_tex017_69x53.png",
+        "image_24194_tex020_69x53.png",
+        "image_27122_tex020_69x53.png",
+        "image_22451_tex018_69x53.png",
+        "image_22236_tex017_69x53.png",
+        "image_24056_tex020_69x53.png",
+        "image_24540_tex020_69x53.png"
+      ]
+    },
+    "run": {
+      "width": 69,
+      "height": 53,
+      "frameCount": 6,
+      "frames": [
+        "image_25204_tex018_69x53.png",
+        "image_24873_tex018_69x53.png",
+        "image_24874_tex018_69x53.png",
+        "image_25203_tex018_69x53.png",
+        "image_25099_tex018_69x53.png",
+        "image_25250_tex020_69x53.png"
+      ]
+    },
+    "walk": {
+      "width": 69,
+      "height": 53,
+      "frameCount": 6,
+      "frames": [
+        "image_25225_tex020_69x53.png",
+        "image_25474_tex020_69x53.png",
+        "image_24875_tex020_69x53.png",
+        "image_24566_tex020_69x53.png",
+        "image_24763_tex020_69x53.png",
+        "image_24876_tex020_69x53.png"
+      ]
+    }
+  }
+}

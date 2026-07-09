@@ -1,0 +1,21 @@
+{
+  "unit": "vampire_lord_stage_1_charm",
+  "actions": {
+    "idle": {
+      "width": 60,
+      "height": 60,
+      "frameCount": 9,
+      "frames": [
+        "image_26831_tex020_60x60.png",
+        "image_26853_tex020_60x60.png",
+        "image_27294_tex018_60x60.png",
+        "image_25674_tex018_60x60.png",
+        "image_25478_tex018_60x60.png",
+        "image_25050_tex018_60x60.png",
+        "image_24686_tex018_60x60.png",
+        "image_24485_tex020_60x60.png",
+        "image_25970_tex020_60x60.png"
+      ]
+    }
+  }
+}

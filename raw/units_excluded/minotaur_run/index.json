@@ -1,0 +1,21 @@
+{
+  "unit": "minotaur_run",
+  "actions": {
+    "attack": {
+      "width": 69,
+      "height": 53,
+      "frameCount": 9,
+      "frames": [
+        "image_25098_tex018_69x53.png",
+        "image_24901_tex017_69x53.png",
+        "image_20472_tex020_69x53.png",
+        "image_19801_tex018_69x53.png",
+        "image_20799_tex020_69x53.png",
+        "image_23006_tex018_69x53.png",
+        "image_27123_tex020_69x53.png",
+        "image_25630_tex020_69x53.png",
+        "image_25033_tex020_69x53.png"
+      ]
+    }
+  }
+}

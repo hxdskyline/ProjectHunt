@@ -1,0 +1,22 @@
+{
+  "unit": "demon_boss_intro",
+  "actions": {
+    "idle": {
+      "width": 95,
+      "height": 95,
+      "frameCount": 10,
+      "frames": [
+        "image_13341_tex018_95x95.png",
+        "image_13301_tex018_95x95.png",
+        "image_13165_tex018_95x95.png",
+        "image_13668_tex018_95x95.png",
+        "image_13677_tex018_95x95.png",
+        "image_12535_tex017_95x95.png",
+        "image_12313_tex018_95x95.png",
+        "image_12154_tex018_95x95.png",
+        "image_13164_tex018_95x95.png",
+        "image_13300_tex018_95x95.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "unit": "masked_boss_stage_1",
+  "actions": {
+    "attack": {
+      "width": 125,
+      "height": 125,
+      "frameCount": 20,
+      "frames": [
+        "image_14629_tex018_125x125.png",
+        "image_14424_tex018_125x125.png",
+        "image_16368_tex017_125x125.png",
+        "image_18062_tex017_125x125.png",
+        "image_16367_tex017_125x125.png",
+        "image_13641_tex018_125x125.png",
+        "image_13766_tex018_125x125.png",
+        "image_12725_tex018_125x125.png",
+        "image_13381_tex018_125x125.png",
+        "image_15046_tex018_125x125.png",
+        "image_18058_tex017_125x125.png",
+        "image_19543_tex018_125x125.png",
+        "image_19479_tex017_125x125.png",
+        "image_14677_tex017_125x125.png",
+        "image_17373_tex017_125x125.png",
+        "image_17166_tex017_125x125.png",
+        "image_12749_tex018_125x125.png",
+        "image_12708_tex018_125x125.png",
+        "image_12636_tex018_125x125.png",
+        "image_13326_tex018_125x125.png"
+      ]
+    },
+    "hit_head": {
+      "width": 125,
+      "height": 125,
+      "frameCount": 24,
+      "frames": [
+        "image_14630_tex018_125x125.png",
+        "image_14425_tex018_125x125.png",
+        "image_14145_tex018_125x125.png",
+        "image_13642_tex018_125x125.png",
+        "image_13620_tex018_125x125.png",
+        "image_13623_tex018_125x125.png",
+        "image_13619_tex018_125x125.png",
+        "image_13621_tex018_125x125.png",
+        "image_13617_tex018_125x125.png",
+        "image_13622_tex018_125x125.png",
+        "image_13618_tex018_125x125.png",
+        "image_13799_tex018_125x125.png",
+        "image_13800_tex018_125x125.png",
+        "image_13830_tex018_125x125.png",
+        "image_13956_tex017_125x125.png",
+        "image_14065_tex018_125x125.png",
+        "image_13767_tex018_125x125.png",
+        "image_13926_tex018_125x125.png",
+        "image_13649_tex017_125x125.png",
+        "image_13849_tex018_125x125.png",
+        "image_13957_tex018_125x125.png",
+        "image_13759_tex018_125x125.png",
+        "image_13829_tex018_125x125.png",
+        "image_14426_tex018_125x125.png"
+      ]
+    },
+    "walk": {
+      "width": 125,
+      "height": 125,
+      "frameCount": 10,
+      "frames": [
+        "image_14428_tex018_125x125.png",
+        "image_15049_tex017_125x125.png",
+        "image_15092_tex017_125x125.png",
+        "image_14773_tex013_125x125.png",
+        "image_13927_tex018_125x125.png",
+        "image_14122_tex018_125x125.png",
+        "image_14631_tex018_125x125.png",
+        "image_15050_tex017_125x125.png",
+        "image_16046_tex015_125x125.png",
+        "image_17190_tex014_125x125.png"
+      ]
+    }
+  }
+}
