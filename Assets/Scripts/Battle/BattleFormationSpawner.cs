@@ -117,6 +117,12 @@ namespace ProjectHunt.Battle
             _spawnedBoss.name = $"{config.id}_Instance";
             var controller = EnsureCombatUnit(_spawnedBoss);
             controller.Setup(config, battleDirector);
+
+            var bossRenderer = _spawnedBoss.GetComponent<SpriteRenderer>();
+            if (bossRenderer != null)
+            {
+                bossRenderer.flipX = true;
+            }
         }
 
         private GameObject FindCharacterPrefab(CharacterConfig config)

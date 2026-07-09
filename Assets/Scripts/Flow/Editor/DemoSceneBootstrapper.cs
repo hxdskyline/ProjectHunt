@@ -44,6 +44,14 @@ namespace ProjectHunt.Flow.Editor
             var context = CreateContextAndFlow(out var flow);
             context.runState.phase = GamePhase.MainMenu;
 
+            var cameraGo = new GameObject("Main Camera");
+            var camera = cameraGo.AddComponent<Camera>();
+            camera.orthographic = true;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.1f, 0.1f, 0.15f);
+            cameraGo.tag = "MainCamera";
+            cameraGo.transform.position = new Vector3(0f, 0f, -10f);
+
             var canvas = CreateCanvas("MainMenuCanvas");
             EnsureEventSystem();
 
@@ -73,10 +81,10 @@ namespace ProjectHunt.Flow.Editor
             refs.dropRoot.SetParent(refsGo.transform);
 
             var spawnRoot = new GameObject("SpawnPoints").transform;
-            refs.playerFrontPoint = CreatePoint(spawnRoot, "PlayerFrontPoint", new Vector3(-4.5f, -1.5f, 0f));
-            refs.playerMidPoint = CreatePoint(spawnRoot, "PlayerMidPoint", new Vector3(-5.8f, -1.5f, 0f));
-            refs.playerBackPoint = CreatePoint(spawnRoot, "PlayerBackPoint", new Vector3(-7.1f, -1.5f, 0f));
-            refs.bossPoint = CreatePoint(spawnRoot, "BossPoint", new Vector3(4.7f, -1.4f, 0f));
+            refs.playerFrontPoint = CreatePoint(spawnRoot, "PlayerFrontPoint", new Vector3(-0.84f, -1.39f, 0f));
+            refs.playerMidPoint = CreatePoint(spawnRoot, "PlayerMidPoint", new Vector3(-2.8f, -1.5f, 0f));
+            refs.playerBackPoint = CreatePoint(spawnRoot, "PlayerBackPoint", new Vector3(-5.2f, -1.02f, 0f));
+            refs.bossPoint = CreatePoint(spawnRoot, "BossPoint", new Vector3(3.51f, 1.79f, 0f));
             refs.dropPoint = CreatePoint(spawnRoot, "DropPoint", new Vector3(3.8f, -2.6f, 0f));
 
             var battleDirectorGo = new GameObject("BattleDirector");
@@ -103,8 +111,8 @@ namespace ProjectHunt.Flow.Editor
             cameraGo.transform.position = new Vector3(0f, 0f, -10f);
 
             var canvas = CreateCanvas("BattleCanvas");
-            var bossHpSlider = CreateSlider(canvas.transform, "BossHpBar", new Vector2(0f, -40f), new Vector2(540f, 30f));
-            var bossHpText = CreateCenteredLabel(canvas.transform, "BossHpText", "Boss", new Vector2(0f, -10f), 22);
+            var bossHpSlider = CreateSlider(canvas.transform, "BossHpBar", new Vector2(0f, -350f), new Vector2(400f, 24f));
+            var bossHpText = CreateCenteredLabel(canvas.transform, "BossHpText", "Boss", new Vector2(0f, -370f), 18);
             var dropHint = CreateCenteredLabel(canvas.transform, "DropHint", "Click to Claim Meteor Hammer", new Vector2(0f, 220f), 20);
             dropHint.gameObject.SetActive(false);
 
@@ -150,7 +158,7 @@ namespace ProjectHunt.Flow.Editor
             for (var i = 0; i < slotConfigs.Length; i++)
             {
                 var slotRoot = CreatePanel(canvas.transform, $"Slot_{slotConfigs[i].displayName}", new Vector2(slotPositions[i], 10f), new Vector2(220f, 260f));
-                var slotView = slotRoot.AddComponent<BuildCharacterSlotView>();
+                var slotView = slotRoot.gameObject.AddComponent<BuildCharacterSlotView>();
                 slotView.characterConfig = slotConfigs[i];
                 slotView.selectedHighlight = CreatePanel(slotRoot.transform, "SelectedHighlight", Vector2.zero, new Vector2(220f, 260f), new Color(0.95f, 0.85f, 0.2f, 0.18f)).gameObject;
                 slotView.selectedHighlight.SetActive(false);
@@ -160,7 +168,7 @@ namespace ProjectHunt.Flow.Editor
                 CreateCenteredLabel(slotRoot.transform, "Name", slotConfigs[i].displayName, new Vector2(0f, 90f), 24);
                 CreateCenteredLabel(slotRoot.transform, "ResourceName", slotConfigs[i].resourceId, new Vector2(0f, 50f), 16);
 
-                var dropSlot = slotRoot.AddComponent<BuildDropSlot>();
+                var dropSlot = slotRoot.gameObject.AddComponent<BuildDropSlot>();
                 dropSlot.selectionController = controller;
                 dropSlot.characterSlotView = slotView;
 
@@ -193,6 +201,14 @@ namespace ProjectHunt.Flow.Editor
 
             var context = CreateContextAndFlow(out var flow);
             context.runState.phase = GamePhase.Result;
+
+            var cameraGo = new GameObject("Main Camera");
+            var camera = cameraGo.AddComponent<Camera>();
+            camera.orthographic = true;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.1f, 0.1f, 0.15f);
+            cameraGo.tag = "MainCamera";
+            cameraGo.transform.position = new Vector3(0f, 0f, -10f);
 
             var canvas = CreateCanvas("ResultCanvas");
             EnsureEventSystem();
@@ -259,7 +275,7 @@ namespace ProjectHunt.Flow.Editor
             rect.anchoredPosition = anchoredPos;
 
             var uiText = go.AddComponent<Text>();
-            uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            uiText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             uiText.fontSize = fontSize;
             uiText.alignment = TextAnchor.MiddleCenter;
             uiText.color = Color.white;

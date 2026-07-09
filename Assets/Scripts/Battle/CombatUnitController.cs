@@ -79,6 +79,11 @@ namespace ProjectHunt.Battle
                 StopCoroutine(_combatRoutine);
                 _combatRoutine = null;
             }
+
+            if (_animator != null)
+            {
+                _animator.Stop();
+            }
         }
 
         public void ApplyDamage(int amount)

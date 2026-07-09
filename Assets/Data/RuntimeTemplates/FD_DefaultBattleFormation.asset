@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01921a2772c36de4981ab67d12a01ac5, type: 3}
+  m_Name: FD_DefaultBattleFormation
+  m_EditorClassIdentifier: 
+  id: demo_default_battle
+  frontCharacter: {fileID: 11400000, guid: b5586e8af7c85bd40a4fd856853bc398, type: 2}
+  midCharacter: {fileID: 11400000, guid: 1a753d060f850aa4fb5ce81289b0f249, type: 2}
+  backCharacter: {fileID: 11400000, guid: dd3d2949b300a82409e8bf053250f084, type: 2}
+  boss: {fileID: 11400000, guid: b86316f033ff2a343aeba71cc2085533, type: 2}

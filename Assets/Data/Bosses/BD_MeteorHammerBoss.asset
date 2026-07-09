@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e765d3f432e650640ac46c639a3d3e1b, type: 3}
+  m_Name: BD_MeteorHammerBoss
+  m_EditorClassIdentifier: 
+  id: boss_meteor_hammer
+  displayName: "\u6D41\u661F\u9524 Boss"
+  resourceId: goblin_boss_wife
+  mainAttackAction: attack_round
+  moveAction: walk
+  deathAction: death
+  weaponType: 3
+  attackRangeType: 3
+  attackTempo: 1
+  maxHp: 100
+  dropWeaponType: 3

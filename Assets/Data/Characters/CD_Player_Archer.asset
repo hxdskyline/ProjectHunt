@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa84b51a920d2bf45a454a7450f103e5, type: 3}
+  m_Name: CD_Player_Archer
+  m_EditorClassIdentifier: 
+  id: player_archer
+  displayName: "\u5F13\u7BAD\u624B"
+  roleType: 2
+  resourceId: longbowman
+  defaultAttackAction: attack
+  moveAction: walk
+  defaultWeaponType: 2
+  attackTempo: 2
+  attackRangeType: 2
+  spawnSlot: 2
+  isPlayable: 1

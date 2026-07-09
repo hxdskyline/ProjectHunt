@@ -64,6 +64,15 @@ namespace ProjectHunt.Battle
             Play(actionName, false);
         }
 
+        public void Stop()
+        {
+            _currentClip = null;
+            _currentAction = null;
+            _loop = false;
+            _timer = 0f;
+            _frameIndex = 0;
+        }
+
         public float GetDuration(string actionName)
         {
             var clip = PixelAnimationLibrary.GetClip(resourceId, actionName, fps);
