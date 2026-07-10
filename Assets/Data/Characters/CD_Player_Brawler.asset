@@ -13,13 +13,17 @@ MonoBehaviour:
   m_Name: CD_Player_Brawler
   m_EditorClassIdentifier: 
   id: player_brawler
-  displayName: "\u62F3\u5E08"
+  displayName: "\u523A\u5BA2"
   roleType: 1
+  isHammerVariant: 0
+  baseCharacterId: 
   resourceId: assassin
   defaultAttackAction: attack
   moveAction: walk
-  defaultWeaponType: 1
+  visualScale: 2.6
+  yOffset: 0
+  defaultWeaponType: 0
   attackTempo: 0
-  attackRangeType: 1
+  attackRangeType: 2
   spawnSlot: 1
   isPlayable: 1

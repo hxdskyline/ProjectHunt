@@ -81,9 +81,9 @@ namespace ProjectHunt.Flow.Editor
             refs.dropRoot.SetParent(refsGo.transform);
 
             var spawnRoot = new GameObject("SpawnPoints").transform;
-            refs.playerFrontPoint = CreatePoint(spawnRoot, "PlayerFrontPoint", new Vector3(-0.84f, -1.39f, 0f));
-            refs.playerMidPoint = CreatePoint(spawnRoot, "PlayerMidPoint", new Vector3(-2.8f, -1.5f, 0f));
-            refs.playerBackPoint = CreatePoint(spawnRoot, "PlayerBackPoint", new Vector3(-5.2f, -1.02f, 0f));
+            refs.playerFrontPoint = CreatePoint(spawnRoot, "PlayerFrontPoint", new Vector3(-0.84f, -0.32f, 0f));
+            refs.playerMidPoint = CreatePoint(spawnRoot, "PlayerMidPoint", new Vector3(-2.8f, -1.584f, 0f));
+            refs.playerBackPoint = CreatePoint(spawnRoot, "PlayerBackPoint", new Vector3(-5.2f, -1.38f, 0f));
             refs.bossPoint = CreatePoint(spawnRoot, "BossPoint", new Vector3(3.51f, 1.79f, 0f));
             refs.dropPoint = CreatePoint(spawnRoot, "DropPoint", new Vector3(3.8f, -2.6f, 0f));
 
@@ -113,7 +113,7 @@ namespace ProjectHunt.Flow.Editor
             var canvas = CreateCanvas("BattleCanvas");
             var bossHpSlider = CreateSlider(canvas.transform, "BossHpBar", new Vector2(0f, -350f), new Vector2(400f, 24f));
             var bossHpText = CreateCenteredLabel(canvas.transform, "BossHpText", "Boss", new Vector2(0f, -370f), 18);
-            var dropHint = CreateCenteredLabel(canvas.transform, "DropHint", "Click to Claim Meteor Hammer", new Vector2(0f, 220f), 20);
+            var dropHint = CreateCenteredLabel(canvas.transform, "DropHint", "\u70b9\u51fb\u62fe\u53d6\u201c\u54e5\u5e03\u6797\u6d41\u661f\u9524\u201d", new Vector2(0f, 220f), 20);
             dropHint.gameObject.SetActive(false);
 
             var hpView = bossHpSlider.gameObject.AddComponent<BossHpBarView>();
@@ -134,6 +134,16 @@ namespace ProjectHunt.Flow.Editor
 
             var context = CreateContextAndFlow(out var flow);
             context.runState.phase = GamePhase.Build;
+
+            var cameraGo = new GameObject("Main Camera");
+            var camera = cameraGo.AddComponent<Camera>();
+            camera.orthographic = true;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.13f, 0.13f, 0.2f, 1f);
+            camera.nearClipPlane = -10f;
+            camera.farClipPlane = 10f;
+            cameraGo.tag = "MainCamera";
+            cameraGo.transform.position = new Vector3(0f, 0f, -10f);
 
             var canvas = CreateCanvas("BuildCanvas");
             EnsureEventSystem();
@@ -162,11 +172,11 @@ namespace ProjectHunt.Flow.Editor
                 slotView.characterConfig = slotConfigs[i];
                 slotView.selectedHighlight = CreatePanel(slotRoot.transform, "SelectedHighlight", Vector2.zero, new Vector2(220f, 260f), new Color(0.95f, 0.85f, 0.2f, 0.18f)).gameObject;
                 slotView.selectedHighlight.SetActive(false);
-                slotView.weaponPreview = CreateImage(slotRoot.transform, "WeaponPreview", new Vector2(0f, -60f), new Vector2(64f, 64f));
-                slotView.weaponPreview.enabled = false;
+                slotView.portraitImage = CreateImage(slotRoot.transform, "WeaponPreview", new Vector2(0f, -60f), new Vector2(64f, 64f));
+                slotView.portraitImage.enabled = false;
 
                 CreateCenteredLabel(slotRoot.transform, "Name", slotConfigs[i].displayName, new Vector2(0f, 90f), 24);
-                CreateCenteredLabel(slotRoot.transform, "ResourceName", slotConfigs[i].resourceId, new Vector2(0f, 50f), 16);
+                CreateCenteredLabel(slotRoot.transform, "ResourceName", "效果介绍", new Vector2(0f, 50f), 16);
 
                 var dropSlot = slotRoot.gameObject.AddComponent<BuildDropSlot>();
                 dropSlot.selectionController = controller;
@@ -230,8 +240,10 @@ namespace ProjectHunt.Flow.Editor
             context.defaultBattleFormation =
                 AssetDatabase.LoadAssetAtPath<BattleFormationConfig>("Assets/Data/RuntimeTemplates/FD_DefaultBattleFormation.asset");
 
-            flowController = contextGo.AddComponent<DemoFlowController>();
+            var flowGo = new GameObject("DemoFlowController");
+            flowController = flowGo.AddComponent<DemoFlowController>();
             flowController.gameContext = context;
+            context.flowController = flowController;
             return context;
         }
 

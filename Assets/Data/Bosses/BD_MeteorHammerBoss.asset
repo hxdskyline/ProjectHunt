@@ -15,11 +15,13 @@ MonoBehaviour:
   id: boss_meteor_hammer
   displayName: "\u6D41\u661F\u9524 Boss"
   resourceId: goblin_boss_wife
-  mainAttackAction: attack_round
+  mainAttackAction: slam_strong
   moveAction: walk
   deathAction: death
   weaponType: 3
   attackRangeType: 3
   attackTempo: 1
-  maxHp: 100
+  maxHp: 89
   dropWeaponType: 3
+  visualScale: 3.8
+  yOffset: 0

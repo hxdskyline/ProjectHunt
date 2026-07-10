@@ -15,9 +15,13 @@ MonoBehaviour:
   id: player_swordsman
   displayName: "\u5251\u58EB"
   roleType: 0
+  isHammerVariant: 0
+  baseCharacterId: 
   resourceId: human_swordsman
   defaultAttackAction: attack
   moveAction: walk
+  visualScale: 3
+  yOffset: 0
   defaultWeaponType: 0
   attackTempo: 1
   attackRangeType: 0

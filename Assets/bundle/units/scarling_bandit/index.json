@@ -1,0 +1,49 @@
+{
+  "unit": "scarling_bandit",
+  "actions": {
+    "attack": {
+      "width": 29,
+      "height": 18,
+      "frameCount": 4,
+      "frames": [
+        "image_32177_tex016_29x18.png",
+        "image_32425_tex016_29x18.png",
+        "image_31841_tex016_29x18.png",
+        "image_32424_tex016_29x18.png"
+      ]
+    },
+    "attack_old": {
+      "width": 19,
+      "height": 16,
+      "frameCount": 4,
+      "frames": [
+        "image_32176_tex015_19x16.png",
+        "image_32423_tex016_19x16.png",
+        "image_32243_tex017_19x16.png",
+        "image_31964_tex017_19x16.png"
+      ]
+    },
+    "walk": {
+      "width": 29,
+      "height": 18,
+      "frameCount": 4,
+      "frames": [
+        "image_32429_tex016_29x18.png",
+        "image_32796_tex015_29x18.png",
+        "image_32658_tex015_29x18.png",
+        "image_32179_tex016_29x18.png"
+      ]
+    },
+    "walk_old": {
+      "width": 19,
+      "height": 16,
+      "frameCount": 4,
+      "frames": [
+        "image_32428_tex016_19x16.png",
+        "image_32795_tex015_19x16.png",
+        "image_32657_tex015_19x16.png",
+        "image_32178_tex016_19x16.png"
+      ]
+    }
+  }
+}

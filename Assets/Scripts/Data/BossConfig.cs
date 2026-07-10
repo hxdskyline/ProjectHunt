@@ -23,5 +23,7 @@ namespace ProjectHunt.Data
         public AttackTempo attackTempo = AttackTempo.Medium;
         public int maxHp = 100;
         public WeaponType dropWeaponType = WeaponType.MeteorHammer;
+        public float visualScale = 3.8f;
+        public float yOffset = 0f;
     }
 }

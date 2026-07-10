@@ -8,6 +8,7 @@ namespace ProjectHunt.Battle
         public Transform playerTeamRoot;
         public Transform bossRoot;
         public Transform dropRoot;
+        public Transform projectileRoot;
 
         [Header("Spawn Points")]
         public Transform playerFrontPoint;

@@ -11,11 +11,15 @@ namespace ProjectHunt.Data
         public string id;
         public string displayName;
         public RoleType roleType;
+        public bool isHammerVariant;
+        public string baseCharacterId;
 
         [Header("Art")]
         public string resourceId;
         public string defaultAttackAction = "attack";
         public string moveAction = "walk";
+        public float visualScale = 3f;
+        public float yOffset = 0f;
 
         [Header("Combat")]
         public WeaponType defaultWeaponType;

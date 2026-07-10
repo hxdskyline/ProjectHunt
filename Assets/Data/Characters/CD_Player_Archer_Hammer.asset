@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa84b51a920d2bf45a454a7450f103e5, type: 3}
+  m_Name: CD_Player_Archer_Hammer
+  m_EditorClassIdentifier: 
+  id: player_archer_hammer
+  displayName: "\u9524\u5F13\u624B"
+  roleType: 2
+  isHammerVariant: 1
+  baseCharacterId: player_archer
+  resourceId: longbowman_hammer
+  defaultAttackAction: attack
+  moveAction: walk
+  visualScale: 2.4
+  yOffset: 0
+  defaultWeaponType: 3
+  attackTempo: 2
+  attackRangeType: 2
+  spawnSlot: 2
+  isPlayable: 1

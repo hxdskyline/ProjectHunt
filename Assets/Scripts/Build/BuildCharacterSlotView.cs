@@ -1,4 +1,5 @@
 using ProjectHunt.Data;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,25 +12,310 @@ namespace ProjectHunt.Build
 
         [Header("UI")]
         public GameObject selectedHighlight;
-        public Image weaponPreview;
+        public Image portraitImage;
+        public Text nameText;
+        public Text effectText;
+        public Button assignButton;
+        public Text assignButtonText;
+        public Image cardBackground;
+        public Color normalCardColor = new Color(0.1f, 0.1f, 0.1f, 0.85f);
+        public Color selectedCardColor = new Color(0.1f, 0.1f, 0.1f, 0.85f);
+        public Color normalButtonColor = new Color(0.95f, 0.55f, 0.16f, 0.98f);
+        public Color selectedButtonColor = new Color(0.95f, 0.55f, 0.16f, 0.98f);
+
+        private static readonly Dictionary<int, Sprite> CroppedPortraitCache = new Dictionary<int, Sprite>();
+        private BuildSelectionController _selectionController;
+
+        private void Awake()
+        {
+            AutoBindIfNeeded();
+        }
+
+        public void Bind(BuildSelectionController selectionController)
+        {
+            _selectionController = selectionController;
+            AutoBindIfNeeded();
+            EnsureAssignButton();
+            ApplyLayout();
+        }
 
         public void SetSelected(bool isSelected)
         {
             if (selectedHighlight != null)
             {
-                selectedHighlight.SetActive(isSelected);
+                selectedHighlight.SetActive(false);
+            }
+
+            if (cardBackground != null)
+            {
+                cardBackground.color = normalCardColor;
+            }
+
+            var buttonGraphic = assignButton != null ? assignButton.targetGraphic as Graphic : null;
+            if (buttonGraphic != null)
+            {
+                buttonGraphic.color = normalButtonColor;
             }
         }
 
-        public void SetWeaponPreview(Sprite sprite, bool enabled)
+        public void SetPortrait(Sprite sprite)
         {
-            if (weaponPreview == null)
+            if (portraitImage == null)
             {
                 return;
             }
 
-            weaponPreview.sprite = sprite;
-            weaponPreview.enabled = enabled;
+            var croppedSprite = GetCroppedPortrait(sprite);
+            portraitImage.sprite = croppedSprite != null ? croppedSprite : sprite;
+            portraitImage.enabled = sprite != null;
+            portraitImage.preserveAspect = true;
+            ApplyPortraitSizing(portraitImage.sprite);
+        }
+
+        public void SetTexts(string displayName, string effectDescription, string buttonText)
+        {
+            if (nameText != null)
+            {
+                nameText.font = BuildUiRuntimeStyle.GetChineseFont();
+                nameText.text = displayName;
+            }
+
+            if (effectText != null)
+            {
+                effectText.font = BuildUiRuntimeStyle.GetChineseFont();
+                effectText.text = effectDescription;
+            }
+
+            if (assignButtonText != null)
+            {
+                assignButtonText.font = BuildUiRuntimeStyle.GetChineseFont();
+                assignButtonText.text = buttonText;
+            }
+        }
+
+        public void AssignToCharacter()
+        {
+            if (_selectionController != null)
+            {
+                _selectionController.ShowDiscoverPanel(this);
+            }
+        }
+
+        private void AutoBindIfNeeded()
+        {
+            if (selectedHighlight == null)
+            {
+                var selected = transform.Find("SelectedHighlight");
+                if (selected != null)
+                {
+                    selectedHighlight = selected.gameObject;
+                }
+            }
+
+            if (portraitImage == null)
+            {
+                var portrait = transform.Find("WeaponPreview");
+                if (portrait != null)
+                {
+                    portraitImage = portrait.GetComponent<Image>();
+                }
+            }
+
+            if (nameText == null)
+            {
+                var label = transform.Find("Name");
+                if (label != null)
+                {
+                    nameText = label.GetComponent<Text>();
+                }
+            }
+
+            if (effectText == null)
+            {
+                var effect = transform.Find("ResourceName");
+                if (effect != null)
+                {
+                    effectText = effect.GetComponent<Text>();
+                }
+            }
+
+            if (cardBackground == null)
+            {
+                cardBackground = GetComponent<Image>();
+            }
+        }
+
+        private void EnsureAssignButton()
+        {
+            if (assignButton == null)
+            {
+                var buttonTransform = transform.Find("AssignButton");
+                if (buttonTransform != null)
+                {
+                    assignButton = buttonTransform.GetComponent<Button>();
+                    assignButtonText = buttonTransform.GetComponentInChildren<Text>();
+                }
+            }
+
+            if (assignButton == null)
+            {
+                CreateAssignButton();
+            }
+
+            if (assignButton == null)
+            {
+                return;
+            }
+
+            assignButton.onClick.RemoveAllListeners();
+            assignButton.onClick.AddListener(AssignToCharacter);
+        }
+
+        private void CreateAssignButton()
+        {
+            var buttonGo = new GameObject("AssignButton", typeof(RectTransform), typeof(Image), typeof(Button));
+            buttonGo.transform.SetParent(transform, false);
+
+            var rect = buttonGo.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0f, -98f);
+            rect.sizeDelta = new Vector2(168f, 42f);
+
+            var image = buttonGo.GetComponent<Image>();
+            image.color = normalButtonColor;
+
+            assignButton = buttonGo.GetComponent<Button>();
+            assignButton.targetGraphic = image;
+
+            var textGo = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            textGo.transform.SetParent(buttonGo.transform, false);
+            var textRect = textGo.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+
+            assignButtonText = textGo.GetComponent<Text>();
+            assignButtonText.alignment = TextAnchor.MiddleCenter;
+            assignButtonText.font = BuildUiRuntimeStyle.GetChineseFont();
+            assignButtonText.fontSize = 18;
+            assignButtonText.color = Color.white;
+        }
+
+        private void ApplyLayout()
+        {
+            if (portraitImage != null)
+            {
+                var portraitRect = portraitImage.rectTransform;
+                portraitRect.anchoredPosition = new Vector2(0f, -18f);
+            }
+
+            if (nameText != null)
+            {
+                var nameRect = nameText.rectTransform;
+                nameRect.anchoredPosition = new Vector2(0f, 96f);
+                nameRect.sizeDelta = new Vector2(180f, 34f);
+                nameText.fontSize = 24;
+                nameText.alignment = TextAnchor.MiddleCenter;
+            }
+
+            if (effectText != null)
+            {
+                var effectRect = effectText.rectTransform;
+                effectRect.anchoredPosition = new Vector2(0f, 54f);
+                effectRect.sizeDelta = new Vector2(176f, 54f);
+                effectText.fontSize = 16;
+                effectText.alignment = TextAnchor.MiddleCenter;
+                effectText.horizontalOverflow = HorizontalWrapMode.Wrap;
+                effectText.verticalOverflow = VerticalWrapMode.Overflow;
+            }
+        }
+
+        private void ApplyPortraitSizing(Sprite sprite)
+        {
+            if (portraitImage == null || sprite == null || characterConfig == null)
+            {
+                return;
+            }
+
+            var scaleFactor = GetPortraitScaleFactor();
+            var size = sprite.rect.size * scaleFactor;
+            portraitImage.rectTransform.sizeDelta = size;
+        }
+
+        private float GetPortraitScaleFactor()
+        {
+            var visualScale = Mathf.Max(0.01f, characterConfig.visualScale);
+            const float uiPixelsPerWorldUnit = 4.2f;
+            return visualScale * uiPixelsPerWorldUnit * 0.5f;
+        }
+
+        private static Sprite GetCroppedPortrait(Sprite sprite)
+        {
+            if (sprite == null)
+            {
+                return null;
+            }
+
+            var key = sprite.GetInstanceID();
+            if (CroppedPortraitCache.TryGetValue(key, out var cached))
+            {
+                return cached;
+            }
+
+            var texture = sprite.texture;
+            if (texture == null)
+            {
+                return sprite;
+            }
+
+            var sourceRect = sprite.rect;
+            var minX = int.MaxValue;
+            var minY = int.MaxValue;
+            var maxX = int.MinValue;
+            var maxY = int.MinValue;
+
+            for (var y = 0; y < sourceRect.height; y++)
+            {
+                for (var x = 0; x < sourceRect.width; x++)
+                {
+                    var pixel = texture.GetPixel((int)sourceRect.x + x, (int)sourceRect.y + y);
+                    if (pixel.a <= 0f)
+                    {
+                        continue;
+                    }
+
+                    if (x < minX) minX = x;
+                    if (y < minY) minY = y;
+                    if (x > maxX) maxX = x;
+                    if (y > maxY) maxY = y;
+                }
+            }
+
+            if (minX == int.MaxValue)
+            {
+                CroppedPortraitCache[key] = sprite;
+                return sprite;
+            }
+
+            var croppedRect = new Rect(
+                sourceRect.x + minX,
+                sourceRect.y + minY,
+                maxX - minX + 1,
+                maxY - minY + 1);
+
+            var croppedSprite = Sprite.Create(
+                texture,
+                croppedRect,
+                new Vector2(0.5f, 0f),
+                sprite.pixelsPerUnit,
+                0,
+                SpriteMeshType.FullRect);
+
+            CroppedPortraitCache[key] = croppedSprite;
+            return croppedSprite;
         }
     }
 }

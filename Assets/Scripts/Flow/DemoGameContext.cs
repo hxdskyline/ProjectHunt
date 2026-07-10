@@ -11,6 +11,8 @@ namespace ProjectHunt.Flow
     {
         public static DemoGameContext Instance { get; private set; }
 
+        public DemoFlowController flowController;
+
         [Header("Static Config")]
         public BattleFormationConfig defaultBattleFormation;
 
@@ -22,7 +24,14 @@ namespace ProjectHunt.Flow
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Transfer state from the old surviving instance to this scene-local one,
+                // then destroy the old so this scene's references stay valid.
+                buildSelection.CopyFrom(Instance.buildSelection);
+                runState.CopyFrom(Instance.runState);
+                var oldInstance = Instance;
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+                Destroy(oldInstance.gameObject);
                 return;
             }
 

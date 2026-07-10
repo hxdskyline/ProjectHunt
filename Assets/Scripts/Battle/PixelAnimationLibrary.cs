@@ -41,6 +41,36 @@ namespace ProjectHunt.Battle
             return null;
         }
 
+        public static Sprite LoadSpriteFromAbsolutePath(string filePath)
+        {
+            return LoadSprite(filePath);
+        }
+
+        public static Sprite GetFirstFrameSprite(string resourceId, params string[] actionNames)
+        {
+            if (actionNames == null || actionNames.Length == 0)
+            {
+                return null;
+            }
+
+            for (var i = 0; i < actionNames.Length; i++)
+            {
+                var clip = GetClip(resourceId, actionNames[i]);
+                if (clip != null && clip.frames != null && clip.frames.Length > 0)
+                {
+                    return clip.frames[0];
+                }
+            }
+
+            return null;
+        }
+
+        public static int GetFrameCount(string resourceId, string actionName, float fps = 8f)
+        {
+            var clip = GetClip(resourceId, actionName, fps);
+            return clip != null && clip.frames != null ? clip.frames.Length : 0;
+        }
+
         private static Dictionary<string, ActionClip> LoadResource(string resourceId, float fps)
         {
             var resourcePath = Path.Combine(Application.dataPath, "bundle", "units", resourceId);

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: demo_default_battle
   frontCharacter: {fileID: 11400000, guid: b5586e8af7c85bd40a4fd856853bc398, type: 2}
-  midCharacter: {fileID: 11400000, guid: 1a753d060f850aa4fb5ce81289b0f249, type: 2}
+  midCharacter: {fileID: 11400000, guid: 51e7bbc782b269944a98b0fa622627f2, type: 2}
   backCharacter: {fileID: 11400000, guid: dd3d2949b300a82409e8bf053250f084, type: 2}
   boss: {fileID: 11400000, guid: b86316f033ff2a343aeba71cc2085533, type: 2}

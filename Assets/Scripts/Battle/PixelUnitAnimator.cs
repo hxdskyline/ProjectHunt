@@ -79,6 +79,11 @@ namespace ProjectHunt.Battle
             return clip?.Duration ?? 0f;
         }
 
+        public int GetFrameCount(string actionName)
+        {
+            return PixelAnimationLibrary.GetFrameCount(resourceId, actionName, fps);
+        }
+
         private void Play(string actionName, bool loop)
         {
             if (string.IsNullOrWhiteSpace(resourceId) || string.IsNullOrWhiteSpace(actionName))

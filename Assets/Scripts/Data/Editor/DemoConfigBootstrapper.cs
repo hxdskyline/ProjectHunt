@@ -23,7 +23,7 @@ namespace ProjectHunt.EditorTools
             var sword = CreateWeapon(
                 "WD_Weapon_Sword",
                 "weapon_sword",
-                "剑",
+                "\u5251",
                 WeaponType.Sword,
                 AttackBehaviorType.SlashForward,
                 AttackRangeType.MeleeShort,
@@ -34,7 +34,7 @@ namespace ProjectHunt.EditorTools
             var fist = CreateWeapon(
                 "WD_Weapon_Fist",
                 "weapon_fist",
-                "拳",
+                "\u62f3",
                 WeaponType.Fist,
                 AttackBehaviorType.PunchForward,
                 AttackRangeType.MeleeVeryShort,
@@ -45,7 +45,7 @@ namespace ProjectHunt.EditorTools
             var bow = CreateWeapon(
                 "WD_Weapon_Bow",
                 "weapon_bow",
-                "弓",
+                "\u5f13",
                 WeaponType.Bow,
                 AttackBehaviorType.ShootLine,
                 AttackRangeType.RangedLine,
@@ -56,7 +56,7 @@ namespace ProjectHunt.EditorTools
             var meteorHammer = CreateWeapon(
                 "WD_Weapon_MeteorHammer",
                 "weapon_meteor_hammer",
-                "流星锤",
+                "\u6d41\u661f\u9524",
                 WeaponType.MeteorHammer,
                 AttackBehaviorType.SpinArea,
                 AttackRangeType.SpinArea,
@@ -67,7 +67,7 @@ namespace ProjectHunt.EditorTools
             var swordsman = CreateCharacter(
                 "CD_Player_Swordsman",
                 "player_swordsman",
-                "剑士",
+                "\u5251\u58eb",
                 RoleType.Swordsman,
                 "human_swordsman",
                 WeaponType.Sword,
@@ -77,23 +77,25 @@ namespace ProjectHunt.EditorTools
                 AttackRangeType.MeleeShort,
                 SpawnSlot.Front);
 
-            var brawler = CreateCharacter(
-                "CD_Player_Brawler",
+            var assassin = CreateCharacter(
+                "CD_Player_Assassin",
                 "player_brawler",
-                "拳师",
-                RoleType.Brawler,
+                "\u523a\u5ba2",
+                RoleType.Assassin,
                 "assassin",
-                WeaponType.Fist,
+                WeaponType.Sword,
                 "attack",
                 "walk",
                 AttackTempo.Fast,
-                AttackRangeType.MeleeVeryShort,
-                SpawnSlot.Mid);
+                AttackRangeType.RangedLine,
+                SpawnSlot.Mid,
+                2.6f,
+                0f);
 
             var archer = CreateCharacter(
                 "CD_Player_Archer",
                 "player_archer",
-                "弓箭手",
+                "\u5f13\u7bad\u624b",
                 RoleType.Archer,
                 "longbowman",
                 WeaponType.Bow,
@@ -101,27 +103,31 @@ namespace ProjectHunt.EditorTools
                 "walk",
                 AttackTempo.Slow,
                 AttackRangeType.RangedLine,
-                SpawnSlot.Back);
+                SpawnSlot.Back,
+                2.4f,
+                0f);
 
             var boss = CreateBoss(
                 "BD_MeteorHammerBoss",
                 "boss_meteor_hammer",
-                "流星锤 Boss",
+                "\u6d41\u661f\u9524 Boss",
                 "goblin_boss_wife",
                 WeaponType.MeteorHammer,
-                "attack_round",
+                "slam_strong",
                 "walk",
                 "death",
                 AttackRangeType.SpinArea,
                 AttackTempo.Medium,
-                100,
-                WeaponType.MeteorHammer);
+                89,
+                WeaponType.MeteorHammer,
+                3.8f,
+                0f);
 
             CreateFormation(
                 "FD_DefaultBattleFormation",
                 "demo_default_battle",
                 swordsman,
-                brawler,
+                assassin,
                 archer,
                 boss);
 
@@ -130,7 +136,7 @@ namespace ProjectHunt.EditorTools
 
             EditorUtility.DisplayDialog(
                 "Project Hunt",
-                "Demo 配置资源已生成或更新完成。",
+                "Demo \u914d\u7f6e\u8d44\u6e90\u5df2\u751f\u6210\u6216\u66f4\u65b0\u5b8c\u6210\u3002",
                 "OK");
         }
 
@@ -191,7 +197,9 @@ namespace ProjectHunt.EditorTools
             string moveAction,
             AttackTempo attackTempo,
             AttackRangeType attackRangeType,
-            SpawnSlot spawnSlot)
+            SpawnSlot spawnSlot,
+            float visualScale = 3f,
+            float yOffset = 0f)
         {
             var assetPath = $"{CharactersDir}/{assetName}.asset";
             var asset = LoadOrCreateAsset<CharacterConfig>(assetPath);
@@ -205,6 +213,8 @@ namespace ProjectHunt.EditorTools
             asset.attackTempo = attackTempo;
             asset.attackRangeType = attackRangeType;
             asset.spawnSlot = spawnSlot;
+            asset.visualScale = visualScale;
+            asset.yOffset = yOffset;
             asset.isPlayable = true;
             EditorUtility.SetDirty(asset);
             return asset;
@@ -222,7 +232,9 @@ namespace ProjectHunt.EditorTools
             AttackRangeType attackRangeType,
             AttackTempo attackTempo,
             int maxHp,
-            WeaponType dropWeaponType)
+            WeaponType dropWeaponType,
+            float visualScale = 3.8f,
+            float yOffset = 0f)
         {
             var assetPath = $"{BossesDir}/{assetName}.asset";
             var asset = LoadOrCreateAsset<BossConfig>(assetPath);
@@ -237,6 +249,8 @@ namespace ProjectHunt.EditorTools
             asset.attackTempo = attackTempo;
             asset.maxHp = maxHp;
             asset.dropWeaponType = dropWeaponType;
+            asset.visualScale = visualScale;
+            asset.yOffset = yOffset;
             EditorUtility.SetDirty(asset);
             return asset;
         }

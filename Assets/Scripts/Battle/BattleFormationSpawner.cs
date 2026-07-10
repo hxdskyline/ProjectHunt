@@ -59,10 +59,19 @@ namespace ProjectHunt.Battle
             ClearSpawnedUnits();
 
             var formation = gameContext.defaultBattleFormation;
-            SpawnCharacter(formation.frontCharacter, sceneReferences.playerFrontPoint, sceneReferences.playerTeamRoot);
-            SpawnCharacter(formation.midCharacter, sceneReferences.playerMidPoint, sceneReferences.playerTeamRoot);
-            SpawnCharacter(formation.backCharacter, sceneReferences.playerBackPoint, sceneReferences.playerTeamRoot);
-            SpawnBoss(formation.boss, sceneReferences.bossPoint, sceneReferences.bossRoot);
+            var isBattle02 = IsBattle02Active();
+            Debug.Log($"[BattleFormation] isBattle02={isBattle02}, spawning players at: front={sceneReferences.playerFrontPoint.position}, mid={sceneReferences.playerMidPoint.position}, back={sceneReferences.playerBackPoint.position}");
+            SpawnCharacter(ResolveBattleCharacter(formation.frontCharacter, isBattle02), sceneReferences.playerFrontPoint, sceneReferences.playerTeamRoot);
+            SpawnCharacter(ResolveBattleCharacter(formation.midCharacter, isBattle02), sceneReferences.playerMidPoint, sceneReferences.playerTeamRoot);
+            SpawnCharacter(ResolveBattleCharacter(formation.backCharacter, isBattle02), sceneReferences.playerBackPoint, sceneReferences.playerTeamRoot);
+            if (!isBattle02)
+            {
+                SpawnBoss(formation.boss, sceneReferences.bossPoint, sceneReferences.bossRoot);
+            }
+            else
+            {
+                Debug.Log("[BattleFormation] Battle02: skipped boss spawn.");
+            }
         }
 
         public void ClearSpawnedUnits()
@@ -123,6 +132,37 @@ namespace ProjectHunt.Battle
             {
                 bossRenderer.flipX = true;
             }
+        }
+
+        private bool IsBattle02Active()
+        {
+            if (battleDirector != null && battleDirector.IsBattle02)
+            {
+                return true;
+            }
+
+            return gameContext != null &&
+                   (gameContext.runState.phase == GamePhase.Battle02 || gameContext.runState.isBattle02Started);
+        }
+
+        private CharacterConfig ResolveBattleCharacter(CharacterConfig baseConfig, bool isBattle02)
+        {
+            if (baseConfig == null || !isBattle02 || gameContext == null)
+            {
+                return baseConfig;
+            }
+
+            var selectedBase = gameContext.buildSelection.selectedCharacter;
+            var selectedHammer = gameContext.buildSelection.selectedHammerCharacter;
+            if (selectedBase == null || selectedHammer == null)
+            {
+                return baseConfig;
+            }
+
+            var isSelectedBase = baseConfig == selectedBase ||
+                                 (!string.IsNullOrWhiteSpace(baseConfig.id) &&
+                                  baseConfig.id == selectedBase.id);
+            return isSelectedBase ? selectedHammer : baseConfig;
         }
 
         private GameObject FindCharacterPrefab(CharacterConfig config)

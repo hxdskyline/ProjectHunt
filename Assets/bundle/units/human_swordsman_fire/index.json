@@ -1,0 +1,27 @@
+﻿{
+    "unit":  "human_swordsman_fire",
+    "actions":  {
+                    "attack":  {
+                                   "width":  10,
+                                   "height":  10,
+                                   "frameCount":  4,
+                                   "frames":  [
+                                                  "image_33180_tex013_10x10_fire.png",
+                                                  "image_32882_tex014_10x10_fire.png",
+                                                  "image_32883_tex014_10x10_fire.png",
+                                                  "image_33024_tex013_10x10_fire.png"
+                                              ]
+                               },
+                    "walk":  {
+                                 "width":  10,
+                                 "height":  10,
+                                 "frameCount":  4,
+                                 "frames":  [
+                                                "image_32645_tex015_10x10_fire.png",
+                                                "image_33026_tex013_10x10_fire.png",
+                                                "image_32646_tex015_10x10_fire.png",
+                                                "image_33027_tex013_10x10_fire.png"
+                                            ]
+                             }
+                }
+}

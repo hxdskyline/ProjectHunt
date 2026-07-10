@@ -5,7 +5,7 @@ namespace ProjectHunt.Data
     public enum RoleType
     {
         Swordsman = 0,
-        Brawler = 1,
+        Assassin = 1,
         Archer = 2,
     }
 
@@ -47,7 +47,16 @@ namespace ProjectHunt.Data
         Drop = 2,
         Build = 3,
         Battle02 = 4,
-        Result = 5,
+        Drop02 = 5,
+        Build02 = 6,
+        Result = 7,
+    }
+
+    public enum RewardType
+    {
+        None = 0,
+        MeteorHammer = 1,
+        FireGland = 2,
     }
 
     public enum AttackBehaviorType

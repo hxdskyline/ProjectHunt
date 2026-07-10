@@ -15,9 +15,13 @@ MonoBehaviour:
   id: player_archer
   displayName: "\u5F13\u7BAD\u624B"
   roleType: 2
+  isHammerVariant: 0
+  baseCharacterId: 
   resourceId: longbowman
   defaultAttackAction: attack
   moveAction: walk
+  visualScale: 2.4
+  yOffset: 0
   defaultWeaponType: 2
   attackTempo: 2
   attackRangeType: 2
