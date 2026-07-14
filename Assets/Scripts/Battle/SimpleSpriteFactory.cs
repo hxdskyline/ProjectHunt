@@ -5,7 +5,8 @@ namespace ProjectHunt.Battle
     public static class SimpleSpriteFactory
     {
         private static Sprite _meteorHammerSprite;
-        private static Sprite _fireGlandSprite;
+        private static Sprite _holyCupSprite;
+        private static Sprite _giantKeySprite;
         private static Sprite _whitePixelSprite;
         private static Sprite _hitSparkSprite;
 
@@ -89,19 +90,19 @@ namespace ProjectHunt.Battle
             return _whitePixelSprite;
         }
 
-        public static Sprite GetFireGlandSprite()
+        public static Sprite GetHolyCupSprite()
         {
-            if (_fireGlandSprite != null)
+            if (_holyCupSprite != null)
             {
-                return _fireGlandSprite;
+                return _holyCupSprite;
             }
 
             var tex = new Texture2D(16, 16, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Point;
             var clear = new Color(0f, 0f, 0f, 0f);
-            var dark = new Color32(104, 24, 12, 255);
-            var core = new Color32(240, 88, 32, 255);
-            var glow = new Color32(255, 190, 76, 255);
+            var bowl = new Color32(226, 184, 98, 255);
+            var stem = new Color32(176, 126, 60, 255);
+            var fill = new Color32(255, 116, 86, 255);
 
             for (var y = 0; y < 16; y++)
             {
@@ -111,35 +112,37 @@ namespace ProjectHunt.Battle
                 }
             }
 
-            for (var y = 3; y <= 12; y++)
+            // Texture coordinates grow upward, so the bowl belongs above the stem.
+            for (var y = 7; y <= 11; y++)
             {
-                for (var x = 3; x <= 12; x++)
+                for (var x = 4; x <= 11; x++)
                 {
-                    var dx = x - 7.5f;
-                    var dy = y - 8f;
-                    var distance = dx * dx * 0.9f + dy * dy;
-                    if (distance <= 18f)
+                    if (y == 7 || y == 11 || x == 4 || x == 11)
                     {
-                        tex.SetPixel(x, y, dark);
+                        tex.SetPixel(x, y, bowl);
                     }
-
-                    if (distance <= 11f)
+                    else
                     {
-                        tex.SetPixel(x, y, core);
-                    }
-
-                    if (distance <= 5.5f)
-                    {
-                        tex.SetPixel(x, y, glow);
+                        tex.SetPixel(x, y, fill);
                     }
                 }
             }
 
-            tex.SetPixel(7, 8, Color.white);
-            tex.SetPixel(8, 8, Color.white);
+            tex.SetPixel(7, 6, bowl);
+            tex.SetPixel(8, 6, bowl);
+            tex.SetPixel(7, 5, stem);
+            tex.SetPixel(8, 5, stem);
+            for (var x = 6; x <= 9; x++)
+            {
+                tex.SetPixel(x, 4, stem);
+            }
+            for (var x = 5; x <= 10; x++)
+            {
+                tex.SetPixel(x, 3, bowl);
+            }
             tex.Apply();
 
-            _fireGlandSprite = Sprite.Create(
+            _holyCupSprite = Sprite.Create(
                 tex,
                 new Rect(0, 0, tex.width, tex.height),
                 new Vector2(0.5f, 0.5f),
@@ -147,7 +150,70 @@ namespace ProjectHunt.Battle
                 0,
                 SpriteMeshType.FullRect);
 
-            return _fireGlandSprite;
+            return _holyCupSprite;
+        }
+
+        public static Sprite GetGiantKeySprite()
+        {
+            if (_giantKeySprite != null)
+            {
+                return _giantKeySprite;
+            }
+
+            var tex = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            var clear = new Color(0f, 0f, 0f, 0f);
+            var metal = new Color32(211, 176, 86, 255);
+            var dark = new Color32(126, 96, 42, 255);
+
+            for (var y = 0; y < 16; y++)
+            {
+                for (var x = 0; x < 16; x++)
+                {
+                    tex.SetPixel(x, y, clear);
+                }
+            }
+
+            for (var y = 4; y <= 11; y++)
+            {
+                for (var x = 2; x <= 7; x++)
+                {
+                    var dx = x - 4.5f;
+                    var dy = y - 7.5f;
+                    if (dx * dx + dy * dy <= 8f)
+                    {
+                        tex.SetPixel(x, y, metal);
+                    }
+                }
+            }
+
+            tex.SetPixel(4, 7, clear);
+            tex.SetPixel(5, 7, clear);
+            tex.SetPixel(4, 8, clear);
+            tex.SetPixel(5, 8, clear);
+
+            for (var x = 7; x <= 13; x++)
+            {
+                tex.SetPixel(x, 7, metal);
+                tex.SetPixel(x, 8, metal);
+            }
+
+            tex.SetPixel(12, 9, dark);
+            tex.SetPixel(13, 9, metal);
+            tex.SetPixel(12, 10, dark);
+            tex.SetPixel(13, 10, metal);
+            tex.SetPixel(10, 5, Color.white);
+            tex.Apply();
+
+            _giantKeySprite = Sprite.Create(
+                tex,
+                new Rect(0, 0, tex.width, tex.height),
+                new Vector2(0.5f, 0.5f),
+                16f,
+                0,
+                SpriteMeshType.FullRect);
+
+            return _giantKeySprite;
         }
 
         public static Sprite GetHitSparkSprite()

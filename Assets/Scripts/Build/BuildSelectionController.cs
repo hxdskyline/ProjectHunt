@@ -60,7 +60,7 @@ namespace ProjectHunt.Build
 
             if (fireGlandSprite == null)
             {
-                fireGlandSprite = SimpleSpriteFactory.GetFireGlandSprite();
+                fireGlandSprite = SimpleSpriteFactory.GetHolyCupSprite();
             }
 
             if (dragItemVisual != null)
@@ -77,6 +77,7 @@ namespace ProjectHunt.Build
         {
             _selectedCharacter = null;
             ResolveFlowController();
+            SyncSlotsWithCurrentRoster();
 
             if (titleText != null)
             {
@@ -186,9 +187,15 @@ namespace ProjectHunt.Build
             }
 
             Debug.Log($"[Build] Discover confirm for {_selectedCharacter.displayName}.");
-            if (CurrentRewardType == RewardType.FireGland)
+            if (CurrentRewardType == RewardType.HolyCup)
             {
-                flowController.ConfirmFireGlandSelection(_selectedCharacter);
+                flowController.ConfirmHolyCupSelection(_selectedCharacter);
+                return;
+            }
+
+            if (CurrentRewardType == RewardType.GiantKey)
+            {
+                flowController.ConfirmGiantKeySelection(_selectedCharacter);
                 return;
             }
 
@@ -300,7 +307,8 @@ namespace ProjectHunt.Build
                 var text = texts[i];
                 if (text != null &&
                     (text.text.Contains("\u54e5\u5e03\u6797\u6d41\u661f\u9524") ||
-                     text.text.Contains("\u706b\u7130\u817a\u4f53")))
+                     text.text.Contains("\u9152\u795e\u5723\u676f") ||
+                     text.text.Contains("\u5de8\u4eba\u94a5\u5319")))
                 {
                     text.gameObject.SetActive(false);
                 }
@@ -309,19 +317,30 @@ namespace ProjectHunt.Build
 
         private CharacterConfig GetDisplayCharacter(CharacterConfig baseCharacter)
         {
-            if (baseCharacter == null || gameContext == null || CurrentRewardType != RewardType.FireGland)
+            if (baseCharacter == null || gameContext == null)
             {
                 return baseCharacter;
             }
 
-            var selectedBase = gameContext.buildSelection.selectedCharacter;
-            var selectedHammer = gameContext.buildSelection.selectedHammerCharacter;
-            if (selectedBase == null || selectedHammer == null)
+            var resolved = baseCharacter;
+
+            if (CurrentRewardType == RewardType.HolyCup || CurrentRewardType == RewardType.GiantKey)
             {
-                return baseCharacter;
+                resolved = ApplyRewardVariant(
+                    resolved,
+                    gameContext.buildSelection.selectedHammerTargetId,
+                    gameContext.buildSelection.selectedHammerCharacter);
             }
 
-            return baseCharacter == selectedBase ? selectedHammer : baseCharacter;
+            if (CurrentRewardType == RewardType.GiantKey)
+            {
+                resolved = ApplyRewardVariant(
+                    resolved,
+                    gameContext.buildSelection.selectedCupTargetId,
+                    gameContext.buildSelection.selectedCupCharacter);
+            }
+
+            return resolved;
         }
 
         private CharacterConfig ResolveRewardCharacter(CharacterConfig baseCharacter, RewardType rewardType)
@@ -333,8 +352,10 @@ namespace ProjectHunt.Build
 
             switch (rewardType)
             {
-                case RewardType.FireGland:
-                    return FireGlandCharacterFactory.GetFireVariant(GetDisplayCharacter(baseCharacter));
+                case RewardType.HolyCup:
+                    return HolyCupCharacterFactory.GetCupVariant(GetDisplayCharacter(baseCharacter));
+                case RewardType.GiantKey:
+                    return GiantKeyCharacterFactory.GetKeyVariant(GetDisplayCharacter(baseCharacter));
                 case RewardType.MeteorHammer:
                 default:
                     return HammerCharacterFactory.GetHammerVariant(baseCharacter);
@@ -343,28 +364,42 @@ namespace ProjectHunt.Build
 
         private string GetBuildTitle(RewardType rewardType)
         {
-            return rewardType == RewardType.FireGland
-                ? "\u628a\u706b\u7130\u817a\u4f53\u4ea4\u7ed9\u8c01\uff1f"
-                : "\u628a\u6d41\u661f\u9524\u4ea4\u7ed9\u8c01\uff1f";
+            return rewardType switch
+            {
+                RewardType.HolyCup => "\u628a\u5723\u676f\u4ea4\u7ed9\u8c01\uff1f",
+                RewardType.GiantKey => "\u628a\u5de8\u4eba\u94a5\u5319\u4ea4\u7ed9\u8c01\uff1f",
+                _ => "\u628a\u6d41\u661f\u9524\u4ea4\u7ed9\u8c01\uff1f",
+            };
         }
 
         private static string GetEffectDescription(RewardType rewardType, RoleType roleType)
         {
-            return rewardType == RewardType.FireGland
-                ? FireGlandRules.GetEffectDescription(roleType)
-                : MeteorHammerRules.GetEffectDescription(roleType);
+            return rewardType switch
+            {
+                RewardType.HolyCup => HolyCupRules.GetEffectDescription(roleType),
+                RewardType.GiantKey => GiantKeyRules.GetEffectDescription(roleType),
+                _ => MeteorHammerRules.GetEffectDescription(roleType),
+            };
         }
 
         private static string GetAssignButtonText(RewardType rewardType, string displayName)
         {
-            return rewardType == RewardType.FireGland
-                ? FireGlandRules.GetAssignButtonText(displayName)
-                : MeteorHammerRules.GetAssignButtonText(displayName);
+            return rewardType switch
+            {
+                RewardType.HolyCup => HolyCupRules.GetAssignButtonText(displayName),
+                RewardType.GiantKey => GiantKeyRules.GetAssignButtonText(displayName),
+                _ => MeteorHammerRules.GetAssignButtonText(displayName),
+            };
         }
 
         private Sprite GetRewardSprite(RewardType rewardType)
         {
-            return rewardType == RewardType.FireGland ? fireGlandSprite : meteorHammerSprite;
+            return rewardType switch
+            {
+                RewardType.HolyCup => fireGlandSprite,
+                RewardType.GiantKey => SimpleSpriteFactory.GetGiantKeySprite(),
+                _ => meteorHammerSprite,
+            };
         }
 
         private void ArrangeCharacterSlots()
@@ -380,6 +415,67 @@ namespace ProjectHunt.Build
 
                 rect.anchoredPosition = new Vector2(anchoredXs[i], 10f);
             }
+        }
+
+        private void SyncSlotsWithCurrentRoster()
+        {
+            if (gameContext == null || gameContext.defaultBattleFormation == null)
+            {
+                return;
+            }
+
+            var formation = gameContext.defaultBattleFormation;
+            var roster = new[]
+            {
+                ResolveRosterCharacter(formation.frontCharacter),
+                ResolveRosterCharacter(formation.midCharacter),
+                ResolveRosterCharacter(formation.backCharacter),
+            };
+
+            for (var i = 0; i < characterSlots.Count && i < roster.Length; i++)
+            {
+                if (characterSlots[i] != null)
+                {
+                    characterSlots[i].characterConfig = roster[i];
+                }
+            }
+        }
+
+        private CharacterConfig ResolveRosterCharacter(CharacterConfig baseCharacter)
+        {
+            if (baseCharacter == null || gameContext == null)
+            {
+                return baseCharacter;
+            }
+
+            var runState = gameContext.runState;
+            if (runState.hasRecruitedMage && baseCharacter.id == runState.mageReplacedCharacterId)
+            {
+                return MageCharacterFactory.GetMageVariant(runState.mageRewardType);
+            }
+
+            var resolved = baseCharacter;
+            resolved = ApplyRewardVariant(
+                resolved,
+                gameContext.buildSelection.selectedHammerTargetId,
+                gameContext.buildSelection.selectedHammerCharacter);
+            resolved = ApplyRewardVariant(
+                resolved,
+                gameContext.buildSelection.selectedCupTargetId,
+                gameContext.buildSelection.selectedCupCharacter);
+            return resolved;
+        }
+
+        private static CharacterConfig ApplyRewardVariant(CharacterConfig currentConfig, string targetId, CharacterConfig rewardVariant)
+        {
+            if (currentConfig == null || string.IsNullOrWhiteSpace(targetId) || rewardVariant == null)
+            {
+                return currentConfig;
+            }
+
+            return currentConfig.id == targetId || currentConfig.baseCharacterId == targetId
+                ? rewardVariant
+                : currentConfig;
         }
 
         private void ResolveFlowController()
@@ -534,6 +630,18 @@ namespace ProjectHunt.Build
             resultRect.localScale = Vector3.one * 0.76f;
             rightRect.localEulerAngles = Vector3.zero;
 
+            if (_rewardType == RewardType.None)
+            {
+                _leftUnitImage.enabled = false;
+                _rightHammerImage.enabled = false;
+                yield return PlayRevealRoutine(resultRect);
+                yield return new WaitForSeconds(0.18f);
+                yield return PlayAttackPreviewRoutine();
+                yield return new WaitForSeconds(0.12f);
+                SetButtonsVisible(true);
+                yield break;
+            }
+
             yield return new WaitForSeconds(0.25f);
 
             const float mergeDuration = 0.48f;
@@ -554,8 +662,19 @@ namespace ProjectHunt.Build
             _leftUnitImage.enabled = false;
             _rightHammerImage.enabled = false;
 
+            yield return PlayRevealRoutine(resultRect);
+
+            yield return new WaitForSeconds(0.18f);
+            yield return PlayAttackPreviewRoutine();
+            yield return new WaitForSeconds(0.12f);
+
+            SetButtonsVisible(true);
+        }
+
+        private IEnumerator PlayRevealRoutine(RectTransform resultRect)
+        {
             const float revealDuration = 0.55f;
-            elapsed = 0f;
+            var elapsed = 0f;
             while (elapsed < revealDuration)
             {
                 elapsed += Time.deltaTime;
@@ -568,12 +687,6 @@ namespace ProjectHunt.Build
                 _resultNameText.color = new Color(1f, 0.94f, 0.82f, Mathf.Clamp01((t - 0.25f) / 0.75f));
                 yield return null;
             }
-
-            yield return new WaitForSeconds(0.18f);
-            yield return PlayAttackPreviewRoutine();
-            yield return new WaitForSeconds(0.12f);
-
-            SetButtonsVisible(true);
         }
 
         private IEnumerator PlayAttackPreviewRoutine()
@@ -802,6 +915,11 @@ namespace ProjectHunt.Build
                 return SimpleSpriteFactory.GetMeteorHammerSprite();
             }
 
+            if (config.roleType == RoleType.Archer && config.resourceId == "catapult")
+            {
+                return PixelAnimationLibrary.GetFirstFrameSprite("catapult_ball", "idle");
+            }
+
             if (config.roleType == RoleType.Archer)
             {
                 return ExternalSpriteLibrary.GetLongbowArrowSprite();
@@ -829,6 +947,11 @@ namespace ProjectHunt.Build
 
         private static Sprite[] GetProjectileAnimationFrames(CharacterConfig config, int attackFrameIndex)
         {
+            if (config != null && config.roleType == RoleType.Archer && config.resourceId == "catapult")
+            {
+                return PixelAnimationLibrary.GetClip("catapult_ball", "idle")?.frames;
+            }
+
             if (config != null && config.roleType == RoleType.Assassin && (!config.isHammerVariant || attackFrameIndex <= 3))
             {
                 return ExternalSpriteLibrary.GetBallistaArrowFrames();
@@ -874,6 +997,11 @@ namespace ProjectHunt.Build
                 return new Vector2(64f, 64f);
             }
 
+            if (config.roleType == RoleType.Archer && config.resourceId == "catapult")
+            {
+                return new Vector2(58f, 58f);
+            }
+
             if (config.roleType == RoleType.Archer)
             {
                 return new Vector2(52f, 24f);
@@ -911,7 +1039,7 @@ namespace ProjectHunt.Build
 
             if (config.roleType == RoleType.Archer)
             {
-                return config.isHammerVariant ? 74f : 58f;
+                return config.isHammerVariant ? 74f : config.resourceId == "catapult" ? 88f : 58f;
             }
 
             return config.isHammerVariant ? 54f : 0f;
@@ -1024,9 +1152,13 @@ namespace ProjectHunt.Build
 
         private static Sprite GetRewardSprite(RewardType rewardType)
         {
-            return rewardType == RewardType.FireGland
-                ? SimpleSpriteFactory.GetFireGlandSprite()
-                : SimpleSpriteFactory.GetMeteorHammerSprite();
+            return rewardType switch
+            {
+                RewardType.None => SimpleSpriteFactory.GetHitSparkSprite(),
+                RewardType.HolyCup => SimpleSpriteFactory.GetHolyCupSprite(),
+                RewardType.GiantKey => SimpleSpriteFactory.GetGiantKeySprite(),
+                _ => SimpleSpriteFactory.GetMeteorHammerSprite(),
+            };
         }
     }
 }

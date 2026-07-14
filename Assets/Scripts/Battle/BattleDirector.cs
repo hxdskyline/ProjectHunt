@@ -50,26 +50,22 @@ namespace ProjectHunt.Battle
         public float meteorHammerDropDuration = 0.8f;
         public float meteorHammerDropArcHeight = 1.35f;
         public float meteorHammerDropSpinSpeed = 720f;
+
+        [Header("Burning Village Waves")]
         public int waveEnemyDamage = 1;
         public int waveEnemyHp = 16;
         public float waveSpawnDelay = 0.75f;
         public float waveEntryOffsetX = 4.8f;
-        public int battle02BossHp = 118;
-        public float battle02BossScale = 1.7f;
-        public float battle02BossYOffset = 0f;
-        public Vector3 battle02BossTargetPosition = new Vector3(4.65f, 0.75f, 0f);
         public Vector3[] waveEnemySlots = new[]
         {
             new Vector3(2.4f, -1.18f, 0f),
             new Vector3(3.3f, -1.5f, 0f),
             new Vector3(4.2f, -1.82f, 0f),
         };
-
         private readonly List<CombatUnitController> _players = new List<CombatUnitController>();
         private readonly List<CombatUnitController> _enemies = new List<CombatUnitController>();
         private CombatUnitController _boss;
         private BossConfig _waveEnemyConfig;
-        private BossConfig _battle02BossConfig;
         private Transform _waveEnemyRoot;
         private int _currentWaveIndex;
         private bool _battle02CombatStarted;
@@ -78,6 +74,27 @@ namespace ProjectHunt.Battle
             (flowController != null && flowController.IsBattle02()) ||
             (gameContext != null &&
              (gameContext.runState.phase == GamePhase.Battle02 || gameContext.runState.isBattle02Started));
+        public bool IsBattle03 =>
+            (flowController != null && flowController.IsBattle03()) ||
+            (gameContext != null &&
+             (gameContext.runState.phase == GamePhase.Battle03 || gameContext.runState.isBattle03Started));
+        public bool IsBlacksmithValidation =>
+            (flowController != null && flowController.IsBlacksmithValidation()) ||
+            (gameContext != null &&
+             (gameContext.runState.phase == GamePhase.BlacksmithValidation ||
+              gameContext.runState.isBlacksmithValidationStarted));
+        public bool IsBattle04 =>
+            (flowController != null && flowController.IsBattle04()) ||
+            (gameContext != null &&
+             (gameContext.runState.phase == GamePhase.Battle04 || gameContext.runState.isBattle04Started));
+        public bool IsBattle05 =>
+            (flowController != null && flowController.IsBattle05()) ||
+            (gameContext != null &&
+             (gameContext.runState.phase == GamePhase.Battle05 || gameContext.runState.isBattle05Started));
+        public bool IsBattle06 =>
+            (flowController != null && flowController.IsBattle06()) ||
+            (gameContext != null &&
+             (gameContext.runState.phase == GamePhase.Battle06 || gameContext.runState.isBattle06Started));
         public CharacterConfig CurrentMeteorHammerUser =>
             gameContext != null && gameContext.buildSelection.isSelectionConfirmed
                 ? gameContext.buildSelection.selectedCharacter
@@ -123,30 +140,24 @@ namespace ProjectHunt.Battle
                 yield break;
             }
 
-            Debug.Log($"[BattleDirector] IsBattle02={IsBattle02} (flowController={flowController != null}, phase={gameContext?.runState.phase}, isBattle02Started={gameContext?.runState.isBattle02Started})");
+            Debug.Log($"[BattleDirector] phase={gameContext?.runState.phase}, IsBattle02={IsBattle02}, IsBlacksmithValidation={IsBlacksmithValidation}, IsBattle03={IsBattle03}, IsBattle04={IsBattle04}, IsBattle05={IsBattle05}, IsBattle06={IsBattle06}");
             formationSpawner.SpawnCurrentBattle();
-            if (IsBattle02)
-            {
-                ClearBossRootCombatUnits();
-                EnsureWaveEnemyRoot();
-                Debug.Log($"[Battle02] Wave root ready: {(_waveEnemyRoot != null ? _waveEnemyRoot.name : "null")}");
-            }
             CollectUnits();
             yield return StartCoroutine(PlayBattleEntrance());
-            if (IsBattle02)
+
+            if (IsBattle02 || IsBlacksmithValidation || IsBattle04 || IsBattle06)
             {
-                Debug.Log("[Battle02] Entering Battle02 wave mode, starting combat.");
                 if (bossHpBarView != null)
                 {
                     bossHpBarView.gameObject.SetActive(false);
                 }
 
                 _battle02CombatStarted = false;
-                StartCoroutine(RunBattle02Waves());
+                StartCoroutine(RunWaveStage(IsBattle04 ? 2 : IsBlacksmithValidation ? 2 : 3));
                 yield break;
             }
 
-            Debug.Log("[BattleDirector] Entering Battle01 mode (boss fight).");
+            Debug.Log($"[BattleDirector] Entering phase {gameContext?.runState.phase}.");
             StartCombat();
         }
 
@@ -175,7 +186,11 @@ namespace ProjectHunt.Battle
             return null;
         }
 
-        public void ResolveAttack(CombatUnitController attacker, int attackImpactIndex = 0, AttackTargetSnapshot targetSnapshot = null)
+        public void ResolveAttack(
+            CombatUnitController attacker,
+            int attackImpactIndex = 0,
+            AttackTargetSnapshot targetSnapshot = null,
+            string attackAction = null)
         {
             if (attacker == null || !attacker.IsAlive || IsBattleResolved)
             {
@@ -236,7 +251,19 @@ namespace ProjectHunt.Battle
                         }
 
                         SpawnHitSpark(player.transform.position + new Vector3(0f, 0.3f, 0f), 0.52f);
-                        var dmg = GetBossDamageAgainst(player);
+                        var isLichFreeze = attacker.bossConfig != null &&
+                                           attacker.bossConfig.resourceId == "boss_lich" &&
+                                           attackAction == "cast";
+                        // Wave enemies are verification pressure only; their damage is always fixed.
+                        var dmg = _enemies.Contains(attacker)
+                            ? waveEnemyDamage
+                            : GetBossDamageAgainst(player);
+                        if (isLichFreeze)
+                        {
+                            dmg = Mathf.CeilToInt(dmg * 1.25f);
+                            player.TryApplyStun(0.7f);
+                            player.ShowStatusText("冻结", new Color(0.55f, 0.84f, 1f, 1f));
+                        }
                         Debug.Log($"[ResolveAttack] enemy hits {player.gameObject.name} for {dmg} (hp {player.currentHp}/{player.maxHp})");
                         player.ApplyDamage(dmg);
                     }
@@ -311,7 +338,6 @@ namespace ProjectHunt.Battle
         private void StartPlayerCombat()
         {
             IsBattleResolved = false;
-
             for (var i = 0; i < _players.Count; i++)
             {
                 if (_players[i] != null)
@@ -321,12 +347,11 @@ namespace ProjectHunt.Battle
             }
         }
 
-        private IEnumerator RunBattle02Waves()
+        private IEnumerator RunWaveStage(int waveCount)
         {
             _currentWaveIndex = 0;
-            while (_currentWaveIndex < 3)
+            while (_currentWaveIndex < waveCount && !IsBattleResolved)
             {
-                Debug.Log($"[Battle02] Wave {_currentWaveIndex + 1}/3 starting. Slots: {waveEnemySlots[0]}, {waveEnemySlots[1]}, {waveEnemySlots[2]} (entryOffsetX={waveEntryOffsetX})");
                 yield return StartCoroutine(SpawnWave(_currentWaveIndex));
 
                 while (GetFirstAliveEnemy() != null && !IsBattleResolved)
@@ -334,37 +359,76 @@ namespace ProjectHunt.Battle
                     yield return null;
                 }
 
-                Debug.Log($"[Battle02] Wave {_currentWaveIndex + 1}/3 cleared.");
                 _currentWaveIndex++;
                 yield return new WaitForSeconds(0.5f);
             }
 
-            if (!IsBattleResolved)
+            if (IsBattleResolved)
             {
-                Debug.Log("[Battle02] All three waves cleared. Summoning fire spider boss.");
-                yield return StartCoroutine(SpawnBattle02Boss());
+                yield break;
             }
+
+            IsBattleResolved = true;
+            for (var i = 0; i < _players.Count; i++)
+            {
+                _players[i]?.StopCombat();
+            }
+
+            if (IsBattle04)
+            {
+                if (gameContext != null && gameContext.runState.isMageValidationStarted)
+                {
+                    flowController?.CompleteBattle04();
+                }
+                else
+                {
+                    MageRecruitmentPresentation.Show(flowController, gameContext);
+                }
+                yield break;
+            }
+
+            if (IsBlacksmithValidation)
+            {
+                yield return new WaitForSeconds(0.65f);
+                flowController?.CompleteBlacksmithValidation();
+                yield break;
+            }
+
+            if (IsBattle06)
+            {
+                yield return new WaitForSeconds(0.8f);
+                flowController?.CompleteBattle06();
+                yield break;
+            }
+
+            if (IsBattle02)
+            {
+                BlacksmithRescuePresentation.Show(flowController);
+                yield break;
+            }
+
+            yield return new WaitForSeconds(0.65f);
+            flowController?.CompleteBattle02();
         }
 
         private IEnumerator SpawnWave(int waveIndex)
         {
             _enemies.Clear();
-            EnsureWaveEnemyConfig();
+            EnsureWaveEnemyConfig(waveIndex);
             EnsureWaveEnemyRoot();
-            Debug.Log($"[Battle02] Spawning wave {waveIndex + 1} into root {(_waveEnemyRoot != null ? _waveEnemyRoot.name : "null")}.");
 
             for (var i = 0; i < waveEnemySlots.Length; i++)
             {
                 var targetPosition = waveEnemySlots[i];
                 var spawnPosition = targetPosition + Vector3.right * waveEntryOffsetX;
-                var enemy = CreateWaveEnemy(targetPosition, spawnPosition, waveIndex, i);
+                var enemy = CreateWaveEnemy(spawnPosition, waveIndex, i);
                 if (enemy != null)
                 {
                     _enemies.Add(enemy);
                 }
             }
 
-            _boss = GetFirstAliveEnemy();
+            // Start the team as soon as the wave exists, so incoming enemies can be hit.
             if (!_battle02CombatStarted)
             {
                 StartPlayerCombat();
@@ -375,42 +439,31 @@ namespace ProjectHunt.Battle
             {
                 if (_enemies[i] != null)
                 {
-                    StartCoroutine(_enemies[i].MoveToPosition(waveEnemySlots[i], entryMoveSpeed));
-                }
-            }
-
-            var moving = true;
-            while (moving)
-            {
-                moving = false;
-                for (var i = 0; i < _enemies.Count; i++)
-                {
-                    if (_enemies[i] != null && Vector3.Distance(_enemies[i].transform.position, waveEnemySlots[i]) > 0.02f)
-                    {
-                        moving = true;
-                        break;
-                    }
-                }
-
-                yield return null;
-            }
-
-            for (var i = 0; i < _enemies.Count; i++)
-            {
-                if (_enemies[i] != null)
-                {
-                    _enemies[i].BeginCombat();
+                    StartCoroutine(MoveWaveEnemyIntoCombat(_enemies[i], waveEnemySlots[i]));
                 }
             }
 
             yield return new WaitForSeconds(waveSpawnDelay);
         }
 
-        private CombatUnitController CreateWaveEnemy(Vector3 targetPosition, Vector3 spawnPosition, int waveIndex, int enemyIndex)
+        private IEnumerator MoveWaveEnemyIntoCombat(CombatUnitController enemy, Vector3 targetPosition)
         {
-            EnsureWaveEnemyRoot();
+            if (enemy == null)
+            {
+                yield break;
+            }
+
+            yield return StartCoroutine(enemy.MoveToPosition(targetPosition, entryMoveSpeed));
+            if (!IsBattleResolved && enemy != null && enemy.IsAlive)
+            {
+                enemy.BeginCombat();
+            }
+        }
+
+        private CombatUnitController CreateWaveEnemy(Vector3 spawnPosition, int waveIndex, int enemyIndex)
+        {
             var root = _waveEnemyRoot != null ? _waveEnemyRoot : transform;
-            var go = new GameObject($"WaveEnemy_{waveIndex}_{enemyIndex}");
+            var go = new GameObject($"BurningMonster_{waveIndex + 1}_{enemyIndex + 1}");
             go.transform.SetParent(root, false);
             go.transform.position = spawnPosition;
             var renderer = go.AddComponent<SpriteRenderer>();
@@ -419,71 +472,34 @@ namespace ProjectHunt.Battle
             go.AddComponent<PixelUnitAnimator>();
             var controller = go.AddComponent<CombatUnitController>();
             controller.Setup(_waveEnemyConfig, this);
-            Debug.Log($"[Battle02] SPAWN {go.name}: spawnPos=({spawnPosition.x:F2},{spawnPosition.y:F2}) target=({targetPosition.x:F2},{targetPosition.y:F2}) moveSpeed={entryMoveSpeed} delay={waveSpawnDelay}");
             return controller;
         }
 
-        private void EnsureWaveEnemyConfig()
+        private void EnsureWaveEnemyConfig(int waveIndex)
         {
-            if (_waveEnemyConfig != null)
+            if (_waveEnemyConfig != null && !IsBattle06)
             {
                 return;
             }
 
             _waveEnemyConfig = ScriptableObject.CreateInstance<BossConfig>();
-            _waveEnemyConfig.id = "wave_image_32177";
-            _waveEnemyConfig.displayName = "\u9a8c\u8bc1\u5c0f\u602a";
-            _waveEnemyConfig.resourceId = "scarling_bandit";
-            _waveEnemyConfig.mainAttackAction = "attack";
+            var iceStage = IsBattle04;
+            var finalStage = IsBattle06;
+            var finalResourceId = waveIndex == 0 ? "undead_bone_warrior" :
+                                  waveIndex == 1 ? "undead_dread_guard" : "skeleton_large";
+            _waveEnemyConfig.id = finalStage ? "final_" + finalResourceId : iceStage ? "icefield_snow_golem" : "burning_village_monster";
+            _waveEnemyConfig.displayName = finalStage ? "最终验证敌人" : iceStage ? "雪傀儡" : "燃烧小怪";
+            _waveEnemyConfig.resourceId = finalStage ? finalResourceId : iceStage ? "snow_golem" : "scarling_bandit";
+            _waveEnemyConfig.mainAttackAction = finalStage && waveIndex > 0 ? "attack_1" : "attack";
             _waveEnemyConfig.moveAction = "walk";
             _waveEnemyConfig.deathAction = string.Empty;
             _waveEnemyConfig.weaponType = WeaponType.Sword;
             _waveEnemyConfig.attackRangeType = AttackRangeType.MeleeShort;
             _waveEnemyConfig.attackTempo = AttackTempo.Medium;
-            _waveEnemyConfig.maxHp = waveEnemyHp;
+            _waveEnemyConfig.maxHp = finalStage ? waveEnemyHp + 10 + waveIndex * 6 : iceStage ? waveEnemyHp + 7 : waveEnemyHp;
             _waveEnemyConfig.dropWeaponType = WeaponType.Sword;
-            _waveEnemyConfig.visualScale = 2.4f;
+            _waveEnemyConfig.visualScale = finalStage ? 2.35f : iceStage ? 2.5f : 2.4f;
             _waveEnemyConfig.yOffset = 0f;
-        }
-
-        private void EnsureBattle02BossConfig()
-        {
-            if (_battle02BossConfig != null)
-            {
-                return;
-            }
-
-            _battle02BossConfig = ScriptableObject.CreateInstance<BossConfig>();
-            _battle02BossConfig.id = "battle02_fire_spider_boss";
-            _battle02BossConfig.displayName = "\u706b\u7130\u8718\u86db";
-            _battle02BossConfig.resourceId = "fire_spider_boss";
-            _battle02BossConfig.mainAttackAction = "attack";
-            _battle02BossConfig.moveAction = "walk";
-            _battle02BossConfig.deathAction = "death";
-            _battle02BossConfig.weaponType = WeaponType.Sword;
-            _battle02BossConfig.attackRangeType = AttackRangeType.MeleeShort;
-            _battle02BossConfig.attackTempo = AttackTempo.Medium;
-            _battle02BossConfig.maxHp = battle02BossHp;
-            _battle02BossConfig.dropWeaponType = WeaponType.Sword;
-            _battle02BossConfig.visualScale = battle02BossScale;
-            _battle02BossConfig.yOffset = battle02BossYOffset;
-        }
-        private void ClearBossRootCombatUnits()
-        {
-            if (sceneReferences?.bossRoot == null)
-            {
-                return;
-            }
-
-            var units = sceneReferences.bossRoot.GetComponentsInChildren<CombatUnitController>(true);
-            for (var i = 0; i < units.Length; i++)
-            {
-                if (units[i] != null)
-                {
-                    units[i].gameObject.SetActive(false);
-                    Destroy(units[i].gameObject);
-                }
-            }
         }
 
         private void EnsureWaveEnemyRoot()
@@ -493,63 +509,10 @@ namespace ProjectHunt.Battle
                 return;
             }
 
-            var rootGo = new GameObject("WaveEnemyRoot");
+            var rootGo = new GameObject("BurningVillageEnemyRoot");
             var parent = sceneReferences != null ? sceneReferences.transform : transform;
             rootGo.transform.SetParent(parent, false);
-            rootGo.transform.localPosition = Vector3.zero;
             _waveEnemyRoot = rootGo.transform;
-        }
-
-        private IEnumerator SpawnBattle02Boss()
-        {
-            EnsureBattle02BossConfig();
-            _enemies.Clear();
-            _boss = CreateBattle02Boss();
-            if (_boss == null)
-            {
-                Debug.LogError("[Battle02] Failed to create fire spider boss.");
-                yield break;
-            }
-
-            if (bossHpBarView != null)
-            {
-                bossHpBarView.gameObject.SetActive(true);
-                bossHpBarView.SetBossName(_battle02BossConfig.displayName);
-                bossHpBarView.SetValue(_boss.currentHp, _boss.GetMaxHp());
-            }
-
-            var bossTargetPosition = battle02BossTargetPosition;
-            _boss.transform.position = bossTargetPosition + Vector3.right * bossEntryOffsetX;
-
-            yield return StartCoroutine(_boss.MoveToPosition(bossTargetPosition, entryMoveSpeed));
-
-            if (!IsBattleResolved && _boss != null)
-            {
-                _boss.BeginCombat();
-            }
-        }
-
-        private CombatUnitController CreateBattle02Boss()
-        {
-            var root = sceneReferences != null && sceneReferences.bossRoot != null
-                ? sceneReferences.bossRoot
-                : transform;
-
-            var spawnPosition = battle02BossTargetPosition;
-
-            var go = new GameObject("Battle02_FireSpiderBoss");
-            go.transform.SetParent(root, false);
-            go.transform.position = spawnPosition;
-
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sortingOrder = 5;
-            renderer.flipX = true;
-
-            go.AddComponent<PixelUnitAnimator>();
-            var controller = go.AddComponent<CombatUnitController>();
-            controller.Setup(_battle02BossConfig, this);
-            Debug.Log($"[Battle02] Fire spider spawned at ({spawnPosition.x:F2},{spawnPosition.y:F2}) scale={battle02BossScale} yOffset={battle02BossYOffset}.");
-            return controller;
         }
 
         private CombatUnitController GetFirstAliveEnemy()
@@ -573,10 +536,12 @@ namespace ProjectHunt.Battle
             }
 
             unit.StopCombat();
-            yield return new WaitForSeconds(0.08f);
             _enemies.Remove(unit);
-            Destroy(unit.gameObject);
-            _boss = GetFirstAliveEnemy();
+            yield return new WaitForSeconds(0.08f);
+            if (unit != null)
+            {
+                Destroy(unit.gameObject);
+            }
         }
 
         private IEnumerator HandleBossDeath()
@@ -606,11 +571,35 @@ namespace ProjectHunt.Battle
                 _boss = null;
             }
 
-            var isBattle02 = flowController != null && flowController.IsBattle02();
-            if (isBattle02)
+            if (IsBattle05)
+            {
+                flowController?.CompleteBattle05();
+                SpawnDrop(RewardType.GiantKey);
+                yield break;
+            }
+
+            if (IsBattle03)
+            {
+                flowController?.CompleteBattle03();
+                SpawnDrop(RewardType.HolyCup);
+                yield break;
+            }
+
+            if (IsBattle02)
             {
                 flowController?.CompleteBattle02();
-                SpawnDrop(RewardType.FireGland);
+                yield break;
+            }
+
+            if (IsBattle04)
+            {
+                flowController?.CompleteBattle04();
+                yield break;
+            }
+
+            if (IsBattle06)
+            {
+                flowController?.CompleteBattle06();
                 yield break;
             }
 
@@ -718,13 +707,21 @@ namespace ProjectHunt.Battle
 
         private GameObject CreateFallbackDrop(Transform parent, Vector3 position, RewardType rewardType)
         {
-            var go = new GameObject(rewardType == RewardType.FireGland ? "FireGlandDrop" : "MeteorHammerDrop");
+            var go = new GameObject(rewardType switch
+            {
+                RewardType.HolyCup => "HolyCupDrop",
+                RewardType.GiantKey => "GiantKeyDrop",
+                _ => "MeteorHammerDrop",
+            });
             go.transform.SetParent(parent);
             go.transform.position = position;
             var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = rewardType == RewardType.FireGland
-                ? SimpleSpriteFactory.GetFireGlandSprite()
-                : SimpleSpriteFactory.GetMeteorHammerSprite();
+            renderer.sprite = rewardType switch
+            {
+                RewardType.HolyCup => SimpleSpriteFactory.GetHolyCupSprite(),
+                RewardType.GiantKey => SimpleSpriteFactory.GetGiantKeySprite(),
+                _ => SimpleSpriteFactory.GetMeteorHammerSprite(),
+            };
             renderer.sortingOrder = 10;
             go.transform.localScale = Vector3.one * 1.5f;
             return go;
@@ -749,10 +746,16 @@ namespace ProjectHunt.Battle
             }
 
             var isMeteorHammerArcher = IsMeteorHammerArcher(attacker);
+            var isHolyCupCatapult = IsHolyCupCatapult(attacker);
             var isAssassinHammerProjectile = ShouldUseAssassinHammerProjectile(attacker, attackImpactIndex);
-            var isAssassinBlade = IsAssassinProjectile(attacker) && !isAssassinHammerProjectile;
+            var isMeteorHammerAssassin = IsMeteorHammerAssassin(attacker);
+            var isGiantKeyProjectile = IsGiantKeyProjectile(attacker);
+            var isAssassinBlade = (IsAssassinProjectile(attacker) || isMeteorHammerAssassin) &&
+                                  !isAssassinHammerProjectile;
             var go = new GameObject(
                 isMeteorHammerArcher || isAssassinHammerProjectile ? "MeteorHammerProjectile" :
+                isHolyCupCatapult ? "CatapultStoneProjectile" :
+                isGiantKeyProjectile ? "GiantKeyProjectile" :
                 isAssassinBlade ? "AssassinBladeProjectile" :
                 "ArrowProjectile");
             go.transform.SetParent(projectileRoot, false);
@@ -762,6 +765,10 @@ namespace ProjectHunt.Battle
 
             var sprite = isMeteorHammerArcher || isAssassinHammerProjectile
                 ? SimpleSpriteFactory.GetMeteorHammerSprite()
+                : isHolyCupCatapult
+                    ? PixelAnimationLibrary.GetFirstFrameSprite("catapult_ball", "idle")
+                : isGiantKeyProjectile
+                    ? SimpleSpriteFactory.GetGiantKeySprite()
                 : isAssassinBlade
                     ? ExternalSpriteLibrary.GetLongbowArrowSprite()
                     : ExternalSpriteLibrary.GetLongbowArrowSprite();
@@ -774,6 +781,10 @@ namespace ProjectHunt.Battle
             {
                 go.transform.localScale = Vector3.one * 0.75f;
             }
+            else if (isHolyCupCatapult)
+            {
+                go.transform.localScale = Vector3.one * 1.55f;
+            }
             else if (isAssassinHammerProjectile)
             {
                 go.transform.localScale = Vector3.one * 0.6f;
@@ -782,23 +793,36 @@ namespace ProjectHunt.Battle
             {
                 go.transform.localScale = Vector3.one * 0.7f;
             }
+            else if (isGiantKeyProjectile)
+            {
+                go.transform.localScale = Vector3.one * 0.82f;
+            }
             else
             {
                 go.transform.localScale = Vector3.one * 0.9f;
             }
 
-            controller.duration = isAssassinBlade ? assassinBladeFlightDuration : arrowFlightDuration;
+            controller.duration = isAssassinBlade ? assassinBladeFlightDuration : isHolyCupCatapult ? arrowFlightDuration + 0.18f : arrowFlightDuration;
             controller.arcHeight = isAssassinBlade
                 ? 0f
                 : isMeteorHammerArcher
                     ? meteorHammerArcherArcHeight
+                    : isHolyCupCatapult
+                        ? meteorHammerArcherArcHeight + 0.55f
+                    : isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Archer
+                        ? meteorHammerArcherArcHeight + 0.35f
                     : arrowArcHeight;
-            controller.isMeteorHammerProjectile = isMeteorHammerArcher;
-            controller.areaImpactRadius = isMeteorHammerArcher ? MeteorHammerRules.ArcherImpactRadius : 0f;
-            controller.alignToVelocity = !isAssassinBlade && !isAssassinHammerProjectile;
-            controller.spinSpeed = isMeteorHammerArcher || isAssassinHammerProjectile ? -720f : 0f;
-            controller.animationFrames = isAssassinBlade ? ExternalSpriteLibrary.GetBallistaArrowFrames() : null;
-            controller.animationFps = isAssassinBlade ? 12f : 0f;
+            controller.isMeteorHammerProjectile = isMeteorHammerArcher || isHolyCupCatapult;
+            controller.areaImpactRadius = isMeteorHammerArcher
+                ? MeteorHammerRules.ArcherImpactRadius
+                : isHolyCupCatapult ? 1.55f : 0f;
+            controller.alignToVelocity = !isAssassinBlade && !isAssassinHammerProjectile && !isGiantKeyProjectile;
+            controller.spinSpeed = isMeteorHammerArcher || isAssassinHammerProjectile || isGiantKeyProjectile ? -720f : 0f;
+            controller.returnToSender = isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Assassin;
+            controller.animationFrames = isAssassinBlade
+                ? ExternalSpriteLibrary.GetBallistaArrowFrames()
+                : isHolyCupCatapult ? PixelAnimationLibrary.GetClip("catapult_ball", "idle")?.frames : null;
+            controller.animationFps = isAssassinBlade || isHolyCupCatapult ? 12f : 0f;
             controller.staticEulerAngles = isAssassinBlade ? new Vector3(0f, 180f, 0f) : Vector3.zero;
 
             var launchPosition = attacker.GetProjectileLaunchPosition();
@@ -806,7 +830,8 @@ namespace ProjectHunt.Battle
                 ? target.transform.position
                 : fallbackTargetWorldPosition;
             var targetPosition = targetBasePosition + new Vector3(0f, isAssassinBlade || isAssassinHammerProjectile ? 0.2f : 0.35f, 0f);
-            if (isAssassinBlade || isAssassinHammerProjectile)
+            if (isAssassinBlade || isAssassinHammerProjectile ||
+                (isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Assassin))
             {
                 launchPosition = GetAssassinLaunchPosition(launchPosition, attackImpactIndex);
                 targetPosition.y = launchPosition.y;
@@ -853,15 +878,26 @@ namespace ProjectHunt.Battle
 
             dropTransform.position = end;
             dropTransform.rotation = Quaternion.identity;
-            claimController.SetInteractable(true);
             Debug.Log($"[Drop] {rewardType} landed at {end} and is now interactable.");
+
+            if (rewardType == RewardType.HolyCup)
+            {
+                // The blacksmith inspects the cup before it enters the familiar claim flow.
+                HolyCupInspectionPresentation.Play(claimController);
+                yield break;
+            }
+
+            claimController.SetInteractable(true);
 
             if (dropHintText != null)
             {
                 dropHintText.gameObject.SetActive(true);
-                dropHintText.text = rewardType == RewardType.FireGland
-                    ? "\u70b9\u51fb\u62fe\u53d6\u201c\u706b\u7130\u817a\u4f53\u201d"
-                    : "\u70b9\u51fb\u62fe\u53d6\u201c\u54e5\u5e03\u6797\u6d41\u661f\u9524\u201d";
+                dropHintText.text = rewardType switch
+                {
+                    RewardType.HolyCup => "\u70b9\u51fb\u62fe\u53d6\u201c\u9152\u795e\u5723\u676f\u201d",
+                    RewardType.GiantKey => "\u70b9\u51fb\u62fe\u53d6\u201c\u5de8\u4eba\u94a5\u5319\u201d",
+                    _ => "\u70b9\u51fb\u62fe\u53d6\u201c\u54e5\u5e03\u6797\u6d41\u661f\u9524\u201d",
+                };
                 var rect = dropHintText.rectTransform;
                 rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, 178f);
             }
@@ -902,15 +938,20 @@ namespace ProjectHunt.Battle
 
         public void ApplyPlayerAreaDamage(Vector3 center, float radius, int damage)
         {
-            if (_boss == null || !_boss.IsAlive)
-            {
-                return;
-            }
-
-            if (Vector3.Distance(_boss.transform.position, center) <= radius)
+            if (_boss != null && _boss.IsAlive && Vector3.Distance(_boss.transform.position, center) <= radius)
             {
                 SpawnHitSpark(_boss.transform.position + new Vector3(0f, 0.38f, 0f), 0.9f);
                 _boss.ApplyDamage(damage);
+            }
+
+            for (var i = _enemies.Count - 1; i >= 0; i--)
+            {
+                var enemy = _enemies[i];
+                if (enemy != null && enemy.IsAlive && Vector3.Distance(enemy.transform.position, center) <= radius)
+                {
+                    SpawnHitSpark(enemy.transform.position + new Vector3(0f, 0.38f, 0f), 0.72f);
+                    enemy.ApplyDamage(damage);
+                }
             }
         }
 
@@ -960,6 +1001,11 @@ namespace ProjectHunt.Battle
                 return slowPlayerDamage + MeteorHammerRules.ArcherAreaDamageBonus;
             }
 
+            if (IsHolyCupCatapult(attacker))
+            {
+                return slowPlayerDamage + 3;
+            }
+
             if (IsMeteorHammerSwordsman(attacker))
             {
                 return mediumPlayerDamage + Mathf.RoundToInt(MeteorHammerRules.SwordsmanBonusDamage);
@@ -979,6 +1025,9 @@ namespace ProjectHunt.Battle
         private bool ShouldUseProjectile(CombatUnitController attacker)
         {
             return IsMeteorHammerArcher(attacker) ||
+                   IsMeteorHammerAssassin(attacker) ||
+                   IsHolyCupCatapult(attacker) ||
+                   IsGiantKeyProjectile(attacker) ||
                    IsNormalArcherProjectile(attacker) ||
                    IsAssassinProjectile(attacker);
         }
@@ -987,7 +1036,7 @@ namespace ProjectHunt.Battle
         {
             if (target == null || target.characterConfig == null)
             {
-                return waveEnemyDamage;
+                return bossDamage;
             }
 
             float modifier;
@@ -1004,8 +1053,7 @@ namespace ProjectHunt.Battle
                     break;
             }
 
-            var sourceDamage = _waveEnemyConfig != null && _enemies.Count > 0 ? waveEnemyDamage : bossDamage;
-            return Mathf.Max(1, Mathf.RoundToInt(sourceDamage * modifier));
+            return Mathf.Max(1, Mathf.RoundToInt(bossDamage * modifier));
         }
 
         private bool ShouldApplyAssassinStun(CombatUnitController attacker)
@@ -1058,6 +1106,26 @@ namespace ProjectHunt.Battle
                    attacker.UsesMeteorHammerOverride &&
                    attacker.characterConfig != null &&
                    MeteorHammerRules.IsMeteorHammerSwordsman(attacker.characterConfig);
+        }
+
+        private static bool IsHolyCupCatapult(CombatUnitController attacker)
+        {
+            return attacker != null &&
+                   attacker.team == CombatUnitController.TeamType.Player &&
+                   attacker.characterConfig != null &&
+                   attacker.characterConfig.roleType == RoleType.Archer &&
+                   attacker.characterConfig.resourceId == "catapult";
+        }
+
+        private static bool IsGiantKeyProjectile(CombatUnitController attacker)
+        {
+            return attacker != null && attacker.team == CombatUnitController.TeamType.Player &&
+                   attacker.characterConfig != null &&
+                   (attacker.characterConfig.roleType == RoleType.Archer ||
+                    attacker.characterConfig.roleType == RoleType.Assassin ||
+                    attacker.characterConfig.roleType == RoleType.Mage) &&
+                   !string.IsNullOrWhiteSpace(attacker.characterConfig.id) &&
+                   attacker.characterConfig.id.EndsWith("_key");
         }
 
         private bool IsMeteorHammerAssassin(CombatUnitController attacker)

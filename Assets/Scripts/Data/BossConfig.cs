@@ -14,6 +14,8 @@ namespace ProjectHunt.Data
         [Header("Art")]
         public string resourceId;
         public string mainAttackAction = "attack_round";
+        public string specialAttackAction;
+        [Min(0)] public int normalAttacksBetweenSpecial;
         public string moveAction = "walk";
         public string deathAction = "death";
 

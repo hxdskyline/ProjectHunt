@@ -1,0 +1,38 @@
+{
+  "unit": "undead_bone_warrior",
+  "actions": {
+    "attack": {
+      "width": 55,
+      "height": 55,
+      "frameCount": 10,
+      "frames": [
+        "image_30029_tex018_55x55.png",
+        "image_30276_tex020_55x55.png",
+        "image_30277_tex020_55x55.png",
+        "image_30030_tex018_55x55.png",
+        "image_29847_tex020_55x55.png",
+        "image_29648_tex020_55x55.png",
+        "image_30214_tex018_55x55.png",
+        "image_30421_tex016_55x55.png",
+        "image_31161_tex018_55x55.png",
+        "image_29803_tex018_55x55.png"
+      ]
+    },
+    "walk": {
+      "width": 55,
+      "height": 55,
+      "frameCount": 9,
+      "frames": [
+        "image_30032_tex018_55x55.png",
+        "image_30034_tex018_55x55.png",
+        "image_29804_tex018_55x55.png",
+        "image_29806_tex018_55x55.png",
+        "image_29809_tex018_55x55.png",
+        "image_30033_tex018_55x55.png",
+        "image_29807_tex018_55x55.png",
+        "image_29805_tex018_55x55.png",
+        "image_29808_tex018_55x55.png"
+      ]
+    }
+  }
+}

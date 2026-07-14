@@ -1,0 +1,16 @@
+{
+  "unit": "catapult_ball",
+  "actions": {
+    "idle": {
+      "width": 6,
+      "height": 6,
+      "frameCount": 4,
+      "frames": [
+        "image_33311_tex014_6x6.png",
+        "image_33310_tex014_6x6.png",
+        "image_33312_tex014_6x6.png",
+        "image_33309_tex014_6x6.png"
+      ]
+    }
+  }
+}

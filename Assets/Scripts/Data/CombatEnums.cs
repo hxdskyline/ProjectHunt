@@ -7,6 +7,7 @@ namespace ProjectHunt.Data
         Swordsman = 0,
         Assassin = 1,
         Archer = 2,
+        Mage = 3,
     }
 
     public enum WeaponType
@@ -47,16 +48,24 @@ namespace ProjectHunt.Data
         Drop = 2,
         Build = 3,
         Battle02 = 4,
-        Drop02 = 5,
-        Build02 = 6,
-        Result = 7,
+        Battle03 = 5,
+        Drop02 = 6,
+        Build02 = 7,
+        Battle04 = 8,
+        Battle05 = 9,
+        Drop03 = 10,
+        Build03 = 11,
+        Battle06 = 12,
+        Result = 13,
+        BlacksmithValidation = 14,
     }
 
     public enum RewardType
     {
         None = 0,
         MeteorHammer = 1,
-        FireGland = 2,
+        HolyCup = 2,
+        GiantKey = 3,
     }
 
     public enum AttackBehaviorType

@@ -1,0 +1,16 @@
+{
+  "unit": "ballista_arrow",
+  "actions": {
+    "idle": {
+      "width": 18,
+      "height": 7,
+      "frameCount": 4,
+      "frames": [
+        "image_32789_tex002_18x7.png",
+        "image_33132_tex002_18x7.png",
+        "image_32788_tex002_18x7.png",
+        "image_33133_tex002_18x7.png"
+      ]
+    }
+  }
+}

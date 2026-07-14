@@ -1,0 +1,40 @@
+{
+  "unit": "snow_golem",
+  "actions": {
+    "attack": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 13,
+      "frames": [
+        "image_25864_tex020_45x45.png",
+        "image_25846_tex020_45x45.png",
+        "image_25789_tex020_45x45.png",
+        "image_25332_tex020_45x45.png",
+        "image_25365_tex020_45x45.png",
+        "image_25561_tex020_45x45.png",
+        "image_27096_tex018_45x45.png",
+        "image_27132_tex020_45x45.png",
+        "image_26685_tex020_45x45.png",
+        "image_27412_tex020_45x45.png",
+        "image_27413_tex020_45x45.png",
+        "image_27864_tex020_45x45.png",
+        "image_28046_tex020_45x45.png"
+      ]
+    },
+    "walk": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 8,
+      "frames": [
+        "image_24908_tex020_45x45.png",
+        "image_25049_tex020_45x45.png",
+        "image_25562_tex020_45x45.png",
+        "image_26053_tex020_45x45.png",
+        "image_27622_tex018_45x45.png",
+        "image_27350_tex018_45x45.png",
+        "image_25366_tex020_45x45.png",
+        "image_25017_tex020_45x45.png"
+      ]
+    }
+  }
+}

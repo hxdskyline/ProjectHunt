@@ -33,6 +33,8 @@ namespace ProjectHunt.Battle
 
         private readonly List<GameObject> _spawnedPlayers = new List<GameObject>();
         private GameObject _spawnedBoss;
+        private BossConfig _battle03BossConfig;
+        private BossConfig _battle05BossConfig;
 
         public IReadOnlyList<GameObject> SpawnedPlayers => _spawnedPlayers;
         public GameObject SpawnedBoss => _spawnedBoss;
@@ -59,18 +61,29 @@ namespace ProjectHunt.Battle
             ClearSpawnedUnits();
 
             var formation = gameContext.defaultBattleFormation;
-            var isBattle02 = IsBattle02Active();
-            Debug.Log($"[BattleFormation] isBattle02={isBattle02}, spawning players at: front={sceneReferences.playerFrontPoint.position}, mid={sceneReferences.playerMidPoint.position}, back={sceneReferences.playerBackPoint.position}");
-            SpawnCharacter(ResolveBattleCharacter(formation.frontCharacter, isBattle02), sceneReferences.playerFrontPoint, sceneReferences.playerTeamRoot);
-            SpawnCharacter(ResolveBattleCharacter(formation.midCharacter, isBattle02), sceneReferences.playerMidPoint, sceneReferences.playerTeamRoot);
-            SpawnCharacter(ResolveBattleCharacter(formation.backCharacter, isBattle02), sceneReferences.playerBackPoint, sceneReferences.playerTeamRoot);
-            if (!isBattle02)
+            Debug.Log($"[BattleFormation] phase={gameContext.runState.phase}, spawning players at: front={sceneReferences.playerFrontPoint.position}, mid={sceneReferences.playerMidPoint.position}, back={sceneReferences.playerBackPoint.position}");
+            var battleRoster = new List<CharacterConfig>
             {
-                SpawnBoss(formation.boss, sceneReferences.bossPoint, sceneReferences.bossRoot);
+                ResolveBattleCharacter(formation.frontCharacter),
+                ResolveBattleCharacter(formation.midCharacter),
+                ResolveBattleCharacter(formation.backCharacter),
+            };
+            battleRoster.Sort((left, right) => GetBattlePositionOrder(left).CompareTo(GetBattlePositionOrder(right)));
+            var positions = new[]
+            {
+                sceneReferences.playerFrontPoint,
+                sceneReferences.playerMidPoint,
+                sceneReferences.playerBackPoint,
+            };
+            for (var i = 0; i < battleRoster.Count && i < positions.Length; i++)
+            {
+                SpawnCharacter(battleRoster[i], positions[i], sceneReferences.playerTeamRoot);
             }
-            else
+
+            var bossConfig = ResolveBattleBoss(formation.boss);
+            if (bossConfig != null)
             {
-                Debug.Log("[BattleFormation] Battle02: skipped boss spawn.");
+                SpawnBoss(bossConfig, sceneReferences.bossPoint, sceneReferences.bossRoot);
             }
         }
 
@@ -111,6 +124,23 @@ namespace ProjectHunt.Battle
             _spawnedPlayers.Add(instance);
         }
 
+        private static int GetBattlePositionOrder(CharacterConfig config)
+        {
+            if (config == null)
+            {
+                return int.MaxValue;
+            }
+
+            return config.roleType switch
+            {
+                RoleType.Swordsman => 0,
+                RoleType.Assassin => 1,
+                RoleType.Mage => 2,
+                RoleType.Archer => 3,
+                _ => int.MaxValue,
+            };
+        }
+
         private void SpawnBoss(BossConfig config, Transform spawnPoint, Transform parentRoot)
         {
             if (config == null || spawnPoint == null || parentRoot == null)
@@ -118,10 +148,16 @@ namespace ProjectHunt.Battle
                 return;
             }
 
+            var spawnPosition = spawnPoint.position;
+            if (IsBattle03Active())
+            {
+                spawnPosition = new Vector3(4.65f, 0f, 0f);
+            }
+
             var prefab = FindBossPrefab(config);
             _spawnedBoss = prefab != null
-                ? Instantiate(prefab, spawnPoint.position, Quaternion.identity, parentRoot)
-                : CreateFallbackUnit($"{config.id}_Fallback", spawnPoint.position, parentRoot);
+                ? Instantiate(prefab, spawnPosition, Quaternion.identity, parentRoot)
+                : CreateFallbackUnit($"{config.id}_Fallback", spawnPosition, parentRoot);
 
             _spawnedBoss.name = $"{config.id}_Instance";
             var controller = EnsureCombatUnit(_spawnedBoss);
@@ -145,24 +181,190 @@ namespace ProjectHunt.Battle
                    (gameContext.runState.phase == GamePhase.Battle02 || gameContext.runState.isBattle02Started);
         }
 
-        private CharacterConfig ResolveBattleCharacter(CharacterConfig baseConfig, bool isBattle02)
+        private bool IsBattle03Active()
         {
-            if (baseConfig == null || !isBattle02 || gameContext == null)
+            if (battleDirector != null && battleDirector.IsBattle03)
+            {
+                return true;
+            }
+
+            return gameContext != null &&
+                   (gameContext.runState.phase == GamePhase.Battle03 || gameContext.runState.isBattle03Started);
+        }
+
+        private bool IsBlacksmithValidationActive()
+        {
+            if (battleDirector != null && battleDirector.IsBlacksmithValidation)
+            {
+                return true;
+            }
+
+            return gameContext != null &&
+                   (gameContext.runState.phase == GamePhase.BlacksmithValidation ||
+                    gameContext.runState.isBlacksmithValidationStarted);
+        }
+
+        private bool IsBattle04Active()
+        {
+            if (battleDirector != null && battleDirector.IsBattle04)
+            {
+                return true;
+            }
+
+            return gameContext != null &&
+                   (gameContext.runState.phase == GamePhase.Battle04 || gameContext.runState.isBattle04Started);
+        }
+
+        private bool IsBattle05Active()
+        {
+            if (battleDirector != null && battleDirector.IsBattle05)
+            {
+                return true;
+            }
+
+            return gameContext != null &&
+                   (gameContext.runState.phase == GamePhase.Battle05 || gameContext.runState.isBattle05Started);
+        }
+
+        private bool IsBattle06Active()
+        {
+            if (battleDirector != null && battleDirector.IsBattle06)
+            {
+                return true;
+            }
+
+            return gameContext != null &&
+                   (gameContext.runState.phase == GamePhase.Battle06 || gameContext.runState.isBattle06Started);
+        }
+
+        private CharacterConfig ResolveBattleCharacter(CharacterConfig baseConfig)
+        {
+            if (baseConfig == null || gameContext == null)
             {
                 return baseConfig;
             }
 
-            var selectedBase = gameContext.buildSelection.selectedCharacter;
-            var selectedHammer = gameContext.buildSelection.selectedHammerCharacter;
-            if (selectedBase == null || selectedHammer == null)
+            if (gameContext.runState.hasRecruitedMage &&
+                baseConfig.id == gameContext.runState.mageReplacedCharacterId)
             {
-                return baseConfig;
+                return MageCharacterFactory.GetMageVariant(gameContext.runState.mageRewardType);
             }
 
-            var isSelectedBase = baseConfig == selectedBase ||
-                                 (!string.IsNullOrWhiteSpace(baseConfig.id) &&
-                                  baseConfig.id == selectedBase.id);
-            return isSelectedBase ? selectedHammer : baseConfig;
+            var resolved = baseConfig;
+            resolved = ApplyRewardVariant(
+                resolved,
+                gameContext.buildSelection.selectedHammerTargetId,
+                gameContext.buildSelection.selectedHammerCharacter);
+            resolved = ApplyRewardVariant(
+                resolved,
+                gameContext.buildSelection.selectedCupTargetId,
+                gameContext.buildSelection.selectedCupCharacter);
+            resolved = ApplyRewardVariant(
+                resolved,
+                gameContext.buildSelection.selectedKeyTargetId,
+                gameContext.buildSelection.selectedKeyCharacter);
+            return resolved;
+        }
+
+        private static CharacterConfig ApplyRewardVariant(CharacterConfig currentConfig, string targetId, CharacterConfig rewardVariant)
+        {
+            if (currentConfig == null || string.IsNullOrWhiteSpace(targetId) || rewardVariant == null)
+            {
+                return currentConfig;
+            }
+
+            var currentId = currentConfig.id;
+            var baseId = currentConfig.baseCharacterId;
+            return currentId == targetId || baseId == targetId
+                ? rewardVariant
+                : currentConfig;
+        }
+
+        private BossConfig ResolveBattleBoss(BossConfig defaultBoss)
+        {
+            // Battle 02 is the burning-village validation stage: three small-enemy waves,
+            // not a boss fight. BattleDirector owns those wave spawns.
+            if (IsBattle02Active())
+            {
+                return null;
+            }
+
+            if (IsBlacksmithValidationActive())
+            {
+                return null;
+            }
+
+            if (IsBattle04Active())
+            {
+                return null;
+            }
+
+            if (IsBattle06Active())
+            {
+                return null;
+            }
+
+            if (IsBattle05Active())
+            {
+                return GetBattle05BossConfig();
+            }
+
+            if (IsBattle03Active())
+            {
+                return GetBattle03BossConfig();
+            }
+
+            return defaultBoss;
+        }
+
+        private BossConfig GetBattle03BossConfig()
+        {
+            if (_battle03BossConfig != null)
+            {
+                return _battle03BossConfig;
+            }
+
+            _battle03BossConfig = ScriptableObject.CreateInstance<BossConfig>();
+            _battle03BossConfig.id = "battle03_drunk_ogre_boss";
+            _battle03BossConfig.displayName = "酒鬼食人魔";
+            _battle03BossConfig.resourceId = "ogre_boss";
+            _battle03BossConfig.mainAttackAction = "attack";
+            _battle03BossConfig.moveAction = "walk";
+            _battle03BossConfig.deathAction = "death";
+            _battle03BossConfig.weaponType = WeaponType.Sword;
+            _battle03BossConfig.attackRangeType = AttackRangeType.MeleeShort;
+            _battle03BossConfig.attackTempo = AttackTempo.Medium;
+            _battle03BossConfig.maxHp = 132;
+            _battle03BossConfig.dropWeaponType = WeaponType.Sword;
+            _battle03BossConfig.visualScale = 2.9f;
+            _battle03BossConfig.yOffset = -0.05f;
+            return _battle03BossConfig;
+        }
+
+        private BossConfig GetBattle05BossConfig()
+        {
+            if (_battle05BossConfig != null)
+            {
+                return _battle05BossConfig;
+            }
+
+            _battle05BossConfig = ScriptableObject.CreateInstance<BossConfig>();
+            _battle05BossConfig.id = "battle05_giant_key_boss";
+            _battle05BossConfig.displayName = "冰骑士";
+            _battle05BossConfig.resourceId = "boss_lich";
+            _battle05BossConfig.mainAttackAction = "attack";
+            _battle05BossConfig.specialAttackAction = "cast";
+            _battle05BossConfig.normalAttacksBetweenSpecial = 2;
+            _battle05BossConfig.moveAction = "walk";
+            _battle05BossConfig.deathAction = "death";
+            _battle05BossConfig.weaponType = WeaponType.Sword;
+            _battle05BossConfig.attackRangeType = AttackRangeType.MeleeShort;
+            _battle05BossConfig.attackTempo = AttackTempo.Slow;
+            _battle05BossConfig.maxHp = 176;
+            _battle05BossConfig.dropWeaponType = WeaponType.Sword;
+            _battle05BossConfig.visualScale = 1.75f;
+            _battle05BossConfig.yOffset = -0.35f;
+            return _battle05BossConfig;
         }
 
         private GameObject FindCharacterPrefab(CharacterConfig config)

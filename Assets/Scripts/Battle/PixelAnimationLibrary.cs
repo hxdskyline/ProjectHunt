@@ -43,7 +43,7 @@ namespace ProjectHunt.Battle
 
         public static Sprite LoadSpriteFromAbsolutePath(string filePath)
         {
-            return LoadSprite(filePath);
+            return LoadSprite(filePath, false);
         }
 
         public static Sprite GetFirstFrameSprite(string resourceId, params string[] actionNames)
@@ -73,7 +73,8 @@ namespace ProjectHunt.Battle
 
         private static Dictionary<string, ActionClip> LoadResource(string resourceId, float fps)
         {
-            var resourcePath = Path.Combine(Application.dataPath, "bundle", "units", resourceId);
+            // This is the single source of truth for editor play mode and standalone builds.
+            var resourcePath = Path.Combine(Application.streamingAssetsPath, "bundle", "units", resourceId);
             var indexPath = Path.Combine(resourcePath, "index.json");
             if (!File.Exists(indexPath))
             {
@@ -110,10 +111,11 @@ namespace ProjectHunt.Battle
                 }
 
                 var sprites = new List<Sprite>(frameList.Count);
+                var useGroundPivot = resourceId == "boss_lich" && pair.Key == "walk";
                 for (var i = 0; i < frameList.Count; i++)
                 {
                     var fileName = frameList[i] as string;
-                    var sprite = LoadSprite(Path.Combine(resourcePath, fileName));
+                    var sprite = LoadSprite(Path.Combine(resourcePath, fileName), useGroundPivot);
                     if (sprite != null)
                     {
                         sprites.Add(sprite);
@@ -131,7 +133,7 @@ namespace ProjectHunt.Battle
             return result;
         }
 
-        private static Sprite LoadSprite(string filePath)
+        private static Sprite LoadSprite(string filePath, bool useGroundPivot)
         {
             if (!File.Exists(filePath))
             {
@@ -149,10 +151,12 @@ namespace ProjectHunt.Battle
             }
 
             texture.name = Path.GetFileNameWithoutExtension(filePath);
+            var pivot = useGroundPivot ? new Vector2(0.5f, 0f) : new Vector2(0.5f, 0.5f);
+
             return Sprite.Create(
                 texture,
                 new Rect(0, 0, texture.width, texture.height),
-                new Vector2(0.5f, 0.5f),
+                pivot,
                 16f,
                 0,
                 SpriteMeshType.FullRect);

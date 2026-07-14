@@ -9,6 +9,8 @@ namespace ProjectHunt.Battle
         public float fps = 8f;
 
         private SpriteRenderer _spriteRenderer;
+        private SpriteRenderer _rootRenderer;
+        private Transform _lichVisualTransform;
         private PixelAnimationLibrary.ActionClip _currentClip;
         private string _currentAction;
         private bool _loop;
@@ -17,7 +19,8 @@ namespace ProjectHunt.Battle
 
         private void Awake()
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _rootRenderer = GetComponent<SpriteRenderer>();
+            _spriteRenderer = _rootRenderer;
         }
 
         private void Update()
@@ -45,13 +48,17 @@ namespace ProjectHunt.Battle
                     }
                 }
 
-                _spriteRenderer.sprite = _currentClip.frames[_frameIndex];
+                SetSprite(_currentClip.frames[_frameIndex]);
             }
         }
 
         public void Configure(string newResourceId)
         {
             resourceId = newResourceId;
+            if (resourceId == "boss_lich")
+            {
+                EnsureLichVisualRenderer();
+            }
         }
 
         public void PlayLoop(string actionName)
@@ -107,7 +114,45 @@ namespace ProjectHunt.Battle
             _loop = loop;
             _timer = 0f;
             _frameIndex = 0;
-            _spriteRenderer.sprite = _currentClip.frames[0];
+            SetSprite(_currentClip.frames[0]);
+        }
+
+        private void EnsureLichVisualRenderer()
+        {
+            if (_lichVisualTransform == null)
+            {
+                var visual = new GameObject("LichVisual", typeof(SpriteRenderer));
+                visual.transform.SetParent(transform, false);
+                _lichVisualTransform = visual.transform;
+                _spriteRenderer = visual.GetComponent<SpriteRenderer>();
+                _spriteRenderer.sortingOrder = _rootRenderer != null ? _rootRenderer.sortingOrder : 5;
+                _spriteRenderer.flipX = true;
+                if (_rootRenderer != null)
+                {
+                    _rootRenderer.enabled = false;
+                }
+            }
+        }
+
+        private void SetSprite(Sprite sprite)
+        {
+            if (_spriteRenderer == null)
+            {
+                return;
+            }
+
+            _spriteRenderer.sprite = sprite;
+            if (resourceId == "boss_lich" && _lichVisualTransform != null && sprite != null)
+            {
+                // Lich walk is the only action authored on the shifted 138x138 canvas.
+                // Attack/cast/death always use the normal offset, including image_12774 and image_13886.
+                var usesWalkOffset = _currentAction == "walk" &&
+                                     sprite.texture.width == 138 &&
+                                     sprite.texture.height == 138;
+                _lichVisualTransform.localPosition = usesWalkOffset
+                    ? new Vector3(0.73f, -2.56f, 0f)
+                    : new Vector3(-1.38f, -0.62f, 0f);
+            }
         }
     }
 }

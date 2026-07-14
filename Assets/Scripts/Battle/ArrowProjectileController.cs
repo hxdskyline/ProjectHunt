@@ -16,6 +16,7 @@ namespace ProjectHunt.Battle
         public Sprite[] animationFrames;
         public float animationFps = 12f;
         public Vector3 staticEulerAngles;
+        public bool returnToSender;
 
         public void Launch(
             Vector3 startPosition,
@@ -97,7 +98,29 @@ namespace ProjectHunt.Battle
                 }
             }
 
+            if (returnToSender)
+            {
+                yield return StartCoroutine(FlyBack(targetPosition, startPosition));
+            }
+
             Destroy(gameObject);
+        }
+
+        private IEnumerator FlyBack(Vector3 startPosition, Vector3 endPosition)
+        {
+            var elapsed = 0f;
+            var returnDuration = Mathf.Max(0.12f, duration * 0.8f);
+            while (elapsed < returnDuration)
+            {
+                elapsed += Time.deltaTime;
+                var t = Mathf.Clamp01(elapsed / returnDuration);
+                transform.position = Vector3.Lerp(startPosition, endPosition, t);
+                if (spinSpeed != 0f)
+                {
+                    transform.Rotate(0f, 0f, spinSpeed * Time.deltaTime);
+                }
+                yield return null;
+            }
         }
 
         private void UpdateAnimationFrame(float elapsed)

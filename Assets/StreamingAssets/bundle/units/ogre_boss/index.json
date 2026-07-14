@@ -1,0 +1,119 @@
+{
+  "unit": "ogre_boss",
+  "actions": {
+    "attack": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 7,
+      "frames": [
+        "image_25012_tex020_65x65.png",
+        "image_24737_tex020_65x65.png",
+        "image_24738_tex020_65x65.png",
+        "image_25424_tex018_65x65.png",
+        "image_25556_tex020_65x65.png",
+        "image_25599_tex020_65x65.png",
+        "image_26363_tex017_65x65.png"
+      ]
+    },
+    "attack_area": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 14,
+      "frames": [
+        "image_25011_tex020_65x65.png",
+        "image_25987_tex016_65x65.png",
+        "image_25421_tex006_65x65.png",
+        "image_25422_tex006_65x65.png",
+        "image_25420_tex006_65x65.png",
+        "image_25423_tex006_65x65.png",
+        "image_25875_tex007_65x65.png",
+        "image_27465_tex018_65x65.png",
+        "image_27193_tex020_65x65.png",
+        "image_27464_tex018_65x65.png",
+        "image_27466_tex018_65x65.png",
+        "image_28175_tex020_65x65.png",
+        "image_27043_tex020_65x65.png",
+        "image_25010_tex020_65x65.png"
+      ]
+    },
+    "death": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 26,
+      "frames": [
+        "image_25013_tex020_65x65.png",
+        "image_22409_tex017_65x65.png",
+        "image_21786_tex013_65x65.png",
+        "image_22294_tex020_65x65.png",
+        "image_22293_tex020_65x65.png",
+        "image_24472_tex020_65x65.png",
+        "image_24469_tex020_65x65.png",
+        "image_24474_tex020_65x65.png",
+        "image_24473_tex020_65x65.png",
+        "image_24475_tex020_65x65.png",
+        "image_24470_tex020_65x65.png",
+        "image_24471_tex020_65x65.png",
+        "image_24476_tex020_65x65.png",
+        "image_24477_tex020_65x65.png",
+        "image_24478_tex020_65x65.png",
+        "image_24739_tex020_65x65.png",
+        "image_25149_tex020_65x65.png",
+        "image_26729_tex017_65x65.png",
+        "image_27044_tex020_65x65.png",
+        "image_25938_tex020_65x65.png",
+        "image_25876_tex020_65x65.png",
+        "image_24613_tex020_65x65.png",
+        "image_25631_tex020_65x65.png",
+        "image_27945_tex020_65x65.png",
+        "image_27946_tex020_65x65.png",
+        "image_27947_tex020_65x65.png"
+      ]
+    },
+    "scream": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 22,
+      "frames": [
+        "image_25014_tex020_65x65.png",
+        "image_25505_tex016_65x65.png",
+        "image_25504_tex016_65x65.png",
+        "image_25503_tex016_65x65.png",
+        "image_25152_tex020_65x65.png",
+        "image_25153_tex020_65x65.png",
+        "image_25353_tex020_65x65.png",
+        "image_25840_tex020_65x65.png",
+        "image_25354_tex020_65x65.png",
+        "image_25151_tex020_65x65.png",
+        "image_25154_tex020_65x65.png",
+        "image_25841_tex020_65x65.png",
+        "image_25150_tex020_65x65.png",
+        "image_25157_tex020_65x65.png",
+        "image_25356_tex020_65x65.png",
+        "image_25843_tex020_65x65.png",
+        "image_25355_tex020_65x65.png",
+        "image_25155_tex020_65x65.png",
+        "image_25158_tex020_65x65.png",
+        "image_25842_tex020_65x65.png",
+        "image_25156_tex020_65x65.png",
+        "image_25939_tex016_65x65.png"
+      ]
+    },
+    "walk": {
+      "width": 65,
+      "height": 65,
+      "frameCount": 10,
+      "frames": [
+        "image_25693_tex016_65x65.png",
+        "image_26111_tex017_65x65.png",
+        "image_25751_tex016_65x65.png",
+        "image_25753_tex016_65x65.png",
+        "image_24830_tex018_65x65.png",
+        "image_24630_tex020_65x65.png",
+        "image_25047_tex018_65x65.png",
+        "image_25752_tex016_65x65.png",
+        "image_26110_tex017_65x65.png",
+        "image_26112_tex017_65x65.png"
+      ]
+    }
+  }
+}

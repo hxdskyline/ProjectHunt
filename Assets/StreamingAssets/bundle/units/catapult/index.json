@@ -1,0 +1,36 @@
+{
+  "unit": "catapult",
+  "actions": {
+    "attack": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 13,
+      "frames": [
+        "image_24441_tex020_45x45.png",
+        "image_24438_tex020_45x45.png",
+        "image_24436_tex020_45x45.png",
+        "image_24440_tex020_45x45.png",
+        "image_24439_tex020_45x45.png",
+        "image_22912_tex018_45x45.png",
+        "image_23175_tex018_45x45.png",
+        "image_23336_tex018_45x45.png",
+        "image_23338_tex018_45x45.png",
+        "image_23335_tex018_45x45.png",
+        "image_23337_tex018_45x45.png",
+        "image_23503_tex020_45x45.png",
+        "image_24437_tex020_45x45.png"
+      ]
+    },
+    "walk": {
+      "width": 45,
+      "height": 45,
+      "frameCount": 4,
+      "frames": [
+        "image_24445_tex020_45x45.png",
+        "image_24443_tex020_45x45.png",
+        "image_24444_tex020_45x45.png",
+        "image_24446_tex020_45x45.png"
+      ]
+    }
+  }
+}

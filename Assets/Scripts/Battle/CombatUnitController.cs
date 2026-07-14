@@ -36,6 +36,7 @@ namespace ProjectHunt.Battle
         private Coroutine _hitFeedbackRoutine;
         private Coroutine _attackFeedbackRoutine;
         private float _stunTimer;
+        private int _bossNormalAttackCount;
 
         private void Awake()
         {
@@ -77,9 +78,7 @@ namespace ProjectHunt.Battle
             position.y += config.yOffset;
             transform.position = position;
 
-            _usesMeteorHammerOverride = director != null &&
-                                        director.IsBattle02 &&
-                                        HammerCharacterFactory.IsHammerVariant(config);
+            _usesMeteorHammerOverride = HammerCharacterFactory.IsHammerVariant(config);
             SetupWeaponVisual();
             SetupHpBar();
         }
@@ -154,7 +153,7 @@ namespace ProjectHunt.Battle
                 }
                 else if (characterConfig != null)
                 {
-                    _animator.PlayLoop(characterConfig.moveAction);
+                    StartCoroutine(HidePlayerAfterDeath());
                 }
 
                 _director?.NotifyUnitDied(this);
@@ -164,6 +163,16 @@ namespace ProjectHunt.Battle
         public float GetMaxHp()
         {
             return maxHp;
+        }
+
+        private IEnumerator HidePlayerAfterDeath()
+        {
+            // Player art has no reliable death clips yet; remove the defeated unit after hit feedback.
+            yield return new WaitForSeconds(0.1f);
+            if (this != null && gameObject != null)
+            {
+                gameObject.SetActive(false);
+            }
         }
 
         public Vector3 GetProjectileLaunchPosition()
@@ -230,6 +239,8 @@ namespace ProjectHunt.Battle
         {
             PlayMoveLoop();
 
+            var finalTargetPosition = targetPosition;
+
             while (this != null && transform != null && Vector3.Distance(transform.position, targetPosition) > 0.02f)
             {
                 transform.position = Vector3.MoveTowards(
@@ -241,7 +252,7 @@ namespace ProjectHunt.Battle
 
             if (this != null && transform != null)
             {
-                transform.position = targetPosition;
+                transform.position = finalTargetPosition;
                 PlayMoveLoop();
             }
         }
@@ -257,7 +268,7 @@ namespace ProjectHunt.Battle
                     yield return null;
                 }
 
-                var attackAction = characterConfig != null ? characterConfig.defaultAttackAction : bossConfig.mainAttackAction;
+                var attackAction = GetAttackAction();
                 var moveAction = characterConfig != null ? characterConfig.moveAction : bossConfig.moveAction;
                 var attackDuration = Mathf.Max(0.2f, _animator.GetDuration(attackAction));
                 var cooldown = GetAttackInterval();
@@ -279,7 +290,7 @@ namespace ProjectHunt.Battle
                     if (IsAlive && !IsStunned && _director != null && !_director.IsBattleResolved)
                     {
                         Debug.Log($"[CombatLoop] {gameObject.name} impact #{i} -> ResolveAttack");
-                        _director.ResolveAttack(this, i, targetSnapshot);
+                        _director.ResolveAttack(this, i, targetSnapshot, attackAction);
                     }
 
                     previousImpactTime = impactTime;
@@ -294,6 +305,29 @@ namespace ProjectHunt.Battle
                 _animator.PlayLoop(moveAction);
                 yield return new WaitForSeconds(cooldown);
             }
+        }
+
+        private string GetAttackAction()
+        {
+            if (characterConfig != null)
+            {
+                return characterConfig.defaultAttackAction;
+            }
+
+            if (bossConfig == null || string.IsNullOrWhiteSpace(bossConfig.specialAttackAction) ||
+                bossConfig.normalAttacksBetweenSpecial <= 0)
+            {
+                return bossConfig != null ? bossConfig.mainAttackAction : string.Empty;
+            }
+
+            if (_bossNormalAttackCount >= bossConfig.normalAttacksBetweenSpecial)
+            {
+                _bossNormalAttackCount = 0;
+                return bossConfig.specialAttackAction;
+            }
+
+            _bossNormalAttackCount++;
+            return bossConfig.mainAttackAction;
         }
 
         private float GetAttackInterval()
@@ -315,10 +349,9 @@ namespace ProjectHunt.Battle
             var schedule = new List<float>(2);
 
             if (characterConfig != null &&
-                characterConfig.resourceId == "assassin" &&
                 characterConfig.roleType == RoleType.Assassin &&
-                !_usesMeteorHammerOverride &&
-                attackAction == "attack")
+                attackAction == "attack" &&
+                (characterConfig.resourceId == "assassin" || _usesMeteorHammerOverride))
             {
                 const int totalFrames = 10;
                 schedule.Add(attackDuration * (3f / totalFrames));

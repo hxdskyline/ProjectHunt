@@ -1,0 +1,30 @@
+{
+  "unit": "mage_blue",
+  "actions": {
+    "attack": {
+      "width": 48,
+      "height": 48,
+      "frameCount": 7,
+      "frames": [
+        "image_30554_tex013_48x48.png",
+        "image_30341_tex013_48x48.png",
+        "image_29087_tex013_48x48.png",
+        "image_29660_tex007_48x48.png",
+        "image_28320_tex018_48x48.png",
+        "image_28397_tex015_48x48.png",
+        "image_28287_tex020_48x48.png"
+      ]
+    },
+    "walk": {
+      "width": 48,
+      "height": 48,
+      "frameCount": 4,
+      "frames": [
+        "image_30556_tex014_48x48.png",
+        "image_30557_tex014_48x48.png",
+        "image_30343_tex013_48x48.png",
+        "image_30342_tex013_48x48.png"
+      ]
+    }
+  }
+}

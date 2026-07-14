@@ -1,0 +1,103 @@
+{
+  "unit": "boss_lich",
+  "actions": {
+    "attack": {
+      "width": 250,
+      "height": 250,
+      "frameCount": 13,
+      "frames": [
+        "image_10583_tex018_250x250.png",
+        "image_10302_tex017_250x250.png",
+        "image_10214_tex017_250x250.png",
+        "image_06185_tex015_250x250.png",
+        "image_06830_tex016_250x250.png",
+        "image_04702_tex014_250x250.png",
+        "image_00515_tex013_250x250.png",
+        "image_00559_tex013_250x250.png",
+        "image_00646_tex013_250x250.png",
+        "image_00694_tex007_250x250.png",
+        "image_10556_tex018_250x250.png",
+        "image_13886_tex018_250x250.png",
+        "image_10400_tex017_250x250.png"
+      ]
+    },
+    "cast": {
+      "width": 280,
+      "height": 280,
+      "frameCount": 18,
+      "frames": [
+        "image_10584_tex018_280x280.png",
+        "image_10303_tex017_280x280.png",
+        "image_12774_tex018_280x280.png",
+        "image_13152_tex014_280x280.png",
+        "image_11529_tex014_280x280.png",
+        "image_07826_tex014_280x280.png",
+        "image_09822_tex007_280x280.png",
+        "image_07096_tex013_280x280.png",
+        "image_05976_tex013_280x280.png",
+        "image_04065_tex013_280x280.png",
+        "image_02644_tex013_280x280.png",
+        "image_01576_tex013_280x280.png",
+        "image_01395_tex007_280x280.png",
+        "image_01012_tex007_280x280.png",
+        "image_00783_tex007_280x280.png",
+        "image_00600_tex006_280x280.png",
+        "image_12773_tex018_280x280.png",
+        "image_10653_tex018_280x280.png"
+      ]
+    },
+    "death": {
+      "width": 250,
+      "height": 250,
+      "frameCount": 29,
+      "frames": [
+        "image_10585_tex018_250x250.png",
+        "image_10304_tex017_250x250.png",
+        "image_08089_tex017_250x250.png",
+        "image_09824_tex017_250x250.png",
+        "image_10622_tex018_250x250.png",
+        "image_10390_tex017_250x250.png",
+        "image_10391_tex017_250x250.png",
+        "image_10388_tex017_250x250.png",
+        "image_10389_tex017_250x250.png",
+        "image_11191_tex018_250x250.png",
+        "image_10987_tex014_250x250.png",
+        "image_11685_tex018_250x250.png",
+        "image_11597_tex017_250x250.png",
+        "image_11684_tex018_250x250.png",
+        "image_11820_tex018_250x250.png",
+        "image_11709_tex018_250x250.png",
+        "image_11765_tex018_250x250.png",
+        "image_12336_tex018_250x250.png",
+        "image_12388_tex018_250x250.png",
+        "image_12419_tex018_250x250.png",
+        "image_12412_tex018_250x250.png",
+        "image_12832_tex013_250x250.png",
+        "image_12656_tex006_250x250.png",
+        "image_12330_tex018_250x250.png",
+        "image_12384_tex018_250x250.png",
+        "image_12843_tex017_250x250.png",
+        "image_12844_tex017_250x250.png",
+        "image_12841_tex016_250x250.png",
+        "image_12842_tex017_250x250.png"
+      ]
+    },
+    "walk": {
+      "width": 138,
+      "height": 138,
+      "frameCount": 10,
+      "frames": [
+        "image_10593_tex018_138x138.png",
+        "image_10594_tex018_138x138.png",
+        "image_10592_tex018_138x138.png",
+        "image_11237_tex018_138x138.png",
+        "image_11616_tex018_138x138.png",
+        "image_12177_tex015_138x138.png",
+        "image_12129_tex018_138x138.png",
+        "image_12128_tex018_138x138.png",
+        "image_11860_tex015_138x138.png",
+        "image_11294_tex018_138x138.png"
+      ]
+    }
+  }
+}

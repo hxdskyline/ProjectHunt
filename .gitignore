@@ -19,6 +19,9 @@
 # Recordings can get excessive in size
 /[Rr]ecordings/
 
+# Local archive for art kept outside the active Unity project and PC build.
+/raw/unused_art/
+
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
 

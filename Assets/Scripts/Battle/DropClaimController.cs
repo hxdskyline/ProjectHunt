@@ -39,6 +39,21 @@ namespace ProjectHunt.Battle
                 return;
             }
 
+            BeginClaimSequence();
+        }
+
+        public void PlayAutoClaimSequence()
+        {
+            if (_isClaimed)
+            {
+                return;
+            }
+
+            BeginClaimSequence();
+        }
+
+        private void BeginClaimSequence()
+        {
             _isClaimed = true;
             var controller = _presentationController != null ? _presentationController : DropClaimPresentationController.Create(this);
             _presentationController = controller;
@@ -104,9 +119,13 @@ namespace ProjectHunt.Battle
             if (flowController != null)
             {
                 Debug.Log("[Drop] Claim presentation finished. Loading build scene.");
-                if (rewardType == RewardType.FireGland)
+                if (rewardType == RewardType.HolyCup)
                 {
-                    flowController.ClaimFireGland();
+                    flowController.ClaimHolyCup();
+                }
+                else if (rewardType == RewardType.GiantKey)
+                {
+                    flowController.ClaimGiantKey();
                 }
                 else
                 {
@@ -478,16 +497,22 @@ namespace ProjectHunt.Battle
 
         private string GetClaimText()
         {
-            return _rewardType == RewardType.FireGland
-                ? "\u83b7\u5f97\u795e\u5668\uff1a\u706b\u7130\u817a\u4f53"
-                : "\u83b7\u5f97\u795e\u5668\uff1a\u6d41\u661f\u9524";
+            return _rewardType switch
+            {
+                RewardType.HolyCup => "\u83b7\u5f97\u795e\u5668\uff1a\u9152\u795e\u5723\u676f",
+                RewardType.GiantKey => "\u83b7\u5f97\u795e\u5668\uff1a\u5de8\u4eba\u94a5\u5319",
+                _ => "\u83b7\u5f97\u795e\u5668\uff1a\u6d41\u661f\u9524",
+            };
         }
 
         private Sprite GetRewardSprite()
         {
-            return _rewardType == RewardType.FireGland
-                ? SimpleSpriteFactory.GetFireGlandSprite()
-                : SimpleSpriteFactory.GetMeteorHammerSprite();
+            return _rewardType switch
+            {
+                RewardType.HolyCup => SimpleSpriteFactory.GetHolyCupSprite(),
+                RewardType.GiantKey => SimpleSpriteFactory.GetGiantKeySprite(),
+                _ => SimpleSpriteFactory.GetMeteorHammerSprite(),
+            };
         }
     }
 }

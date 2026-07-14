@@ -45,8 +45,15 @@ namespace ProjectHunt.Battle
                 return cached;
             }
 
-            var fullPath = Path.Combine(ExternalRoot, relativePath.Replace("/", "\\"));
-            var sprite = PixelAnimationLibrary.LoadSpriteFromAbsolutePath(fullPath);
+            var normalizedPath = relativePath.Replace("/", "\\");
+            var packagedPath = Path.Combine(Application.streamingAssetsPath, "bundle", normalizedPath);
+            var sprite = PixelAnimationLibrary.LoadSpriteFromAbsolutePath(packagedPath);
+            if (sprite == null)
+            {
+                // Keeps the editor workflow usable when a new source sprite has not yet been packaged.
+                var editorSourcePath = Path.Combine(ExternalRoot, normalizedPath);
+                sprite = PixelAnimationLibrary.LoadSpriteFromAbsolutePath(editorSourcePath);
+            }
             if (sprite != null)
             {
                 SpriteCache[relativePath] = sprite;

@@ -1,0 +1,51 @@
+{
+  "unit": "undead_dread_guard",
+  "actions": {
+    "attack_1": {
+      "width": 75,
+      "height": 75,
+      "frameCount": 8,
+      "frames": [
+        "image_21039_tex020_75x75.png",
+        "image_21127_tex020_75x75.png",
+        "image_21126_tex020_75x75.png",
+        "image_21041_tex020_75x75.png",
+        "image_21064_tex018_75x75.png",
+        "image_21061_tex020_75x75.png",
+        "image_22239_tex020_75x75.png",
+        "image_21040_tex020_75x75.png"
+      ]
+    },
+    "attack_2": {
+      "width": 75,
+      "height": 75,
+      "frameCount": 8,
+      "frames": [
+        "image_21044_tex020_75x75.png",
+        "image_21042_tex020_75x75.png",
+        "image_20453_tex020_75x75.png",
+        "image_20638_tex020_75x75.png",
+        "image_20511_tex020_75x75.png",
+        "image_20361_tex020_75x75.png",
+        "image_20462_tex020_75x75.png",
+        "image_21043_tex020_75x75.png"
+      ]
+    },
+    "walk": {
+      "width": 75,
+      "height": 75,
+      "frameCount": 9,
+      "frames": [
+        "image_21046_tex020_75x75.png",
+        "image_20825_tex020_75x75.png",
+        "image_20756_tex020_75x75.png",
+        "image_20632_tex020_75x75.png",
+        "image_20528_tex020_75x75.png",
+        "image_20639_tex020_75x75.png",
+        "image_20631_tex020_75x75.png",
+        "image_20755_tex020_75x75.png",
+        "image_20824_tex020_75x75.png"
+      ]
+    }
+  }
+}

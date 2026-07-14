@@ -1,0 +1,89 @@
+{
+  "unit": "skeleton_large",
+  "actions": {
+    "attack_1": {
+      "width": 36,
+      "height": 33,
+      "frameCount": 13,
+      "frames": [
+        "image_23926_tex018_36x33.png",
+        "image_23927_tex018_36x33.png",
+        "image_23496_tex020_36x33.png",
+        "image_23288_tex020_36x33.png",
+        "image_23289_tex020_36x33.png",
+        "image_23657_tex020_36x33.png",
+        "image_24310_tex020_36x33.png",
+        "image_24480_tex020_36x33.png",
+        "image_24308_tex020_36x33.png",
+        "image_24309_tex020_36x33.png",
+        "image_24339_tex020_36x33.png",
+        "image_25459_tex016_36x33.png",
+        "image_23749_tex013_36x33.png"
+      ]
+    },
+    "attack_2": {
+      "width": 26,
+      "height": 32,
+      "frameCount": 9,
+      "frames": [
+        "image_23928_tex018_26x32.png",
+        "image_23729_tex018_26x32.png",
+        "image_24412_tex017_26x32.png",
+        "image_24413_tex017_26x32.png",
+        "image_24836_tex020_26x32.png",
+        "image_24884_tex018_26x32.png",
+        "image_24837_tex020_26x32.png",
+        "image_24906_tex017_26x32.png",
+        "image_23750_tex018_26x32.png"
+      ]
+    },
+    "death": {
+      "width": 31,
+      "height": 32,
+      "frameCount": 8,
+      "frames": [
+        "image_23929_tex018_31x32.png",
+        "image_24345_tex017_31x32.png",
+        "image_24481_tex017_31x32.png",
+        "image_25668_tex018_31x32.png",
+        "image_26850_tex020_31x32.png",
+        "image_29287_tex013_31x32.png",
+        "image_28459_tex018_31x32.png",
+        "image_28934_tex016_31x32.png"
+      ]
+    },
+    "rise": {
+      "width": 31,
+      "height": 34,
+      "frameCount": 10,
+      "frames": [
+        "image_28447_tex007_31x34.png",
+        "image_29423_tex006_31x34.png",
+        "image_28352_tex014_31x34.png",
+        "image_27242_tex020_31x34.png",
+        "image_26684_tex020_31x34.png",
+        "image_26851_tex020_31x34.png",
+        "image_25460_tex016_31x34.png",
+        "image_24075_tex017_31x34.png",
+        "image_23751_tex018_31x34.png",
+        "image_23930_tex018_31x34.png"
+      ]
+    },
+    "walk": {
+      "width": 21,
+      "height": 33,
+      "frameCount": 9,
+      "frames": [
+        "image_24414_tex017_21x33.png",
+        "image_24214_tex017_21x33.png",
+        "image_24058_tex016_21x33.png",
+        "image_23996_tex017_21x33.png",
+        "image_24720_tex014_21x33.png",
+        "image_24946_tex006_21x33.png",
+        "image_25251_tex006_21x33.png",
+        "image_24694_tex013_21x33.png",
+        "image_24615_tex014_21x33.png"
+      ]
+    }
+  }
+}

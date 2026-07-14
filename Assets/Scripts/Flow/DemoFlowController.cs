@@ -21,7 +21,6 @@ namespace ProjectHunt.Flow
         {
             if (Instance != null && Instance != this)
             {
-                // Keep this scene-local instance, destroy the old persistent one so scene references stay valid.
                 var oldInstance = Instance;
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
@@ -81,13 +80,11 @@ namespace ProjectHunt.Flow
             EnsureContext();
             gameContext.buildSelection.selectedCharacter = selectedCharacter;
             gameContext.buildSelection.selectedHammerCharacter = HammerCharacterFactory.GetHammerVariant(selectedCharacter);
+            gameContext.buildSelection.selectedHammerTargetId = selectedCharacter != null ? selectedCharacter.id : null;
             gameContext.buildSelection.isSelectionConfirmed = selectedCharacter != null;
             gameContext.buildSelection.hasClaimedMeteorHammer = selectedCharacter != null;
             gameContext.buildSelection.pendingRewardType = RewardType.None;
-            gameContext.runState.phase = GamePhase.Battle02;
-            gameContext.runState.isBattle02Started = true;
-            Debug.Log($"[Flow] ConfirmBuildSelection: phase={gameContext.runState.phase}, isBattle02Started={gameContext.runState.isBattle02Started}, loading={battleSceneName}");
-            SceneManager.LoadScene(battleSceneName);
+            StartBattlePhase(GamePhase.Battle02);
         }
 
         public void CompleteBattle02()
@@ -95,36 +92,173 @@ namespace ProjectHunt.Flow
             EnsureContext();
             gameContext.runState.isBattle02Complete = true;
             gameContext.runState.isBattle02Started = false;
+            StartBattlePhase(GamePhase.BlacksmithValidation);
+        }
+
+        public void CompleteBlacksmithValidation()
+        {
+            EnsureContext();
+            gameContext.runState.isBlacksmithValidationComplete = true;
+            gameContext.runState.isBlacksmithValidationStarted = false;
+            StartBattlePhase(GamePhase.Battle03);
+        }
+
+        public void CompleteBattle03()
+        {
+            EnsureContext();
+            gameContext.runState.isBattle03Complete = true;
+            gameContext.runState.isBattle03Started = false;
             gameContext.runState.isDrop02Spawned = true;
             gameContext.runState.phase = GamePhase.Drop02;
         }
 
-        public void ClaimFireGland()
+        public void ClaimHolyCup()
         {
             EnsureContext();
-            gameContext.buildSelection.hasClaimedFireGland = true;
-            gameContext.buildSelection.pendingRewardType = RewardType.FireGland;
+            gameContext.buildSelection.hasClaimedHolyCup = true;
+            gameContext.buildSelection.pendingRewardType = RewardType.HolyCup;
             gameContext.runState.isDrop02Claimed = true;
             gameContext.runState.phase = GamePhase.Build02;
             SceneManager.LoadScene(buildSceneName);
         }
 
-        public void ConfirmFireGlandSelection(CharacterConfig selectedCharacter)
+        public void ConfirmHolyCupSelection(CharacterConfig selectedCharacter)
         {
             EnsureContext();
             gameContext.buildSelection.selectedCharacter = selectedCharacter;
-            gameContext.buildSelection.selectedFireCharacter = FireGlandCharacterFactory.GetFireVariant(selectedCharacter);
+            gameContext.buildSelection.selectedCupCharacter = HolyCupCharacterFactory.GetCupVariant(selectedCharacter);
+            gameContext.buildSelection.selectedCupTargetId = selectedCharacter != null ? selectedCharacter.id : null;
             gameContext.buildSelection.pendingRewardType = RewardType.None;
+            StartBattlePhase(GamePhase.Battle04);
+        }
+
+        public void CompleteBattle04()
+        {
+            EnsureContext();
+            gameContext.runState.isBattle04Complete = true;
+            gameContext.runState.isBattle04Started = false;
+            gameContext.runState.isMageValidationStarted = false;
+            StartBattlePhase(GamePhase.Battle05);
+        }
+
+        public void RecruitMage(string replacedCharacterId, RewardType rewardType)
+        {
+            EnsureContext();
+            gameContext.runState.hasRecruitedMage = !string.IsNullOrWhiteSpace(replacedCharacterId);
+            gameContext.runState.mageReplacedCharacterId = replacedCharacterId;
+            gameContext.runState.mageRewardType = rewardType;
+            gameContext.runState.isMageValidationStarted = true;
+            StartBattlePhase(GamePhase.Battle04);
+        }
+
+        public void CompleteBattle05()
+        {
+            EnsureContext();
+            gameContext.runState.isBattle05Complete = true;
+            gameContext.runState.isBattle05Started = false;
+            gameContext.runState.isDrop03Spawned = true;
+            gameContext.runState.phase = GamePhase.Drop03;
+        }
+
+        public void ClaimGiantKey()
+        {
+            EnsureContext();
+            gameContext.buildSelection.hasClaimedGiantKey = true;
+            gameContext.buildSelection.pendingRewardType = RewardType.GiantKey;
+            gameContext.runState.isDrop03Claimed = true;
+            gameContext.runState.phase = GamePhase.Build03;
+            SceneManager.LoadScene(buildSceneName);
+        }
+
+        public void ConfirmGiantKeySelection(CharacterConfig selectedCharacter)
+        {
+            EnsureContext();
+            gameContext.buildSelection.selectedCharacter = selectedCharacter;
+            gameContext.buildSelection.selectedKeyCharacter = GiantKeyCharacterFactory.GetKeyVariant(selectedCharacter);
+            gameContext.buildSelection.selectedKeyTargetId = selectedCharacter != null ? selectedCharacter.id : null;
+            gameContext.buildSelection.pendingRewardType = RewardType.None;
+            StartBattlePhase(GamePhase.Battle06);
+        }
+
+        public void CompleteBattle06()
+        {
+            EnsureContext();
+            gameContext.runState.isBattle06Complete = true;
+            gameContext.runState.isBattle06Started = false;
             gameContext.runState.phase = GamePhase.Result;
             SceneManager.LoadScene(resultSceneName);
         }
 
         public bool IsBattle02()
         {
+            return IsBattlePhase(GamePhase.Battle02, gameContext != null && gameContext.runState.isBattle02Started);
+        }
+
+        public bool IsBattle03()
+        {
+            return IsBattlePhase(GamePhase.Battle03, gameContext != null && gameContext.runState.isBattle03Started);
+        }
+
+        public bool IsBlacksmithValidation()
+        {
+            return IsBattlePhase(
+                GamePhase.BlacksmithValidation,
+                gameContext != null && gameContext.runState.isBlacksmithValidationStarted);
+        }
+
+        public bool IsBattle04()
+        {
+            return IsBattlePhase(GamePhase.Battle04, gameContext != null && gameContext.runState.isBattle04Started);
+        }
+
+        public bool IsBattle05()
+        {
+            return IsBattlePhase(GamePhase.Battle05, gameContext != null && gameContext.runState.isBattle05Started);
+        }
+
+        public bool IsBattle06()
+        {
+            return IsBattlePhase(GamePhase.Battle06, gameContext != null && gameContext.runState.isBattle06Started);
+        }
+
+        private bool IsBattlePhase(GamePhase phase, bool startedFlag)
+        {
             EnsureContext();
-            var result = gameContext.runState.phase == GamePhase.Battle02 || gameContext.runState.isBattle02Started;
-            Debug.Log($"[Flow] IsBattle02={result} (phase={gameContext.runState.phase}, isBattle02Started={gameContext.runState.isBattle02Started})");
-            return result;
+            return gameContext.runState.phase == phase || startedFlag;
+        }
+
+        private void StartBattlePhase(GamePhase phase)
+        {
+            EnsureContext();
+            gameContext.runState.phase = phase;
+            SetBattleStartedFlag(phase, true);
+            Debug.Log($"[Flow] Start battle phase: {phase}, loading={battleSceneName}");
+            SceneManager.LoadScene(battleSceneName);
+        }
+
+        private void SetBattleStartedFlag(GamePhase phase, bool value)
+        {
+            switch (phase)
+            {
+                case GamePhase.Battle02:
+                    gameContext.runState.isBattle02Started = value;
+                    break;
+                case GamePhase.Battle03:
+                    gameContext.runState.isBattle03Started = value;
+                    break;
+                case GamePhase.BlacksmithValidation:
+                    gameContext.runState.isBlacksmithValidationStarted = value;
+                    break;
+                case GamePhase.Battle04:
+                    gameContext.runState.isBattle04Started = value;
+                    break;
+                case GamePhase.Battle05:
+                    gameContext.runState.isBattle05Started = value;
+                    break;
+                case GamePhase.Battle06:
+                    gameContext.runState.isBattle06Started = value;
+                    break;
+            }
         }
 
         private void EnsureContext()
