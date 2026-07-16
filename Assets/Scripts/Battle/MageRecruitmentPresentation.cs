@@ -2,6 +2,7 @@ using System.Collections;
 using ProjectHunt.Build;
 using ProjectHunt.Data;
 using ProjectHunt.Flow;
+using ProjectHunt.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -24,6 +25,7 @@ namespace ProjectHunt.Battle
 
         public static void Show(DemoFlowController flow, DemoGameContext context)
         {
+            ProjectHunt.UI.BattleHudLayoutController.NotifyRescuePhase();
             var host = new GameObject("MageRecruitmentPresentation");
             var presentation = host.AddComponent<MageRecruitmentPresentation>();
             presentation._flow = flow;
@@ -66,20 +68,22 @@ namespace ProjectHunt.Battle
             canvas.sortingOrder = 180;
             var scaler = _dialogueCanvas.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.referenceResolution = new Vector2(1080f, 1920f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 1f;
 
             var panel = new GameObject("Panel", typeof(RectTransform), typeof(Image));
             panel.transform.SetParent(_dialogueCanvas.transform, false);
             var panelRect = panel.GetComponent<RectTransform>();
-            panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0f);
-            panelRect.pivot = new Vector2(0.5f, 0f);
-            panelRect.anchoredPosition = new Vector2(0f, 7f);
-            panelRect.sizeDelta = new Vector2(820f, 112f);
+            panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            panelRect.pivot = new Vector2(0.5f, 0.5f);
+            panelRect.anchoredPosition = new Vector2(0f, 205f);
+            panelRect.sizeDelta = new Vector2(980f, 154f);
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
             panelImage.color = new Color(0.04f, 0.04f, 0.06f, 0.9f);
 
-            var line = CreateText(panel.transform, "Text", new Vector2(820f, 112f), 28, Vector2.zero);
+            var line = CreateText(panel.transform, "Text", new Vector2(900f, 126f), 28, Vector2.zero);
             line.text = "\u6cd5\u5e08\uff1a\u8fd9\u4e00\u5e26\u88ab\u4e00\u4e2a\u62b1\u7740\u5de8\u5927\u94a5\u5319\u7684\u602a\u7269\u5360\u9886\u4e86\uff0c\u5feb\u968f\u6211\u53bb\u6d88\u706d\u5b83\uff01";
             yield return new WaitForSeconds(2.7f);
             Destroy(_dialogueCanvas);
@@ -100,15 +104,26 @@ namespace ProjectHunt.Battle
             _canvas.sortingOrder = 210;
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.referenceResolution = new Vector2(1080f, 1920f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 1f;
 
-            var panel = CreateImage(_canvas.transform, "Panel", new Vector2(900f, 410f), new Color(0.05f, 0.06f, 0.1f, 0.96f));
+            var dim = CreateImage(_canvas.transform, "Dim", new Vector2(1080f, 1920f), new Color(0.015f, 0.02f, 0.035f, 0.74f));
+            dim.GetComponent<Outline>().enabled = false;
+            var panel = CreateImage(_canvas.transform, "Panel", new Vector2(940f, 760f), new Color(0.05f, 0.06f, 0.1f, 0.98f));
             _selectionPanel = panel;
+            panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 190f);
             panel.GetComponent<Outline>().effectColor = new Color(0.42f, 0.75f, 1f, 0.8f);
-            _title = CreateText(panel.transform, "Title", new Vector2(800f, 54f), 30, new Vector2(0f, 150f));
-            _line = CreateText(panel.transform, "Line", new Vector2(800f, 80f), 22, new Vector2(0f, 84f));
+            panel.GetComponent<Outline>().effectDistance = new Vector2(4f, -4f);
+            _title = CreateText(panel.transform, "Title", new Vector2(840f, 70f), 38, new Vector2(0f, 290f));
+            _line = CreateText(panel.transform, "Line", new Vector2(820f, 108f), 25, new Vector2(0f, 205f));
             _buttonRoot = new GameObject("Buttons", typeof(RectTransform)).transform;
             _buttonRoot.SetParent(panel.transform, false);
+            var buttonRootRect = (RectTransform)_buttonRoot;
+            buttonRootRect.anchorMin = Vector2.zero;
+            buttonRootRect.anchorMax = Vector2.one;
+            buttonRootRect.offsetMin = Vector2.zero;
+            buttonRootRect.offsetMax = Vector2.zero;
         }
 
         private void ShowReplacement()
@@ -117,10 +132,10 @@ namespace ProjectHunt.Battle
             _line.text = "\u9009\u62e9\u4e00\u540d\u961f\u5458\u66ff\u6362\uff0c\u6216\u9009\u62e9\u4e0d\u66ff\u6362\u3002";
             ClearButtons();
             var formation = _context.defaultBattleFormation;
-            AddButton(formation.frontCharacter, -270f);
-            AddButton(formation.midCharacter, -90f);
-            AddButton(formation.backCharacter, 90f);
-            AddButton("\u4e0d\u66ff\u6362", 270f, () => Complete(null, RewardType.None));
+            AddButton(formation.frontCharacter, -215f, 70f);
+            AddButton(formation.midCharacter, 215f, 70f);
+            AddButton(formation.backCharacter, -215f, -65f);
+            AddButton("\u4e0d\u66ff\u6362", 215f, -65f, () => Complete(null, RewardType.None));
         }
 
         private void ShowRewardChoice(CharacterConfig replaced)
@@ -130,10 +145,10 @@ namespace ProjectHunt.Battle
             _line.text = "\u53ef\u7a7a\u624b\u53c2\u6218\uff0c\u4e5f\u53ef\u4f7f\u7528\u6d41\u661f\u9524\u6216\u9152\u795e\u5723\u676f\u3002";
             ClearButtons();
             if (_context.buildSelection.hasClaimedMeteorHammer)
-                AddButton("\u63a5\u89e6\u6d41\u661f\u9524", -210f, () => ShowDiscoverReward(replaced, RewardType.MeteorHammer));
-            AddButton("\u7a7a\u624b\u52a0\u5165", 0f, () => ShowDiscoverReward(replaced, RewardType.None));
+                AddButton("\u63a5\u89e6\u6d41\u661f\u9524", 0f, 90f, () => ShowDiscoverReward(replaced, RewardType.MeteorHammer));
+            AddButton("\u7a7a\u624b\u52a0\u5165", 0f, -30f, () => ShowDiscoverReward(replaced, RewardType.None));
             if (_context.buildSelection.hasClaimedHolyCup)
-                AddButton("\u63a5\u89e6\u9152\u795e\u5723\u676f", 210f, () => ShowDiscoverReward(replaced, RewardType.HolyCup));
+                AddButton("\u63a5\u89e6\u9152\u795e\u5723\u676f", 0f, -150f, () => ShowDiscoverReward(replaced, RewardType.HolyCup));
         }
 
         private void ShowDiscoverReward(CharacterConfig replaced, RewardType reward)
@@ -179,23 +194,27 @@ namespace ProjectHunt.Battle
             Destroy(gameObject);
         }
 
-        private void AddButton(CharacterConfig config, float x)
+        private void AddButton(CharacterConfig config, float x, float y)
         {
-            AddButton("\u66ff\u6362" + config.displayName, x, () => ShowRewardChoice(config));
+            AddButton("\u66ff\u6362" + config.displayName, x, y, () => ShowRewardChoice(config));
         }
 
-        private void AddButton(string label, float x, UnityEngine.Events.UnityAction action)
+        private void AddButton(string label, float x, float y, UnityEngine.Events.UnityAction action)
         {
             var go = new GameObject(label, typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(_buttonRoot, false);
             var rect = go.GetComponent<RectTransform>();
-            rect.anchoredPosition = new Vector2(x, -92f);
-            rect.sizeDelta = new Vector2(180f, 54f);
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(x, y);
+            rect.sizeDelta = new Vector2(360f, 92f);
             var image = go.GetComponent<Image>();
-            image.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
-            image.color = new Color(0.95f, 0.55f, 0.16f, 1f);
+            image.sprite = ExtractedArtLibrary.LoadUi("button_primary") ?? SimpleSpriteFactory.GetWhitePixelSprite();
+            image.color = Color.white;
+            var outline = go.AddComponent<Outline>();
+            outline.effectColor = new Color(1f, 0.76f, 0.3f, 0.9f);
+            outline.effectDistance = new Vector2(3f, -3f);
             go.GetComponent<Button>().onClick.AddListener(action);
-            var text = CreateText(go.transform, "Text", new Vector2(170f, 48f), 20, Vector2.zero);
+            var text = CreateText(go.transform, "Text", new Vector2(330f, 76f), 27, Vector2.zero);
             text.text = label;
         }
 

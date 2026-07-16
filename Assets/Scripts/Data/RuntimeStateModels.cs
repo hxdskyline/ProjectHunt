@@ -64,8 +64,6 @@ namespace ProjectHunt.Data
         public bool isDropClaimed;
         public bool isBattle02Started;
         public bool isBattle02Complete;
-        public bool isBlacksmithValidationStarted;
-        public bool isBlacksmithValidationComplete;
         public bool isBattle03Started;
         public bool isBattle03Complete;
         public bool isDrop02Spawned;
@@ -91,8 +89,6 @@ namespace ProjectHunt.Data
             isDropClaimed = false;
             isBattle02Started = false;
             isBattle02Complete = false;
-            isBlacksmithValidationStarted = false;
-            isBlacksmithValidationComplete = false;
             isBattle03Started = false;
             isBattle03Complete = false;
             isDrop02Spawned = false;
@@ -123,8 +119,6 @@ namespace ProjectHunt.Data
             isDropClaimed = other.isDropClaimed;
             isBattle02Started = other.isBattle02Started;
             isBattle02Complete = other.isBattle02Complete;
-            isBlacksmithValidationStarted = other.isBlacksmithValidationStarted;
-            isBlacksmithValidationComplete = other.isBlacksmithValidationComplete;
             isBattle03Started = other.isBattle03Started;
             isBattle03Complete = other.isBattle03Complete;
             isDrop02Spawned = other.isDrop02Spawned;

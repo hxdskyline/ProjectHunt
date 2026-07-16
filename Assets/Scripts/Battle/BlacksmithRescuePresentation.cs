@@ -16,6 +16,7 @@ namespace ProjectHunt.Battle
 
         public static void Show(DemoFlowController flow)
         {
+            ProjectHunt.UI.BattleHudLayoutController.NotifyRescuePhase();
             var host = new GameObject("BlacksmithRescuePresentation");
             var presentation = host.AddComponent<BlacksmithRescuePresentation>();
             presentation._flow = flow;
@@ -44,9 +45,9 @@ namespace ProjectHunt.Battle
             }
 
             CreateDialogue();
-            yield return Say("\u591a\u8c22\u4f60\u4eec\u3002", 1.1f);
-            yield return Say("\u6751\u5b50\u88ab\u4e00\u4e2a\u7231\u559d\u9152\u7684\u602a\u7269\u7ed9\u70e7\u4e86\u3002", 1.55f);
-            yield return Say("\u5b83\u5c31\u5728\u524d\u9762\u3002", 1.0f);
+            yield return Say("\u8fd9\u6751\u5b50\uff0c\u88ab\u4e00\u4e2a\u7231\u559d\u9152\u7684\u602a\u7269\u70e7\u4e86\u3002", 1.55f);
+            yield return Say("\u90a3\u5bb6\u4f19\u5f80\u5317\u8fb9\u53bb\u4e86\u3002", 1.1f);
+            yield return Say("\u5982\u679c\u4f60\u4eec\u8fd8\u8981\u8ffd\uff0c\u6211\u8ddf\u4f60\u4eec\u4e00\u8d77\u53bb\u3002", 1.3f);
             Destroy(_blacksmith);
             Destroy(_dialogueCanvas);
             _flow?.CompleteBattle02();

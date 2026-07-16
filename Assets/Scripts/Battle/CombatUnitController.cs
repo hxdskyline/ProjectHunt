@@ -83,6 +83,22 @@ namespace ProjectHunt.Battle
             SetupHpBar();
         }
 
+        public void ApplyTemporaryCharacterConfig(CharacterConfig config)
+        {
+            if (config == null || team != TeamType.Player || !IsAlive)
+            {
+                return;
+            }
+
+            characterConfig = config;
+            _animator.Configure(config.resourceId);
+            _baseVisualScale = Vector3.one * Mathf.Max(0.01f, config.visualScale);
+            transform.localScale = _baseVisualScale;
+            _usesMeteorHammerOverride = HammerCharacterFactory.IsHammerVariant(config);
+            SetupWeaponVisual();
+            _animator.PlayLoop(config.moveAction);
+        }
+
         public void Setup(BossConfig config, BattleDirector director)
         {
             characterConfig = null;
@@ -145,6 +161,7 @@ namespace ProjectHunt.Battle
 
             if (currentHp <= 0)
             {
+                BattleSfx.PlayDeath(bossConfig != null);
                 CleanupHpBar();
                 StopCombat();
                 if (bossConfig != null)
@@ -356,6 +373,15 @@ namespace ProjectHunt.Battle
                 const int totalFrames = 10;
                 schedule.Add(attackDuration * (3f / totalFrames));
                 schedule.Add(attackDuration * (8f / totalFrames));
+                return schedule;
+            }
+
+            if (characterConfig != null &&
+                characterConfig.id == "mage_none" &&
+                attackAction == "attack")
+            {
+                // The beam is released on the fifth frame of the mage's seven-frame cast.
+                schedule.Add(attackDuration * (4f / 7f));
                 return schedule;
             }
 

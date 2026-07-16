@@ -80,7 +80,21 @@ namespace ProjectHunt.Battle
                 SpawnCharacter(battleRoster[i], positions[i], sceneReferences.playerTeamRoot);
             }
 
-            var bossConfig = ResolveBattleBoss(formation.boss);
+            var bossConfig = ResolveBattleBoss(formation.boss, battleDirector == null || !battleDirector.UsesPreBossWaves);
+            if (bossConfig != null)
+            {
+                SpawnBoss(bossConfig, sceneReferences.bossPoint, sceneReferences.bossRoot);
+            }
+        }
+
+        public void SpawnDelayedBoss()
+        {
+            if (_spawnedBoss != null || gameContext == null || gameContext.defaultBattleFormation == null || sceneReferences == null)
+            {
+                return;
+            }
+
+            var bossConfig = ResolveBattleBoss(gameContext.defaultBattleFormation.boss, true);
             if (bossConfig != null)
             {
                 SpawnBoss(bossConfig, sceneReferences.bossPoint, sceneReferences.bossRoot);
@@ -192,18 +206,6 @@ namespace ProjectHunt.Battle
                    (gameContext.runState.phase == GamePhase.Battle03 || gameContext.runState.isBattle03Started);
         }
 
-        private bool IsBlacksmithValidationActive()
-        {
-            if (battleDirector != null && battleDirector.IsBlacksmithValidation)
-            {
-                return true;
-            }
-
-            return gameContext != null &&
-                   (gameContext.runState.phase == GamePhase.BlacksmithValidation ||
-                    gameContext.runState.isBlacksmithValidationStarted);
-        }
-
         private bool IsBattle04Active()
         {
             if (battleDirector != null && battleDirector.IsBattle04)
@@ -280,16 +282,11 @@ namespace ProjectHunt.Battle
                 : currentConfig;
         }
 
-        private BossConfig ResolveBattleBoss(BossConfig defaultBoss)
+        private BossConfig ResolveBattleBoss(BossConfig defaultBoss, bool includeDelayedBoss)
         {
             // Battle 02 is the burning-village validation stage: three small-enemy waves,
             // not a boss fight. BattleDirector owns those wave spawns.
             if (IsBattle02Active())
-            {
-                return null;
-            }
-
-            if (IsBlacksmithValidationActive())
             {
                 return null;
             }
@@ -300,6 +297,11 @@ namespace ProjectHunt.Battle
             }
 
             if (IsBattle06Active())
+            {
+                return null;
+            }
+
+            if (!includeDelayedBoss)
             {
                 return null;
             }

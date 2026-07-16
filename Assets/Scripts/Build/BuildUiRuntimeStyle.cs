@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ProjectHunt.Build
 {
-    internal static class BuildUiRuntimeStyle
+    public static class BuildUiRuntimeStyle
     {
         private static Font _cachedFont;
 

@@ -9,6 +9,8 @@ namespace ProjectHunt.Battle
         private static Sprite _giantKeySprite;
         private static Sprite _whitePixelSprite;
         private static Sprite _hitSparkSprite;
+        private static Sprite _heartIconSprite;
+        private static Sprite _crossedSwordsIconSprite;
 
         public static Sprite GetMeteorHammerSprite()
         {
@@ -264,6 +266,93 @@ namespace ProjectHunt.Battle
                 SpriteMeshType.FullRect);
 
             return _hitSparkSprite;
+        }
+
+        public static Sprite GetHeartIconSprite()
+        {
+            if (_heartIconSprite != null)
+            {
+                return _heartIconSprite;
+            }
+
+            var pixels = new[]
+            {
+                "................",
+                "................",
+                "...RR....RR.....",
+                "..RDDR..RDDR....",
+                ".RDDDDRRDDDDR...",
+                ".RDDDDDDDDDDR...",
+                ".RDDDDDDDDDDR...",
+                "..RDDDDDDDDR....",
+                "...RDDDDDDR.....",
+                "....RDDDDR......",
+                ".....RDDR.......",
+                "......RR........",
+                "................",
+                "................",
+                "................",
+                "................",
+            };
+            _heartIconSprite = CreatePixelIcon(pixels, new Color32(245, 72, 82, 255), new Color32(150, 35, 48, 255));
+            return _heartIconSprite;
+        }
+
+        public static Sprite GetCrossedSwordsIconSprite()
+        {
+            if (_crossedSwordsIconSprite != null)
+            {
+                return _crossedSwordsIconSprite;
+            }
+
+            var pixels = new[]
+            {
+                "................",
+                "..L.........L...",
+                "...L.......L....",
+                "....L.....L.....",
+                ".....L...L......",
+                "......L.L.......",
+                ".......L........",
+                "......L.L.......",
+                ".....L...L......",
+                "....L.....L.....",
+                "...H.......H....",
+                "..HHH.....HHH...",
+                "...H.......H....",
+                "................",
+                "................",
+                "................",
+            };
+            _crossedSwordsIconSprite = CreatePixelIcon(pixels, new Color32(226, 226, 218, 255), new Color32(188, 132, 56, 255));
+            return _crossedSwordsIconSprite;
+        }
+
+        private static Sprite CreatePixelIcon(string[] pixels, Color light, Color dark)
+        {
+            var height = pixels.Length;
+            var width = pixels[0].Length;
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            texture.filterMode = FilterMode.Point;
+            for (var y = 0; y < height; y++)
+            {
+                var row = pixels[height - 1 - y];
+                for (var x = 0; x < width; x++)
+                {
+                    texture.SetPixel(x, y, row[x] == 'L' || row[x] == 'R'
+                        ? light
+                        : row[x] == 'H' || row[x] == 'D' ? dark : Color.clear);
+                }
+            }
+            texture.Apply();
+
+            return Sprite.Create(
+                texture,
+                new Rect(0, 0, width, height),
+                new Vector2(0.5f, 0.5f),
+                16f,
+                0,
+                SpriteMeshType.FullRect);
         }
     }
 }

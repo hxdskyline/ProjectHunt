@@ -55,6 +55,7 @@ namespace ProjectHunt.Battle
         private void BeginClaimSequence()
         {
             _isClaimed = true;
+            BattleSfx.PlayClaim();
             var controller = _presentationController != null ? _presentationController : DropClaimPresentationController.Create(this);
             _presentationController = controller;
             controller.PlayClaimSequence(FinalizeClaim);

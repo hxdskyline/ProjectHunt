@@ -57,7 +57,7 @@ namespace ProjectHunt.Data
         Build03 = 11,
         Battle06 = 12,
         Result = 13,
-        BlacksmithValidation = 14,
+        Ending = 14,
     }
 
     public enum RewardType

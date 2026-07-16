@@ -92,14 +92,6 @@ namespace ProjectHunt.Flow
             EnsureContext();
             gameContext.runState.isBattle02Complete = true;
             gameContext.runState.isBattle02Started = false;
-            StartBattlePhase(GamePhase.BlacksmithValidation);
-        }
-
-        public void CompleteBlacksmithValidation()
-        {
-            EnsureContext();
-            gameContext.runState.isBlacksmithValidationComplete = true;
-            gameContext.runState.isBlacksmithValidationStarted = false;
             StartBattlePhase(GamePhase.Battle03);
         }
 
@@ -185,7 +177,7 @@ namespace ProjectHunt.Flow
             EnsureContext();
             gameContext.runState.isBattle06Complete = true;
             gameContext.runState.isBattle06Started = false;
-            gameContext.runState.phase = GamePhase.Result;
+            gameContext.runState.phase = GamePhase.Ending;
             SceneManager.LoadScene(resultSceneName);
         }
 
@@ -197,13 +189,6 @@ namespace ProjectHunt.Flow
         public bool IsBattle03()
         {
             return IsBattlePhase(GamePhase.Battle03, gameContext != null && gameContext.runState.isBattle03Started);
-        }
-
-        public bool IsBlacksmithValidation()
-        {
-            return IsBattlePhase(
-                GamePhase.BlacksmithValidation,
-                gameContext != null && gameContext.runState.isBlacksmithValidationStarted);
         }
 
         public bool IsBattle04()
@@ -245,9 +230,6 @@ namespace ProjectHunt.Flow
                     break;
                 case GamePhase.Battle03:
                     gameContext.runState.isBattle03Started = value;
-                    break;
-                case GamePhase.BlacksmithValidation:
-                    gameContext.runState.isBlacksmithValidationStarted = value;
                     break;
                 case GamePhase.Battle04:
                     gameContext.runState.isBattle04Started = value;

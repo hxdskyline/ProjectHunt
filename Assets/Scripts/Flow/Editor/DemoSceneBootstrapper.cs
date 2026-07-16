@@ -210,24 +210,21 @@ namespace ProjectHunt.Flow.Editor
             ClearScene(scene);
 
             var context = CreateContextAndFlow(out var flow);
-            context.runState.phase = GamePhase.Result;
+            context.runState.phase = GamePhase.Ending;
 
             var cameraGo = new GameObject("Main Camera");
             var camera = cameraGo.AddComponent<Camera>();
             camera.orthographic = true;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.1f, 0.1f, 0.15f);
+            camera.backgroundColor = new Color(0.12f, 0.08f, 0.05f);
             cameraGo.tag = "MainCamera";
             cameraGo.transform.position = new Vector3(0f, 0f, -10f);
 
-            var canvas = CreateCanvas("ResultCanvas");
+            var canvas = CreateCanvas("EndingCanvas");
             EnsureEventSystem();
 
-            CreateCenteredLabel(canvas.transform, "ResultTitle", "Weapon Claimed", new Vector2(0f, 100f), 34);
-            var restartButton = CreateButton(canvas.transform, "RestartButton", "Restart", new Vector2(0f, -40f), new Vector2(220f, 70f));
-            var restartAction = restartButton.gameObject.AddComponent<SceneFlowButtonAction>();
-            restartAction.actionType = SceneFlowButtonAction.ActionType.ReturnToMainMenu;
-            UnityEventTools.AddPersistentListener(restartButton.onClick, restartAction.Execute);
+            var endingControllerGo = new GameObject("EndingSceneController");
+            endingControllerGo.AddComponent<EndingSceneController>();
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);

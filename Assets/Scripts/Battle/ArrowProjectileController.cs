@@ -84,16 +84,19 @@ namespace ProjectHunt.Battle
             {
                 if (isMeteorHammerProjectile && areaImpactRadius > 0f)
                 {
+                    BattleSfx.PlayImpact(true, true);
                     director.SpawnHitSpark(targetPosition, 0.85f);
                     director.ApplyPlayerAreaDamage(targetPosition, areaImpactRadius, damage);
                 }
                 else if (target != null && target.IsAlive)
                 {
+                    BattleSfx.PlayImpact(false, spinSpeed != 0f);
                     director.SpawnHitSpark(targetPosition, 0.5f);
                     target.ApplyDamage(damage);
                 }
                 else
                 {
+                    BattleSfx.PlayImpact(false, false);
                     director.SpawnHitSpark(targetPosition, 0.35f);
                 }
             }

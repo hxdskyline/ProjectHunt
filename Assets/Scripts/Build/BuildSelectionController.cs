@@ -106,10 +106,14 @@ namespace ProjectHunt.Build
                 slot.Bind(this);
                 slot.SetSelected(false);
                 slot.SetPortrait(GetPortraitSprite(GetDisplayCharacter(slot.characterConfig)));
+                var baseRoleName = GetBaseRoleDisplayName(
+                    GetDisplayCharacter(slot.characterConfig) != null
+                        ? GetDisplayCharacter(slot.characterConfig).roleType
+                        : RoleType.Swordsman);
                 slot.SetTexts(
-                    GetDisplayCharacter(slot.characterConfig) != null ? GetDisplayCharacter(slot.characterConfig).displayName : "\u89d2\u8272",
+                    baseRoleName,
                     GetEffectDescription(CurrentRewardType, slot.characterConfig != null ? slot.characterConfig.roleType : RoleType.Swordsman),
-                    GetAssignButtonText(CurrentRewardType, GetDisplayCharacter(slot.characterConfig) != null ? GetDisplayCharacter(slot.characterConfig).displayName : "\u89d2\u8272"));
+                    GetAssignButtonText(CurrentRewardType, baseRoleName));
             }
 
             ArrangeCharacterSlots();
@@ -392,6 +396,18 @@ namespace ProjectHunt.Build
             };
         }
 
+        private static string GetBaseRoleDisplayName(RoleType roleType)
+        {
+            return roleType switch
+            {
+                RoleType.Swordsman => "\u5251\u58eb",
+                RoleType.Assassin => "\u523a\u5ba2",
+                RoleType.Archer => "\u5f13\u624b",
+                RoleType.Mage => "\u6cd5\u5e08",
+                _ => "\u89d2\u8272",
+            };
+        }
+
         private Sprite GetRewardSprite(RewardType rewardType)
         {
             return rewardType switch
@@ -661,6 +677,7 @@ namespace ProjectHunt.Build
 
             _leftUnitImage.enabled = false;
             _rightHammerImage.enabled = false;
+            BattleSfx.PlayMerge();
 
             yield return PlayRevealRoutine(resultRect);
 
@@ -673,6 +690,7 @@ namespace ProjectHunt.Build
 
         private IEnumerator PlayRevealRoutine(RectTransform resultRect)
         {
+            BattleSfx.PlayReveal();
             const float revealDuration = 0.55f;
             var elapsed = 0f;
             while (elapsed < revealDuration)
@@ -797,6 +815,7 @@ namespace ProjectHunt.Build
             }
 
             _previewProjectileImage.gameObject.SetActive(false);
+            BattleSfx.PlayImpact(config != null && config.roleType == RoleType.Archer, true);
             yield return PlayImpactFlashRoutine(end, config);
         }
 

@@ -70,6 +70,7 @@ namespace ProjectHunt.Battle
         private int _currentWaveIndex;
         private bool _battle02CombatStarted;
         public bool IsBattleResolved { get; private set; }
+        public bool UsesPreBossWaves => !IsBattle02 && !IsBattle04 && !IsBattle06;
         public bool IsBattle02 =>
             (flowController != null && flowController.IsBattle02()) ||
             (gameContext != null &&
@@ -78,11 +79,6 @@ namespace ProjectHunt.Battle
             (flowController != null && flowController.IsBattle03()) ||
             (gameContext != null &&
              (gameContext.runState.phase == GamePhase.Battle03 || gameContext.runState.isBattle03Started));
-        public bool IsBlacksmithValidation =>
-            (flowController != null && flowController.IsBlacksmithValidation()) ||
-            (gameContext != null &&
-             (gameContext.runState.phase == GamePhase.BlacksmithValidation ||
-              gameContext.runState.isBlacksmithValidationStarted));
         public bool IsBattle04 =>
             (flowController != null && flowController.IsBattle04()) ||
             (gameContext != null &&
@@ -128,6 +124,8 @@ namespace ProjectHunt.Battle
                 rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, 178f);
             }
 
+            BattleHudLayoutController.Ensure(this);
+
             StartCoroutine(BootstrapBattle());
         }
 
@@ -140,12 +138,12 @@ namespace ProjectHunt.Battle
                 yield break;
             }
 
-            Debug.Log($"[BattleDirector] phase={gameContext?.runState.phase}, IsBattle02={IsBattle02}, IsBlacksmithValidation={IsBlacksmithValidation}, IsBattle03={IsBattle03}, IsBattle04={IsBattle04}, IsBattle05={IsBattle05}, IsBattle06={IsBattle06}");
+            Debug.Log($"[BattleDirector] phase={gameContext?.runState.phase}, IsBattle02={IsBattle02}, IsBattle03={IsBattle03}, IsBattle04={IsBattle04}, IsBattle05={IsBattle05}, IsBattle06={IsBattle06}");
             formationSpawner.SpawnCurrentBattle();
             CollectUnits();
             yield return StartCoroutine(PlayBattleEntrance());
 
-            if (IsBattle02 || IsBlacksmithValidation || IsBattle04 || IsBattle06)
+            if (IsBattle02 || IsBattle04 || IsBattle06 || UsesPreBossWaves)
             {
                 if (bossHpBarView != null)
                 {
@@ -153,7 +151,7 @@ namespace ProjectHunt.Battle
                 }
 
                 _battle02CombatStarted = false;
-                StartCoroutine(RunWaveStage(IsBattle04 ? 2 : IsBlacksmithValidation ? 2 : 3));
+                StartCoroutine(RunWaveStage(IsBattle04 ? 2 : 3, UsesPreBossWaves));
                 yield break;
             }
 
@@ -208,13 +206,21 @@ namespace ProjectHunt.Battle
                 if (resolvedTarget != null)
                 {
                     attacker.PlayAttackFeedback();
+                    BattleSfx.PlayAttack(attacker, attackImpactIndex);
 
                     if (ShouldUseProjectile(attacker))
                     {
                         var fallbackPosition = targetSnapshot != null
                             ? targetSnapshot.worldPosition
                             : resolvedTarget.transform.position;
-                        SpawnProjectile(attacker, resolvedTarget, fallbackPosition, GetDamage(attacker), attackImpactIndex);
+                        if (IsUnarmedMageBeam(attacker))
+                        {
+                            SpawnMageBeam(attacker, resolvedTarget, fallbackPosition, GetDamage(attacker));
+                        }
+                        else
+                        {
+                            SpawnProjectile(attacker, resolvedTarget, fallbackPosition, GetDamage(attacker), attackImpactIndex);
+                        }
                     }
                     else
                     {
@@ -224,6 +230,7 @@ namespace ProjectHunt.Battle
                         }
 
                         SpawnHitSpark(resolvedTarget.transform.position + new Vector3(0f, 0.45f, 0f), 0.6f);
+                        BattleSfx.PlayImpact(false, IsMeteorHammerSwordsman(attacker));
                         resolvedTarget.ApplyDamage(GetDamage(attacker));
 
                         if (ShouldApplyAssassinStun(attacker))
@@ -236,6 +243,7 @@ namespace ProjectHunt.Battle
             else
             {
                 attacker.PlayAttackFeedback();
+                BattleSfx.PlayAttack(attacker, attackImpactIndex);
                 Debug.Log($"[ResolveAttack] enemy={attacker.gameObject.name} attacking {_players.Count} players.");
 
                 for (var i = 0; i < _players.Count; i++)
@@ -246,16 +254,19 @@ namespace ProjectHunt.Battle
                         if (ShouldBlockBossDamage(player))
                         {
                             SpawnHitSpark(player.transform.position + new Vector3(0f, 0.3f, 0f), 0.42f);
+                            BattleSfx.PlayBlock();
                             player.ShowStatusText("\u683c\u6321", new Color(1f, 0.95f, 0.6f, 1f));
                             continue;
                         }
 
                         SpawnHitSpark(player.transform.position + new Vector3(0f, 0.3f, 0f), 0.52f);
+                        var isWaveEnemy = _enemies.Contains(attacker);
+                        BattleSfx.PlayImpact(false, attacker.bossConfig != null && !isWaveEnemy, isWaveEnemy ? 0.4f : 1f);
                         var isLichFreeze = attacker.bossConfig != null &&
                                            attacker.bossConfig.resourceId == "boss_lich" &&
                                            attackAction == "cast";
                         // Wave enemies are verification pressure only; their damage is always fixed.
-                        var dmg = _enemies.Contains(attacker)
+                        var dmg = isWaveEnemy
                             ? waveEnemyDamage
                             : GetBossDamageAgainst(player);
                         if (isLichFreeze)
@@ -347,7 +358,7 @@ namespace ProjectHunt.Battle
             }
         }
 
-        private IEnumerator RunWaveStage(int waveCount)
+        private IEnumerator RunWaveStage(int waveCount, bool summonBossAfterWaves = false)
         {
             _currentWaveIndex = 0;
             while (_currentWaveIndex < waveCount && !IsBattleResolved)
@@ -359,6 +370,7 @@ namespace ProjectHunt.Battle
                     yield return null;
                 }
 
+                BattleHudLayoutController.NotifyWaveCleared(_currentWaveIndex, waveCount);
                 _currentWaveIndex++;
                 yield return new WaitForSeconds(0.5f);
             }
@@ -374,6 +386,19 @@ namespace ProjectHunt.Battle
                 _players[i]?.StopCombat();
             }
 
+            if (summonBossAfterWaves)
+            {
+                BattleHudLayoutController.NotifyBossIncoming();
+                yield return new WaitForSeconds(0.8f);
+                formationSpawner.SpawnDelayedBoss();
+                CollectUnits();
+                yield return StartCoroutine(PlayBossEntrance());
+                StartCombat();
+                yield break;
+            }
+
+            BattleHudLayoutController.NotifyRouteCompleted();
+
             if (IsBattle04)
             {
                 if (gameContext != null && gameContext.runState.isMageValidationStarted)
@@ -384,13 +409,6 @@ namespace ProjectHunt.Battle
                 {
                     MageRecruitmentPresentation.Show(flowController, gameContext);
                 }
-                yield break;
-            }
-
-            if (IsBlacksmithValidation)
-            {
-                yield return new WaitForSeconds(0.65f);
-                flowController?.CompleteBlacksmithValidation();
                 yield break;
             }
 
@@ -427,6 +445,8 @@ namespace ProjectHunt.Battle
                     _enemies.Add(enemy);
                 }
             }
+
+            BattleHudLayoutController.NotifyWaveStarted(waveIndex, IsBattle04 ? 2 : 3, _enemies.Count);
 
             // Start the team as soon as the wave exists, so incoming enemies can be hit.
             if (!_battle02CombatStarted)
@@ -537,6 +557,7 @@ namespace ProjectHunt.Battle
 
             unit.StopCombat();
             _enemies.Remove(unit);
+            BattleHudLayoutController.NotifyWaveEnemyDefeated(_enemies.Count);
             yield return new WaitForSeconds(0.08f);
             if (unit != null)
             {
@@ -613,6 +634,8 @@ namespace ProjectHunt.Battle
             {
                 return;
             }
+
+            BattleHudLayoutController.NotifyTreasurePhase();
 
             GameObject instance;
             if (dropPrefab != null)
@@ -703,6 +726,19 @@ namespace ProjectHunt.Battle
             }
 
             yield return new WaitForSeconds(0.1f);
+        }
+
+        private IEnumerator PlayBossEntrance()
+        {
+            if (_boss == null)
+            {
+                yield break;
+            }
+
+            var targetPosition = _boss.transform.position;
+            _boss.transform.position = targetPosition + Vector3.right * bossEntryOffsetX;
+            BattleSfx.PlayBossIntro(_boss);
+            yield return StartCoroutine(_boss.MoveToPosition(targetPosition, entryMoveSpeed));
         }
 
         private GameObject CreateFallbackDrop(Transform parent, Vector3 position, RewardType rewardType)
@@ -844,6 +880,58 @@ namespace ProjectHunt.Battle
                 damage,
                 target,
                 this);
+            BattleSfx.PlayProjectileLaunch(isMeteorHammerArcher || isAssassinHammerProjectile || isHolyCupCatapult || isGiantKeyProjectile);
+        }
+
+        private void SpawnMageBeam(CombatUnitController attacker, CombatUnitController target, Vector3 fallbackTargetWorldPosition, int damage)
+        {
+            var root = sceneReferences != null && sceneReferences.projectileRoot != null
+                ? sceneReferences.projectileRoot
+                : transform;
+            var launchPosition = attacker.GetProjectileLaunchPosition();
+            var targetBasePosition = target != null && target.IsAlive
+                ? target.transform.position
+                : fallbackTargetWorldPosition;
+            var targetPosition = targetBasePosition + new Vector3(0f, 0.35f, 0f);
+            var direction = targetPosition - launchPosition;
+            var beam = new GameObject("MageWhiteBeam");
+            beam.transform.SetParent(root, false);
+            beam.transform.position = launchPosition + direction * 0.5f;
+            beam.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+
+            var renderer = beam.AddComponent<SpriteRenderer>();
+            renderer.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
+            renderer.color = new Color(0.92f, 0.97f, 1f, 1f);
+            renderer.sortingOrder = 24;
+            beam.transform.localScale = new Vector3(Mathf.Max(0.01f, direction.magnitude), 0.11f, 1f);
+            StartCoroutine(FadeMageBeam(beam, renderer));
+            BattleSfx.PlayBeam();
+
+            if (target != null && target.IsAlive)
+            {
+                SpawnHitSpark(targetPosition, 0.68f);
+                target.ApplyDamage(damage);
+            }
+        }
+
+        private static IEnumerator FadeMageBeam(GameObject beam, SpriteRenderer renderer)
+        {
+            const float duration = 0.14f;
+            var elapsed = 0f;
+            var startScale = beam.transform.localScale;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                var progress = Mathf.Clamp01(elapsed / duration);
+                beam.transform.localScale = new Vector3(startScale.x, Mathf.Lerp(startScale.y, 0.02f, progress), 1f);
+                var color = renderer.color;
+                color.a = 1f - progress;
+                renderer.color = color;
+                yield return null;
+            }
+
+            Destroy(beam);
         }
 
         private static Vector3 GetAssassinLaunchPosition(Vector3 defaultLaunchPosition, int attackImpactIndex)
@@ -878,6 +966,7 @@ namespace ProjectHunt.Battle
 
             dropTransform.position = end;
             dropTransform.rotation = Quaternion.identity;
+            BattleSfx.PlayDropLand();
             Debug.Log($"[Drop] {rewardType} landed at {end} and is now interactable.");
 
             if (rewardType == RewardType.HolyCup)
@@ -1022,12 +1111,18 @@ namespace ProjectHunt.Battle
             }
         }
 
+        public int GetDisplayedPlayerDamage(CombatUnitController attacker)
+        {
+            return attacker != null && attacker.characterConfig != null ? GetDamage(attacker) : 0;
+        }
+
         private bool ShouldUseProjectile(CombatUnitController attacker)
         {
             return IsMeteorHammerArcher(attacker) ||
                    IsMeteorHammerAssassin(attacker) ||
                    IsHolyCupCatapult(attacker) ||
                    IsGiantKeyProjectile(attacker) ||
+                   IsUnarmedMageBeam(attacker) ||
                    IsNormalArcherProjectile(attacker) ||
                    IsAssassinProjectile(attacker);
         }
@@ -1100,6 +1195,15 @@ namespace ProjectHunt.Battle
                    !attacker.UsesMeteorHammerOverride;
         }
 
+        private static bool IsUnarmedMageBeam(CombatUnitController attacker)
+        {
+            return attacker != null &&
+                   attacker.team == CombatUnitController.TeamType.Player &&
+                   attacker.characterConfig != null &&
+                   attacker.characterConfig.roleType == RoleType.Mage &&
+                   attacker.characterConfig.id == "mage_none";
+        }
+
         private bool IsMeteorHammerSwordsman(CombatUnitController attacker)
         {
             return attacker != null &&
@@ -1142,4 +1246,3 @@ namespace ProjectHunt.Battle
         }
     }
 }
-
