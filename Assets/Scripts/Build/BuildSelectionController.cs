@@ -29,6 +29,7 @@ namespace ProjectHunt.Build
         private Vector3 _dragStartPosition;
         private Transform _dragStartParent;
         private DiscoverUnitPresentationController _discoverPresentationController;
+        private AudioSource _selectionMusicSource;
         private RewardType CurrentRewardType => gameContext != null ? gameContext.buildSelection.pendingRewardType : RewardType.None;
 
         private void Awake()
@@ -52,6 +53,7 @@ namespace ProjectHunt.Build
             }
 
             AutoBindUi();
+            StartSelectionMusic();
 
             if (meteorHammerSprite == null)
             {
@@ -71,6 +73,52 @@ namespace ProjectHunt.Build
 
             HideCarryoverHintTexts();
             ResetView();
+        }
+
+        private void StartSelectionMusic()
+        {
+            EnsureAudioListener();
+            var clip = Resources.Load<AudioClip>("Audio/ProjectHunt/snd_music_village_choices_2");
+            if (clip == null)
+            {
+                Debug.LogWarning("[Build] Selection BGM is missing: snd_music_village_choices_2.");
+                return;
+            }
+
+            _selectionMusicSource = gameObject.AddComponent<AudioSource>();
+            _selectionMusicSource.playOnAwake = false;
+            _selectionMusicSource.loop = true;
+            _selectionMusicSource.spatialBlend = 0f;
+            _selectionMusicSource.volume = 0.08f;
+            _selectionMusicSource.clip = clip;
+            _selectionMusicSource.Play();
+            Debug.Log($"[Build] Selection BGM started: {clip.name}.");
+        }
+
+        private static void EnsureAudioListener()
+        {
+            if (FindObjectOfType<AudioListener>() != null)
+            {
+                return;
+            }
+
+            var sceneCamera = Camera.main != null ? Camera.main : FindObjectOfType<Camera>();
+            if (sceneCamera == null)
+            {
+                Debug.LogError("[Build] Cannot create AudioListener because BuildScene has no camera.");
+                return;
+            }
+
+            sceneCamera.gameObject.AddComponent<AudioListener>();
+            Debug.Log("[Build] Added missing AudioListener to the BuildScene camera.");
+        }
+
+        private void OnDestroy()
+        {
+            if (_selectionMusicSource != null)
+            {
+                _selectionMusicSource.Stop();
+            }
         }
 
         public void ResetView()
@@ -105,7 +153,8 @@ namespace ProjectHunt.Build
 
                 slot.Bind(this);
                 slot.SetSelected(false);
-                slot.SetPortrait(GetPortraitSprite(GetDisplayCharacter(slot.characterConfig)));
+                var originalCharacter = GetOriginalCharacter(slot.characterConfig);
+                slot.SetPortrait(GetPortraitSprite(originalCharacter), originalCharacter);
                 var baseRoleName = GetBaseRoleDisplayName(
                     GetDisplayCharacter(slot.characterConfig) != null
                         ? GetDisplayCharacter(slot.characterConfig).roleType
@@ -347,6 +396,49 @@ namespace ProjectHunt.Build
             return resolved;
         }
 
+        private CharacterConfig GetOriginalCharacter(CharacterConfig currentCharacter)
+        {
+            if (currentCharacter == null)
+            {
+                return null;
+            }
+
+            if (currentCharacter.roleType == RoleType.Mage)
+            {
+                return MageCharacterFactory.GetMageVariant(RewardType.None);
+            }
+
+            var formation = gameContext != null ? gameContext.defaultBattleFormation : null;
+            if (formation == null)
+            {
+                return currentCharacter;
+            }
+
+            var originals = new[]
+            {
+                formation.frontCharacter,
+                formation.midCharacter,
+                formation.backCharacter,
+            };
+            for (var i = 0; i < originals.Length; i++)
+            {
+                var original = originals[i];
+                if (original == null)
+                {
+                    continue;
+                }
+
+                if (original.id == currentCharacter.id ||
+                    original.id == currentCharacter.baseCharacterId ||
+                    original.roleType == currentCharacter.roleType)
+                {
+                    return original;
+                }
+            }
+
+            return currentCharacter;
+        }
+
         private CharacterConfig ResolveRewardCharacter(CharacterConfig baseCharacter, RewardType rewardType)
         {
             if (baseCharacter == null)
@@ -568,16 +660,21 @@ namespace ProjectHunt.Build
         private Image _leftUnitImage;
         private Image _rightHammerImage;
         private Image _centerResultImage;
+        private Image _resultHolyCupImage;
         private Image _glowImage;
         private Text _resultNameText;
         private Button _backButton;
         private Button _confirmButton;
         private Image _previewProjectileImage;
         private Image _impactFlashImage;
+        private Text _fakeHealText;
         private Action _onBack;
         private Action _onConfirm;
         private CharacterConfig _hammerCharacter;
         private RewardType _rewardType;
+        private bool _acknowledgementOnly;
+        private float _leftPortraitPixelsToUi = 1f;
+        private float _resultPortraitPixelsToUi = 1f;
 
         public static DiscoverUnitPresentationController Create(Canvas canvas)
         {
@@ -595,10 +692,25 @@ namespace ProjectHunt.Build
 
         public void PlayDiscoverSequence(CharacterConfig baseCharacter, CharacterConfig hammerCharacter, RewardType rewardType, Action onBack, Action onConfirm)
         {
+            BeginDiscoverSequence(baseCharacter, hammerCharacter, rewardType, onBack, onConfirm, false);
+        }
+
+        private void BeginDiscoverSequence(
+            CharacterConfig baseCharacter,
+            CharacterConfig hammerCharacter,
+            RewardType rewardType,
+            Action onBack,
+            Action onConfirm,
+            bool acknowledgementOnly)
+        {
+            _acknowledgementOnly = acknowledgementOnly;
+            _confirmButton.GetComponentInChildren<Text>().text = acknowledgementOnly ? "\u77e5\u9053\u4e86" : "\u786e\u8ba4";
             _hammerCharacter = hammerCharacter;
             _rewardType = rewardType;
             _onBack = onBack;
             _onConfirm = onConfirm;
+            StopAllCoroutines();
+            SetButtonsVisible(acknowledgementOnly);
             gameObject.SetActive(true);
             _root.gameObject.SetActive(true);
 
@@ -606,6 +718,7 @@ namespace ProjectHunt.Build
             _resultNameText.text = hammerCharacter != null ? hammerCharacter.displayName : string.Empty;
             _leftUnitImage.sprite = GetPortraitSprite(baseCharacter);
             _leftUnitImage.enabled = _leftUnitImage.sprite != null;
+            _leftPortraitPixelsToUi = ApplyPresentationPortrait(_leftUnitImage, _leftUnitImage.sprite, 140f);
             _rightHammerImage.sprite = GetRewardSprite(rewardType);
             _rightHammerImage.enabled = _rightHammerImage.sprite != null;
             _centerResultImage.sprite = GetPortraitSprite(hammerCharacter);
@@ -614,21 +727,59 @@ namespace ProjectHunt.Build
                 _centerResultImage.sprite = GetPortraitSprite(baseCharacter);
             }
             _centerResultImage.enabled = _centerResultImage.sprite != null;
+            _resultPortraitPixelsToUi = ApplyPresentationPortrait(_centerResultImage, _centerResultImage.sprite, 168f);
+            ConfigureResultHolyCup(hammerCharacter, rewardType);
             _previewProjectileImage.gameObject.SetActive(false);
             _impactFlashImage.gameObject.SetActive(false);
 
-            StopAllCoroutines();
             StartCoroutine(PlayRoutine());
+        }
+
+        public void PlayDiscoverAcknowledgement(
+            CharacterConfig baseCharacter,
+            CharacterConfig discoveredCharacter,
+            RewardType rewardType,
+            Action onDismiss)
+        {
+            BeginDiscoverSequence(baseCharacter, discoveredCharacter, rewardType, null, onDismiss, true);
+        }
+
+        private void ConfigureResultHolyCup(CharacterConfig resultCharacter, RewardType rewardType)
+        {
+            var showCup = resultCharacter != null &&
+                          resultCharacter.roleType == RoleType.Swordsman &&
+                          rewardType == RewardType.HolyCup;
+            _resultHolyCupImage.gameObject.SetActive(showCup);
+            if (!showCup)
+            {
+                return;
+            }
+
+            var cupSprite = SimpleSpriteFactory.GetHolyCupSprite();
+            _resultHolyCupImage.sprite = cupSprite;
+            _resultHolyCupImage.preserveAspect = false;
+            _resultHolyCupImage.rectTransform.sizeDelta = cupSprite.rect.size * _resultPortraitPixelsToUi;
+            _resultHolyCupImage.rectTransform.anchoredPosition =
+                new Vector2(0.0658f, 0.2585f) * (16f * _resultPortraitPixelsToUi);
+            _resultHolyCupImage.rectTransform.localEulerAngles = new Vector3(0f, 0f, 180f);
+            _resultHolyCupImage.rectTransform.localScale = new Vector3(0.5719084f, 0.29298f, 0.3f);
         }
 
         private IEnumerator PlayRoutine()
         {
-            SetButtonsVisible(false);
+            if (!_acknowledgementOnly)
+            {
+                SetButtonsVisible(false);
+            }
 
             _dim.color = new Color(0f, 0f, 0f, 0.26f);
             _panel.color = new Color(0.08f, 0.08f, 0.12f, 0.95f);
             _glowImage.color = new Color(1f, 0.8f, 0.32f, 0f);
             _centerResultImage.color = new Color(1f, 1f, 1f, 0f);
+            if (_resultHolyCupImage.gameObject.activeSelf)
+            {
+                _resultHolyCupImage.color = new Color(1f, 1f, 1f, 0f);
+            }
             _resultNameText.color = new Color(1f, 0.94f, 0.82f, 0f);
 
             var leftRect = _leftUnitImage.rectTransform;
@@ -690,7 +841,7 @@ namespace ProjectHunt.Build
 
         private IEnumerator PlayRevealRoutine(RectTransform resultRect)
         {
-            BattleSfx.PlayReveal();
+            BattleSfx.PlayUnitDiscovery();
             const float revealDuration = 0.55f;
             var elapsed = 0f;
             while (elapsed < revealDuration)
@@ -701,6 +852,10 @@ namespace ProjectHunt.Build
                 _glowImage.color = new Color(1f, 0.8f, 0.32f, 0.4f * ease);
                 _glowImage.rectTransform.localScale = Vector3.one * (0.92f + ease * 0.18f);
                 _centerResultImage.color = new Color(1f, 1f, 1f, ease);
+                if (_resultHolyCupImage.gameObject.activeSelf)
+                {
+                    _resultHolyCupImage.color = new Color(1f, 1f, 1f, ease);
+                }
                 resultRect.localScale = Vector3.Lerp(Vector3.one * 0.76f, Vector3.one, ease);
                 _resultNameText.color = new Color(1f, 0.94f, 0.82f, Mathf.Clamp01((t - 0.25f) / 0.75f));
                 yield return null;
@@ -722,6 +877,10 @@ namespace ProjectHunt.Build
 
             if (attackClip == null || attackClip.frames == null || attackClip.frames.Length == 0)
             {
+                if (_hammerCharacter.id == "mage_holycup")
+                {
+                    yield return PlayFakeHealRoutine(basePosition);
+                }
                 yield break;
             }
 
@@ -731,6 +890,7 @@ namespace ProjectHunt.Build
                 if (frame != null)
                 {
                     _centerResultImage.sprite = frame;
+                    ApplyPresentationFrame(_centerResultImage, frame, _resultPortraitPixelsToUi);
                 }
 
                 var normalized = attackClip.frames.Length <= 1 ? 1f : frameIndex / (float)(attackClip.frames.Length - 1);
@@ -749,8 +909,36 @@ namespace ProjectHunt.Build
             }
 
             _centerResultImage.sprite = idleSprite;
+            ApplyPresentationFrame(_centerResultImage, idleSprite, _resultPortraitPixelsToUi);
             resultRect.anchoredPosition = basePosition;
             resultRect.localScale = baseScale;
+
+            if (_hammerCharacter.id == "mage_holycup")
+            {
+                yield return PlayFakeHealRoutine(basePosition);
+            }
+        }
+
+        private IEnumerator PlayFakeHealRoutine(Vector2 basePosition)
+        {
+            _fakeHealText.gameObject.SetActive(true);
+            var start = basePosition + new Vector2(42f, 58f);
+            var end = start + new Vector2(0f, 58f);
+            _fakeHealText.rectTransform.anchoredPosition = start;
+            _fakeHealText.text = "HP+8";
+
+            var elapsed = 0f;
+            const float duration = 0.55f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                var t = Mathf.Clamp01(elapsed / duration);
+                _fakeHealText.rectTransform.anchoredPosition = Vector2.Lerp(start, end, t);
+                _fakeHealText.color = new Color(0.35f, 1f, 0.45f, 1f - t);
+                yield return null;
+            }
+
+            _fakeHealText.gameObject.SetActive(false);
         }
 
         private IEnumerator PlayProjectilePreviewRoutine(CharacterConfig config, Vector2 basePosition, int attackFrameIndex)
@@ -804,7 +992,7 @@ namespace ProjectHunt.Build
 
                 if (UsesSpinningProjectile(config, attackFrameIndex))
                 {
-                    _previewProjectileImage.rectTransform.localEulerAngles = new Vector3(0f, 0f, -720f * elapsed);
+                    _previewProjectileImage.rectTransform.localEulerAngles = new Vector3(0f, 0f, -2160f * elapsed);
                 }
                 else if (UsesFlippedProjectile(config, attackFrameIndex))
                 {
@@ -865,6 +1053,13 @@ namespace ProjectHunt.Build
             _leftUnitImage = CreateAnchoredImage(_root, "BaseUnit", new Vector2(150f, 150f), Color.white);
             _rightHammerImage = CreateAnchoredImage(_root, "Hammer", new Vector2(92f, 92f), Color.white);
             _centerResultImage = CreateAnchoredImage(_root, "ResultUnit", new Vector2(180f, 180f), new Color(1f, 1f, 1f, 0f));
+            _resultHolyCupImage = CreateAnchoredImage(
+                _centerResultImage.transform,
+                "ResultHolyCup",
+                new Vector2(16f, 16f),
+                new Color(1f, 1f, 1f, 0f));
+            _resultHolyCupImage.raycastTarget = false;
+            _resultHolyCupImage.gameObject.SetActive(false);
 
             _previewProjectileImage = CreateAnchoredImage(_root, "ProjectilePreview", new Vector2(68f, 68f), Color.white);
             _previewProjectileImage.gameObject.SetActive(false);
@@ -874,6 +1069,10 @@ namespace ProjectHunt.Build
             _impactFlashImage.sprite = SimpleSpriteFactory.GetHitSparkSprite();
             _impactFlashImage.gameObject.SetActive(false);
             _impactFlashImage.raycastTarget = false;
+
+            _fakeHealText = CreateText(_root, "FakeHealText", new Vector2(150f, 54f), 30, "HP+8");
+            _fakeHealText.color = new Color(0.35f, 1f, 0.45f, 1f);
+            _fakeHealText.gameObject.SetActive(false);
 
             _resultNameText = CreateText(_root, "ResultName", new Vector2(260f, 40f), 24, string.Empty);
             _resultNameText.rectTransform.anchoredPosition = new Vector2(0f, -120f);
@@ -898,8 +1097,10 @@ namespace ProjectHunt.Build
 
         private void SetButtonsVisible(bool isVisible)
         {
-            _backButton.gameObject.SetActive(isVisible);
+            _backButton.gameObject.SetActive(isVisible && !_acknowledgementOnly);
             _confirmButton.gameObject.SetActive(isVisible);
+            _confirmButton.GetComponent<RectTransform>().anchoredPosition =
+                new Vector2(_acknowledgementOnly ? 0f : 78f, -172f);
         }
 
         private static bool ShouldSpawnProjectileAtFrame(CharacterConfig config, int frameIndex)
@@ -927,6 +1128,11 @@ namespace ProjectHunt.Build
             if (config == null)
             {
                 return null;
+            }
+
+            if (IsGiantKeyArcher(config))
+            {
+                return SimpleSpriteFactory.GetGiantKeySprite();
             }
 
             if (config.roleType == RoleType.Archer && config.isHammerVariant)
@@ -1011,6 +1217,11 @@ namespace ProjectHunt.Build
                 return new Vector2(64f, 64f);
             }
 
+            if (IsGiantKeyArcher(config))
+            {
+                return new Vector2(64f, 64f);
+            }
+
             if (config.roleType == RoleType.Archer && config.isHammerVariant)
             {
                 return new Vector2(64f, 64f);
@@ -1058,7 +1269,9 @@ namespace ProjectHunt.Build
 
             if (config.roleType == RoleType.Archer)
             {
-                return config.isHammerVariant ? 74f : config.resourceId == "catapult" ? 88f : 58f;
+                return config.isHammerVariant || IsGiantKeyArcher(config)
+                    ? 74f
+                    : config.resourceId == "catapult" ? 88f : 58f;
             }
 
             return config.isHammerVariant ? 54f : 0f;
@@ -1066,10 +1279,19 @@ namespace ProjectHunt.Build
 
         private static bool UsesSpinningProjectile(CharacterConfig config, int attackFrameIndex)
         {
-            return config != null &&
+            return IsGiantKeyArcher(config) ||
+                   config != null &&
                    config.isHammerVariant &&
                    config.roleType != RoleType.Assassin
                    || (config != null && config.roleType == RoleType.Assassin && config.isHammerVariant && attackFrameIndex > 3);
+        }
+
+        private static bool IsGiantKeyArcher(CharacterConfig config)
+        {
+            return config != null &&
+                   config.roleType == RoleType.Archer &&
+                   (config.resourceId == "longbowman_key" ||
+                    (!string.IsNullOrWhiteSpace(config.id) && config.id.EndsWith("_key")));
         }
 
         private static bool UsesFlippedProjectile(CharacterConfig config, int attackFrameIndex)
@@ -1167,6 +1389,33 @@ namespace ProjectHunt.Build
                 "stand",
                 "walk",
                 config.defaultAttackAction);
+        }
+
+        private static float ApplyPresentationPortrait(Image image, Sprite sprite, float visibleDisplaySize)
+        {
+            if (image == null || sprite == null)
+            {
+                return 1f;
+            }
+
+            // Measure visible pixels once, then retain this pixel-to-UI scale for every attack frame.
+            var croppedSprite = BuildCharacterSlotView.GetCroppedPortraitSprite(sprite);
+            var visibleSize = croppedSprite != null ? croppedSprite.rect.size : sprite.rect.size;
+            var pixelsToUi = visibleDisplaySize / Mathf.Max(1f, visibleSize.x, visibleSize.y);
+            ApplyPresentationFrame(image, sprite, pixelsToUi);
+            return pixelsToUi;
+        }
+
+        private static void ApplyPresentationFrame(Image image, Sprite sprite, float pixelsToUi)
+        {
+            if (image == null || sprite == null)
+            {
+                return;
+            }
+
+            image.sprite = sprite;
+            image.preserveAspect = true;
+            image.rectTransform.sizeDelta = sprite.rect.size * Mathf.Max(0.01f, pixelsToUi);
         }
 
         private static Sprite GetRewardSprite(RewardType rewardType)

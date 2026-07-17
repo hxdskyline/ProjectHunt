@@ -120,6 +120,45 @@ namespace ProjectHunt.Battle
             }
         }
 
+        public void RespawnPlayersForCurrentRoster()
+        {
+            if (gameContext == null || gameContext.defaultBattleFormation == null || sceneReferences == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _spawnedPlayers.Count; i++)
+            {
+                if (_spawnedPlayers[i] == null)
+                {
+                    continue;
+                }
+
+                _spawnedPlayers[i].GetComponent<CombatUnitController>()?.StopCombat();
+                Destroy(_spawnedPlayers[i]);
+            }
+            _spawnedPlayers.Clear();
+
+            var formation = gameContext.defaultBattleFormation;
+            var battleRoster = new List<CharacterConfig>
+            {
+                ResolveBattleCharacter(formation.frontCharacter),
+                ResolveBattleCharacter(formation.midCharacter),
+                ResolveBattleCharacter(formation.backCharacter),
+            };
+            battleRoster.Sort((left, right) => GetBattlePositionOrder(left).CompareTo(GetBattlePositionOrder(right)));
+            var positions = new[]
+            {
+                sceneReferences.playerFrontPoint,
+                sceneReferences.playerMidPoint,
+                sceneReferences.playerBackPoint,
+            };
+            for (var i = 0; i < battleRoster.Count && i < positions.Length; i++)
+            {
+                SpawnCharacter(battleRoster[i], positions[i], sceneReferences.playerTeamRoot);
+            }
+        }
+
         private void SpawnCharacter(CharacterConfig config, Transform spawnPoint, Transform parentRoot)
         {
             if (config == null || spawnPoint == null || parentRoot == null)
@@ -362,7 +401,7 @@ namespace ProjectHunt.Battle
             _battle05BossConfig.weaponType = WeaponType.Sword;
             _battle05BossConfig.attackRangeType = AttackRangeType.MeleeShort;
             _battle05BossConfig.attackTempo = AttackTempo.Slow;
-            _battle05BossConfig.maxHp = 176;
+            _battle05BossConfig.maxHp = 123;
             _battle05BossConfig.dropWeaponType = WeaponType.Sword;
             _battle05BossConfig.visualScale = 1.75f;
             _battle05BossConfig.yOffset = -0.35f;

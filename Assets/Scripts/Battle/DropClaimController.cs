@@ -55,7 +55,7 @@ namespace ProjectHunt.Battle
         private void BeginClaimSequence()
         {
             _isClaimed = true;
-            BattleSfx.PlayClaim();
+            BattleSfx.PlayWeaponDiscovery();
             var controller = _presentationController != null ? _presentationController : DropClaimPresentationController.Create(this);
             _presentationController = controller;
             controller.PlayClaimSequence(FinalizeClaim);
@@ -270,7 +270,9 @@ namespace ProjectHunt.Battle
             hammerRect.anchoredPosition = startLocalPoint;
             hammerRect.localScale = Vector3.one * 0.9f;
 
-            var endLocalPoint = Vector2.zero;
+            // Keep the ritual centered inside the portrait gameplay viewport rather than
+            // the full 9:16 screen, leaving the route and party HUD unobstructed.
+            var endLocalPoint = new Vector2(0f, 265f);
             panelRect.localScale = Vector3.one * 0.92f;
 
             const float introDuration = 0.6f;
@@ -354,7 +356,9 @@ namespace ProjectHunt.Battle
 
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.referenceResolution = new Vector2(1080f, 1920f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 1f;
 
             _overlayRoot = canvasGo.GetComponent<RectTransform>();
             _overlayRoot.anchorMin = Vector2.zero;
@@ -363,19 +367,22 @@ namespace ProjectHunt.Battle
             _overlayRoot.offsetMax = Vector2.zero;
 
             _fullscreenDim = CreateFullScreenImage(_overlayRoot, "Dim", new Color(0f, 0f, 0f, 0f));
-            _claimGlow = CreateAnchoredImage(_overlayRoot, "Glow", new Vector2(360f, 220f), new Color(1f, 0.8f, 0.32f, 0f));
-            _claimGlow.type = Image.Type.Sliced;
+            _claimGlow = CreateAnchoredImage(_overlayRoot, "Glow", new Vector2(820f, 600f), new Color(1f, 0.8f, 0.32f, 0f));
+            _claimGlow.rectTransform.anchoredPosition = new Vector2(0f, 225f);
+            _claimGlow.preserveAspect = false;
 
-            _claimPanel = CreateAnchoredImage(_overlayRoot, "Panel", new Vector2(310f, 170f), new Color(0.05f, 0.05f, 0.08f, 0f));
+            _claimPanel = CreateAnchoredImage(_overlayRoot, "Panel", new Vector2(720f, 500f), new Color(0.05f, 0.05f, 0.08f, 0f));
+            _claimPanel.rectTransform.anchoredPosition = new Vector2(0f, 205f);
+            _claimPanel.preserveAspect = false;
             var claimBorder = _claimPanel.gameObject.AddComponent<Outline>();
             claimBorder.effectColor = new Color(1f, 0.82f, 0.42f, 0.92f);
-            claimBorder.effectDistance = new Vector2(2f, -2f);
+            claimBorder.effectDistance = new Vector2(5f, -5f);
 
-            _centerHammerImage = CreateAnchoredImage(_overlayRoot, "HammerIcon", new Vector2(112f, 112f), Color.white);
+            _centerHammerImage = CreateAnchoredImage(_overlayRoot, "RewardIcon", new Vector2(230f, 230f), Color.white);
             _centerHammerImage.sprite = GetRewardSprite();
 
-            _claimText = CreateText(_overlayRoot, "ClaimText", new Vector2(340f, 50f), 30, GetClaimText());
-            _claimText.rectTransform.anchoredPosition = new Vector2(0f, -84f);
+            _claimText = CreateText(_overlayRoot, "ClaimText", new Vector2(660f, 74f), 38, GetClaimText());
+            _claimText.rectTransform.anchoredPosition = new Vector2(0f, 25f);
             _claimText.alignment = TextAnchor.MiddleCenter;
 
             EnsureOverlayVisible(false);

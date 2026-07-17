@@ -58,18 +58,18 @@ namespace ProjectHunt.Build
             }
         }
 
-        public void SetPortrait(Sprite sprite)
+        public void SetPortrait(Sprite sprite, CharacterConfig portraitConfig = null)
         {
             if (portraitImage == null)
             {
                 return;
             }
 
-            var croppedSprite = GetCroppedPortrait(sprite);
+            var croppedSprite = GetCroppedPortraitSprite(sprite);
             portraitImage.sprite = croppedSprite != null ? croppedSprite : sprite;
             portraitImage.enabled = sprite != null;
             portraitImage.preserveAspect = true;
-            ApplyPortraitSizing(portraitImage.sprite);
+            ApplyPortraitSizing(portraitImage.sprite, portraitConfig != null ? portraitConfig : characterConfig);
         }
 
         public void SetTexts(string displayName, string effectDescription, string buttonText)
@@ -233,26 +233,26 @@ namespace ProjectHunt.Build
             }
         }
 
-        private void ApplyPortraitSizing(Sprite sprite)
+        private void ApplyPortraitSizing(Sprite sprite, CharacterConfig sizingConfig)
         {
-            if (portraitImage == null || sprite == null || characterConfig == null)
+            if (portraitImage == null || sprite == null || sizingConfig == null)
             {
                 return;
             }
 
-            var scaleFactor = GetPortraitScaleFactor();
+            var scaleFactor = GetPortraitScaleFactor(sizingConfig);
             var size = sprite.rect.size * scaleFactor;
             portraitImage.rectTransform.sizeDelta = size;
         }
 
-        private float GetPortraitScaleFactor()
+        private static float GetPortraitScaleFactor(CharacterConfig sizingConfig)
         {
-            var visualScale = Mathf.Max(0.01f, characterConfig.visualScale);
+            var visualScale = Mathf.Max(0.01f, sizingConfig.visualScale);
             const float uiPixelsPerWorldUnit = 4.2f;
             return visualScale * uiPixelsPerWorldUnit * 0.5f;
         }
 
-        private static Sprite GetCroppedPortrait(Sprite sprite)
+        public static Sprite GetCroppedPortraitSprite(Sprite sprite)
         {
             if (sprite == null)
             {

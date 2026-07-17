@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ProjectHunt.Data
 {
@@ -17,6 +18,24 @@ namespace ProjectHunt.Data
         public string selectedKeyTargetId;
         public bool isSelectionConfirmed;
         public RewardType pendingRewardType;
+        public bool hasCompletedRelicDragTip;
+        public List<string> discoveredUnitIds = new List<string>();
+        public List<string> partyCardOrder = new List<string>();
+        public List<RewardType> relicSlotOrder = new List<RewardType>();
+
+        public bool HasDiscoveredUnit(string unitId)
+        {
+            return !string.IsNullOrWhiteSpace(unitId) && discoveredUnitIds != null && discoveredUnitIds.Contains(unitId);
+        }
+
+        public void MarkUnitDiscovered(string unitId)
+        {
+            discoveredUnitIds ??= new List<string>();
+            if (!string.IsNullOrWhiteSpace(unitId) && !discoveredUnitIds.Contains(unitId))
+            {
+                discoveredUnitIds.Add(unitId);
+            }
+        }
 
         public void Reset()
         {
@@ -32,6 +51,13 @@ namespace ProjectHunt.Data
             selectedKeyTargetId = null;
             isSelectionConfirmed = false;
             pendingRewardType = RewardType.None;
+            hasCompletedRelicDragTip = false;
+            discoveredUnitIds ??= new List<string>();
+            discoveredUnitIds.Clear();
+            partyCardOrder ??= new List<string>();
+            partyCardOrder.Clear();
+            relicSlotOrder ??= new List<RewardType>();
+            relicSlotOrder.Clear();
         }
 
         public void CopyFrom(BuildSelectionState other)
@@ -52,6 +78,16 @@ namespace ProjectHunt.Data
             selectedKeyTargetId = other.selectedKeyTargetId;
             isSelectionConfirmed = other.isSelectionConfirmed;
             pendingRewardType = other.pendingRewardType;
+            hasCompletedRelicDragTip = other.hasCompletedRelicDragTip;
+            discoveredUnitIds = other.discoveredUnitIds != null
+                ? new List<string>(other.discoveredUnitIds)
+                : new List<string>();
+            partyCardOrder = other.partyCardOrder != null
+                ? new List<string>(other.partyCardOrder)
+                : new List<string>();
+            relicSlotOrder = other.relicSlotOrder != null
+                ? new List<RewardType>(other.relicSlotOrder)
+                : new List<RewardType>();
         }
     }
 

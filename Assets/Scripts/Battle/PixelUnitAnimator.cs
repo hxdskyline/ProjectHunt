@@ -7,6 +7,7 @@ namespace ProjectHunt.Battle
     {
         public string resourceId;
         public float fps = 8f;
+        public float playbackSpeed = 1f;
 
         private SpriteRenderer _spriteRenderer;
         private SpriteRenderer _rootRenderer;
@@ -30,7 +31,7 @@ namespace ProjectHunt.Battle
                 return;
             }
 
-            _timer += Time.deltaTime;
+            _timer += Time.deltaTime * Mathf.Max(0.01f, playbackSpeed);
             while (_timer >= _currentClip.frameDuration)
             {
                 _timer -= _currentClip.frameDuration;

@@ -25,6 +25,8 @@ namespace ProjectHunt.Battle
             Claim,
             Merge,
             Reveal,
+            WeaponDiscovery,
+            UnitDiscovery,
         }
 
         private static readonly Dictionary<Sound, AudioClip> Clips = new Dictionary<Sound, AudioClip>();
@@ -45,6 +47,8 @@ namespace ProjectHunt.Battle
             { Sound.Claim, "snd_rewards_take_artifact" },
             { Sound.Merge, "snd_artifacts_open" },
             { Sound.Reveal, "snd_artifacts_open" },
+            { Sound.WeaponDiscovery, "snd_rewards_take_artifact" },
+            { Sound.UnitDiscovery, "snd_artifacts_open" },
         };
         private const string ResourceRoot = "Audio/ProjectHunt/";
         private static AudioSource _source;
@@ -89,7 +93,8 @@ namespace ProjectHunt.Battle
             }
             else if (config.roleType == RoleType.Assassin)
             {
-                Play(config.id.EndsWith("_hammer") && impactIndex > 0 ? Sound.HammerSwing : Sound.Throw, 0.65f, 1.05f);
+                var volume = config.id.EndsWith("_key") ? 0.325f : 0.65f;
+                Play(config.id.EndsWith("_hammer") && impactIndex > 0 ? Sound.HammerSwing : Sound.Throw, volume, 1.05f);
             }
             else if (config.id.EndsWith("_hammer"))
             {
@@ -101,9 +106,9 @@ namespace ProjectHunt.Battle
             }
         }
 
-        public static void PlayProjectileLaunch(bool isHeavy)
+        public static void PlayProjectileLaunch(bool isHeavy, float volumeScale = 1f)
         {
-            Play(isHeavy ? Sound.HammerSwing : Sound.Throw, isHeavy ? 0.48f : 0.34f, 1.08f);
+            Play(isHeavy ? Sound.HammerSwing : Sound.Throw, (isHeavy ? 0.48f : 0.34f) * Mathf.Clamp01(volumeScale), 1.08f);
         }
 
         public static void PlayImpact(bool isArea = false, bool isHeavy = false, float volumeScale = 1f)
@@ -117,20 +122,31 @@ namespace ProjectHunt.Battle
             Play(Sound.Beam, 0.78f, 1f);
         }
 
+        public static void PlayHeal()
+        {
+            Play(Sound.Magic, 0.58f, 1.15f);
+        }
+
         public static void PlayBlock()
         {
             Play(Sound.Block, 0.75f, 1.05f);
         }
 
-        public static void PlayDeath(bool isBoss)
+        public static void PlayBell()
         {
+            PlayNamed("snd_unit_masked_boss_bell", 0.7f, 1f);
+        }
+
+        public static void PlayDeath(bool isBoss, float volumeScale = 1f)
+        {
+            volumeScale = Mathf.Clamp01(volumeScale);
             if (isBoss)
             {
-                PlayNamed("snd_boss_death", 0.9f, 1f);
+                PlayNamed("snd_boss_death", 0.9f * volumeScale, 1f);
                 return;
             }
 
-            Play(Sound.Death, 0.55f, 1.05f);
+            Play(Sound.Death, 0.55f * volumeScale, 1.05f);
         }
 
         public static void PlayDropLand()
@@ -141,6 +157,16 @@ namespace ProjectHunt.Battle
         public static void PlayClaim()
         {
             Play(Sound.Claim, 0.82f, 1f);
+        }
+
+        public static void PlayWeaponDiscovery()
+        {
+            Play(Sound.WeaponDiscovery, 0.86f, 1f);
+        }
+
+        public static void PlayUnitDiscovery()
+        {
+            Play(Sound.UnitDiscovery, 0.82f, 1.06f);
         }
 
         public static void PlayMerge()
@@ -292,11 +318,13 @@ namespace ProjectHunt.Battle
                 case Sound.DropLand:
                     return Mathf.Sin(twoPi * Mathf.Lerp(110f, 38f, t) * time) * 0.82f + noise * 0.28f;
                 case Sound.Claim:
+                case Sound.WeaponDiscovery:
                     return Mathf.Sin(twoPi * (420f + 620f * t) * time) * 0.62f +
                            Mathf.Sin(twoPi * (630f + 820f * t) * time) * 0.25f;
                 case Sound.Merge:
                     return Mathf.Sin(twoPi * (240f + 780f * t) * time) * 0.6f + noise * 0.12f;
                 case Sound.Reveal:
+                case Sound.UnitDiscovery:
                     return Mathf.Sin(twoPi * 523.25f * time) * 0.42f +
                            Mathf.Sin(twoPi * 659.25f * time) * 0.34f +
                            Mathf.Sin(twoPi * 783.99f * time) * 0.24f;
@@ -315,6 +343,8 @@ namespace ProjectHunt.Battle
                 case Sound.Claim:
                 case Sound.Merge:
                 case Sound.Reveal:
+                case Sound.WeaponDiscovery:
+                case Sound.UnitDiscovery:
                     return 0.5f;
                 case Sound.Beam:
                     return 0.28f;
@@ -325,7 +355,10 @@ namespace ProjectHunt.Battle
 
         private static float GetDecay(Sound sound)
         {
-            return sound == Sound.Reveal || sound == Sound.Claim ? 0.7f : 1.8f;
+            return sound == Sound.Reveal || sound == Sound.Claim ||
+                   sound == Sound.WeaponDiscovery || sound == Sound.UnitDiscovery
+                ? 0.7f
+                : 1.8f;
         }
     }
 }

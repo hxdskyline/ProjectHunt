@@ -212,7 +212,7 @@ namespace ProjectHunt.Data
             var config = ScriptableObject.CreateInstance<CharacterConfig>();
             config.id = "mage_" + rewardType.ToString().ToLowerInvariant();
             config.baseCharacterId = "mage";
-            config.displayName = rewardType == RewardType.MeteorHammer ? "锤法师" : rewardType == RewardType.HolyCup ? "酒法师" : "法师";
+            config.displayName = rewardType == RewardType.MeteorHammer ? "锤法师" : rewardType == RewardType.HolyCup ? "回复术士" : "法师";
             config.roleType = RoleType.Mage;
             config.resourceId = "mage_blue";
             config.defaultAttackAction = "attack";

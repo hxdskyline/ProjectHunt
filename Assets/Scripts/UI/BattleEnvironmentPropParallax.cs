@@ -10,9 +10,8 @@ namespace ProjectHunt.UI
     /// </summary>
     public sealed class BattleEnvironmentPropParallax : MonoBehaviour
     {
-        public float playerFollowFactor = 0.1f;
+        public float playerFollowFactor = 0.2f;
         public float enemyFollowFactor = 0.055f;
-        public float maxHorizontalOffset = 0.55f;
         public float smoothing = 7f;
 
         private readonly List<CombatUnitController> _players = new List<CombatUnitController>();
@@ -40,14 +39,11 @@ namespace ProjectHunt.UI
                 ref _playerSignature,
                 ref _hasPlayerPosition,
                 true) * playerFollowFactor;
-            _accumulatedOffset += CalculateForwardTravel(
+            _accumulatedOffset += CalculateFirstWaveEnemyTravel(
                 _enemies,
                 ref _enemyFurthestX,
                 ref _enemySignature,
-                ref _hasEnemyPosition,
-                false) * enemyFollowFactor;
-            _accumulatedOffset = Mathf.Min(_accumulatedOffset, maxHorizontalOffset);
-
+                ref _hasEnemyPosition) * enemyFollowFactor;
             // Props only travel left as combatants enter. Their target never moves backward.
             var target = _origin + Vector3.left * _accumulatedOffset;
             transform.position = Vector3.Lerp(
@@ -131,6 +127,51 @@ namespace ProjectHunt.UI
             var enemyTravel = furthestX - averageX;
             furthestX = averageX;
             return enemyTravel;
+        }
+
+        private static float CalculateFirstWaveEnemyTravel(
+            List<CombatUnitController> enemies,
+            ref float furthestX,
+            ref int signature,
+            ref bool hasPosition)
+        {
+            CombatUnitController firstEnemy = null;
+            for (var i = 0; i < enemies.Count; i++)
+            {
+                // Wave enemies are named BurningMonster_<wave>_<index>.
+                // Only index 1 is allowed to drive the shared midground.
+                if (enemies[i] != null && enemies[i].name.EndsWith("_1"))
+                {
+                    firstEnemy = enemies[i];
+                    break;
+                }
+            }
+
+            if (firstEnemy == null)
+            {
+                hasPosition = false;
+                signature = 0;
+                return 0f;
+            }
+
+            var currentX = firstEnemy.transform.position.x;
+            var currentSignature = firstEnemy.GetInstanceID();
+            if (!hasPosition || signature != currentSignature)
+            {
+                furthestX = currentX;
+                signature = currentSignature;
+                hasPosition = true;
+                return 0f;
+            }
+
+            if (currentX >= furthestX)
+            {
+                return 0f;
+            }
+
+            var travel = furthestX - currentX;
+            furthestX = currentX;
+            return travel;
         }
     }
 }

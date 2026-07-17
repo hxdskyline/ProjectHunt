@@ -139,11 +139,15 @@ namespace ProjectHunt.Battle
             }
 
             Debug.Log($"[BattleDirector] phase={gameContext?.runState.phase}, IsBattle02={IsBattle02}, IsBattle03={IsBattle03}, IsBattle04={IsBattle04}, IsBattle05={IsBattle05}, IsBattle06={IsBattle06}");
+            var startsWithWaves = IsBattle02 || IsBattle04 || IsBattle06 || UsesPreBossWaves;
+            // Midground props must exist before units are moved to their entrance positions,
+            // otherwise their parallax tracker cannot observe the players walking in.
+            BattleHudLayoutController.PrepareEntranceBackdrop(!startsWithWaves);
             formationSpawner.SpawnCurrentBattle();
             CollectUnits();
             yield return StartCoroutine(PlayBattleEntrance());
 
-            if (IsBattle02 || IsBattle04 || IsBattle06 || UsesPreBossWaves)
+            if (startsWithWaves)
             {
                 if (bossHpBarView != null)
                 {
@@ -197,6 +201,56 @@ namespace ProjectHunt.Battle
 
             if (attacker.team == CombatUnitController.TeamType.Player)
             {
+                if (IsGiantKeyMage(attacker))
+                {
+                    var keyMageTarget = targetSnapshot != null && targetSnapshot.target != null
+                        ? targetSnapshot.target
+                        : _boss != null && _boss.IsAlive ? _boss : GetFirstAliveEnemy();
+                    var fallbackPosition = targetSnapshot != null
+                        ? targetSnapshot.worldPosition
+                        : keyMageTarget != null
+                            ? keyMageTarget.transform.position
+                            : attacker.transform.position + Vector3.right * 5f;
+                    attacker.PlayAttackFeedback();
+                    SpawnKeyMageDoorBeams(attacker, keyMageTarget, fallbackPosition, GetDamage(attacker));
+                    return;
+                }
+
+                if (IsHolyCupMage(attacker))
+                {
+                    var healingTarget = GetHealingTarget(attacker);
+                    if (healingTarget != null)
+                    {
+                        attacker.PlayAttackFeedback();
+                        BattleSfx.PlayHeal();
+                        var restoredHp = healingTarget.RestoreHp(8);
+                        if (restoredHp > 0)
+                        {
+                            healingTarget.ShowCombatText(
+                                "+" + restoredHp,
+                                new Color(0.35f, 1f, 0.45f, 1f));
+                        }
+
+                        return;
+                    }
+
+                    var holyCupTarget = targetSnapshot != null && targetSnapshot.target != null
+                        ? targetSnapshot.target
+                        : _boss != null && _boss.IsAlive ? _boss : GetFirstAliveEnemy();
+                    if (holyCupTarget == null)
+                    {
+                        return;
+                    }
+
+                    var holyCupFallbackPosition = targetSnapshot != null
+                        ? targetSnapshot.worldPosition
+                        : holyCupTarget.transform.position;
+                    attacker.PlayAttackFeedback();
+                    BattleSfx.PlayAttack(attacker, attackImpactIndex);
+                    SpawnMageBeam(attacker, holyCupTarget, holyCupFallbackPosition, 4);
+                    return;
+                }
+
                 var lockedTarget = targetSnapshot != null ? targetSnapshot.target : null;
                 var currentTarget = _boss != null && _boss.IsAlive ? _boss : GetFirstAliveEnemy();
                 var resolvedTarget = ShouldUseProjectile(attacker)
@@ -233,7 +287,7 @@ namespace ProjectHunt.Battle
                         BattleSfx.PlayImpact(false, IsMeteorHammerSwordsman(attacker));
                         resolvedTarget.ApplyDamage(GetDamage(attacker));
 
-                        if (ShouldApplyAssassinStun(attacker))
+                        if (ShouldApplyAssassinStun(attacker, resolvedTarget))
                         {
                             resolvedTarget.TryApplyStun(MeteorHammerRules.AssassinStunDuration);
                         }
@@ -255,7 +309,7 @@ namespace ProjectHunt.Battle
                         {
                             SpawnHitSpark(player.transform.position + new Vector3(0f, 0.3f, 0f), 0.42f);
                             BattleSfx.PlayBlock();
-                            player.ShowStatusText("\u683c\u6321", new Color(1f, 0.95f, 0.6f, 1f));
+                            player.ShowCombatText("\u683c\u6321", new Color(1f, 0.95f, 0.6f, 1f));
                             continue;
                         }
 
@@ -272,11 +326,12 @@ namespace ProjectHunt.Battle
                         if (isLichFreeze)
                         {
                             dmg = Mathf.CeilToInt(dmg * 1.25f);
-                            player.TryApplyStun(0.7f);
-                            player.ShowStatusText("冻结", new Color(0.55f, 0.84f, 1f, 1f));
+                            player.TryApplyStun(4.5f, "冻结", false);
                         }
+                        dmg = attacker.ModifyOutgoingDamage(dmg);
                         Debug.Log($"[ResolveAttack] enemy hits {player.gameObject.name} for {dmg} (hp {player.currentHp}/{player.maxHp})");
                         player.ApplyDamage(dmg);
+                        TryTriggerHolyCupSwordsmanWeaken(player);
                     }
                 }
             }
@@ -288,6 +343,11 @@ namespace ProjectHunt.Battle
             {
                 bossHpBarView.SetValue(_boss.currentHp, _boss.GetMaxHp());
             }
+        }
+
+        public bool IsWaveEnemy(CombatUnitController unit)
+        {
+            return unit != null && _enemies.Contains(unit);
         }
 
         public void NotifyUnitDied(CombatUnitController unit)
@@ -358,6 +418,30 @@ namespace ProjectHunt.Battle
             }
         }
 
+        public void RefreshPlayerParty()
+        {
+            if (formationSpawner == null || IsBattleResolved)
+            {
+                return;
+            }
+
+            formationSpawner.RespawnPlayersForCurrentRoster();
+            _players.Clear();
+            var spawnedPlayers = formationSpawner.SpawnedPlayers;
+            for (var i = 0; i < spawnedPlayers.Count; i++)
+            {
+                if (spawnedPlayers[i] != null)
+                {
+                    var controller = spawnedPlayers[i].GetComponent<CombatUnitController>();
+                    if (controller != null)
+                    {
+                        _players.Add(controller);
+                    }
+                }
+            }
+            StartPlayerCombat();
+        }
+
         private IEnumerator RunWaveStage(int waveCount, bool summonBossAfterWaves = false)
         {
             _currentWaveIndex = 0;
@@ -388,8 +472,25 @@ namespace ProjectHunt.Battle
 
             if (summonBossAfterWaves)
             {
-                BattleHudLayoutController.NotifyBossIncoming();
-                yield return new WaitForSeconds(0.8f);
+                for (var i = 0; i < _players.Count; i++)
+                {
+                    if (_players[i] != null && _players[i].IsAlive)
+                    {
+                        _players[i].PlayMoveLoop();
+                    }
+                }
+
+                yield return StartCoroutine(BattleHudLayoutController.PlayBossBackdropEntrance());
+                for (var i = 0; i < _players.Count; i++)
+                {
+                    if (_players[i] != null && _players[i].IsAlive)
+                    {
+                        _players[i].PlayStand();
+                    }
+                }
+                yield return new WaitForSeconds(1.5f);
+                // The Boss is intentionally created only after the carpet has reached and locked
+                // its final position, so its entrance cannot overlap the backdrop transition.
                 formationSpawner.SpawnDelayedBoss();
                 CollectUnits();
                 yield return StartCoroutine(PlayBossEntrance());
@@ -446,6 +547,10 @@ namespace ProjectHunt.Battle
                 }
             }
 
+            for (var i = 0; i < _players.Count; i++)
+            {
+                _players[i]?.BeginWaveEffects();
+            }
             BattleHudLayoutController.NotifyWaveStarted(waveIndex, IsBattle04 ? 2 : 3, _enemies.Count);
 
             // Start the team as soon as the wave exists, so incoming enemies can be hit.
@@ -738,7 +843,7 @@ namespace ProjectHunt.Battle
             var targetPosition = _boss.transform.position;
             _boss.transform.position = targetPosition + Vector3.right * bossEntryOffsetX;
             BattleSfx.PlayBossIntro(_boss);
-            yield return StartCoroutine(_boss.MoveToPosition(targetPosition, entryMoveSpeed));
+            yield return StartCoroutine(_boss.MoveToPosition(targetPosition, entryMoveSpeed * 0.65f));
         }
 
         private GameObject CreateFallbackDrop(Transform parent, Vector3 position, RewardType rewardType)
@@ -798,6 +903,8 @@ namespace ProjectHunt.Battle
             var renderer = go.AddComponent<SpriteRenderer>();
             var controller = go.AddComponent<ArrowProjectileController>();
             controller.spriteRenderer = renderer;
+            controller.attacker = attacker;
+            controller.appliesHammerAssassinStun = isAssassinHammerProjectile;
 
             var sprite = isMeteorHammerArcher || isAssassinHammerProjectile
                 ? SimpleSpriteFactory.GetMeteorHammerSprite()
@@ -853,8 +960,16 @@ namespace ProjectHunt.Battle
                 ? MeteorHammerRules.ArcherImpactRadius
                 : isHolyCupCatapult ? 1.55f : 0f;
             controller.alignToVelocity = !isAssassinBlade && !isAssassinHammerProjectile && !isGiantKeyProjectile;
-            controller.spinSpeed = isMeteorHammerArcher || isAssassinHammerProjectile || isGiantKeyProjectile ? -720f : 0f;
+            controller.spinSpeed = isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Archer
+                ? -2160f
+                : isMeteorHammerArcher || isAssassinHammerProjectile || isGiantKeyProjectile ? -720f : 0f;
+            if (isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Archer)
+            {
+                controller.spinAccelerationDelay = 0.5f;
+                controller.spinAccelerationMultiplier = 3f;
+            }
             controller.returnToSender = isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Assassin;
+            controller.pierceAllEnemiesByX = controller.returnToSender;
             controller.animationFrames = isAssassinBlade
                 ? ExternalSpriteLibrary.GetBallistaArrowFrames()
                 : isHolyCupCatapult ? PixelAnimationLibrary.GetClip("catapult_ball", "idle")?.frames : null;
@@ -866,11 +981,23 @@ namespace ProjectHunt.Battle
                 ? target.transform.position
                 : fallbackTargetWorldPosition;
             var targetPosition = targetBasePosition + new Vector3(0f, isAssassinBlade || isAssassinHammerProjectile ? 0.2f : 0.35f, 0f);
-            if (isAssassinBlade || isAssassinHammerProjectile ||
-                (isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Assassin))
+            var isGiantKeyAssassin = isGiantKeyProjectile && attacker.characterConfig.roleType == RoleType.Assassin;
+            if (isGiantKeyAssassin)
+            {
+                // Unlike the two hand-tuned hammer-assassin shots, the boomerang must follow
+                // the assassin's current formation height instead of a fixed world-space Y.
+                launchPosition = attacker.GetProjectileLaunchPosition();
+                targetPosition.y = launchPosition.y;
+            }
+            else if (isAssassinBlade || isAssassinHammerProjectile)
             {
                 launchPosition = GetAssassinLaunchPosition(launchPosition, attackImpactIndex);
                 targetPosition.y = launchPosition.y;
+            }
+            if (controller.pierceAllEnemiesByX)
+            {
+                targetPosition = new Vector3(6.8f, launchPosition.y, launchPosition.z);
+                controller.arcHeight = 0f;
             }
 
             controller.Launch(
@@ -880,7 +1007,9 @@ namespace ProjectHunt.Battle
                 damage,
                 target,
                 this);
-            BattleSfx.PlayProjectileLaunch(isMeteorHammerArcher || isAssassinHammerProjectile || isHolyCupCatapult || isGiantKeyProjectile);
+            BattleSfx.PlayProjectileLaunch(
+                isMeteorHammerArcher || isAssassinHammerProjectile || isHolyCupCatapult || isGiantKeyProjectile,
+                isGiantKeyAssassin ? 0.5f : 1f);
         }
 
         private void SpawnMageBeam(CombatUnitController attacker, CombatUnitController target, Vector3 fallbackTargetWorldPosition, int damage)
@@ -932,6 +1061,75 @@ namespace ProjectHunt.Battle
             }
 
             Destroy(beam);
+        }
+
+        private void SpawnKeyMageDoorBeams(
+            CombatUnitController attacker,
+            CombatUnitController target,
+            Vector3 fallbackTargetWorldPosition,
+            int damage)
+        {
+            var root = sceneReferences != null && sceneReferences.projectileRoot != null
+                ? sceneReferences.projectileRoot
+                : transform;
+            var doorCenter = attacker.transform.position + new Vector3(0f, 1.65f, 0f);
+            var door = new GameObject("KeyMageDoor");
+            door.transform.SetParent(root, false);
+            door.transform.position = doorCenter;
+            CreateDoorBar(door.transform, "Left", new Vector3(-0.43f, 0f, 0f), new Vector3(0.12f, 1f, 1f));
+            CreateDoorBar(door.transform, "Right", new Vector3(0.43f, 0f, 0f), new Vector3(0.12f, 1f, 1f));
+            CreateDoorBar(door.transform, "Top", new Vector3(0f, 0.44f, 0f), new Vector3(0.98f, 0.12f, 1f));
+            StartCoroutine(DestroyAfterDelay(door, 0.32f));
+
+            var targetBase = target != null && target.IsAlive
+                ? target.transform.position
+                : fallbackTargetWorldPosition;
+            var verticalOffsets = new[] { -0.34f, 0f, 0.34f };
+            for (var i = 0; i < verticalOffsets.Length; i++)
+            {
+                SpawnKeyMageBeamVisual(root, doorCenter, targetBase + new Vector3(0f, verticalOffsets[i], 0f));
+                if (target != null && target.IsAlive)
+                {
+                    target.ApplyDamage(damage);
+                }
+            }
+            BattleSfx.PlayBeam();
+        }
+
+        private static void CreateDoorBar(Transform parent, string name, Vector3 localPosition, Vector3 localScale)
+        {
+            var bar = new GameObject(name);
+            bar.transform.SetParent(parent, false);
+            bar.transform.localPosition = localPosition;
+            bar.transform.localScale = localScale;
+            var renderer = bar.AddComponent<SpriteRenderer>();
+            renderer.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
+            renderer.color = new Color(0.96f, 0.72f, 0.22f, 1f);
+            renderer.sortingOrder = 24;
+        }
+
+        private void SpawnKeyMageBeamVisual(Transform root, Vector3 start, Vector3 end)
+        {
+            var direction = end - start;
+            var beam = new GameObject("KeyMageDoorBeam");
+            beam.transform.SetParent(root, false);
+            beam.transform.position = start + direction * 0.5f;
+            beam.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+            beam.transform.localScale = new Vector3(Mathf.Max(0.01f, direction.magnitude), 0.09f, 1f);
+            var renderer = beam.AddComponent<SpriteRenderer>();
+            renderer.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
+            renderer.color = new Color(0.45f, 0.82f, 1f, 1f);
+            renderer.sortingOrder = 24;
+            StartCoroutine(FadeMageBeam(beam, renderer));
+        }
+
+        private static IEnumerator DestroyAfterDelay(GameObject target, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (target != null)
+            {
+                Destroy(target);
+            }
         }
 
         private static Vector3 GetAssassinLaunchPosition(Vector3 defaultLaunchPosition, int attackImpactIndex)
@@ -1044,6 +1242,42 @@ namespace ProjectHunt.Battle
             }
         }
 
+        public void ApplyPlayerCrossingDamage(
+            float previousProjectileX,
+            float currentProjectileX,
+            int damage,
+            HashSet<int> hitEnemyIds)
+        {
+            if (hitEnemyIds == null || Mathf.Approximately(previousProjectileX, currentProjectileX))
+            {
+                return;
+            }
+
+            var minX = Mathf.Min(previousProjectileX, currentProjectileX);
+            var maxX = Mathf.Max(previousProjectileX, currentProjectileX);
+            if (_boss != null && _boss.IsAlive && _boss.transform.position.x >= minX &&
+                _boss.transform.position.x <= maxX && hitEnemyIds.Add(_boss.GetInstanceID()))
+            {
+                SpawnHitSpark(_boss.transform.position + new Vector3(0f, 0.38f, 0f), 0.9f);
+                BattleSfx.PlayImpact(false, true);
+                _boss.ApplyDamage(damage);
+            }
+
+            for (var i = _enemies.Count - 1; i >= 0; i--)
+            {
+                var enemy = _enemies[i];
+                if (enemy == null || !enemy.IsAlive || enemy.transform.position.x < minX ||
+                    enemy.transform.position.x > maxX || !hitEnemyIds.Add(enemy.GetInstanceID()))
+                {
+                    continue;
+                }
+
+                SpawnHitSpark(enemy.transform.position + new Vector3(0f, 0.38f, 0f), 0.72f);
+                BattleSfx.PlayImpact(false, true);
+                enemy.ApplyDamage(damage);
+            }
+        }
+
         private IEnumerator HitSparkRoutine(Vector3 worldPosition, float scale)
         {
             var root = sceneReferences != null && sceneReferences.projectileRoot != null
@@ -1151,13 +1385,31 @@ namespace ProjectHunt.Battle
             return Mathf.Max(1, Mathf.RoundToInt(bossDamage * modifier));
         }
 
-        private bool ShouldApplyAssassinStun(CombatUnitController attacker)
+        private bool ShouldApplyAssassinStun(CombatUnitController attacker, CombatUnitController target)
         {
-            return attacker != null &&
-                   attacker.UsesMeteorHammerOverride &&
-                   attacker.characterConfig != null &&
-                   MeteorHammerRules.IsMeteorHammerAssassin(attacker.characterConfig) &&
-                   Random.value <= MeteorHammerRules.AssassinStunChance;
+            if (attacker == null || target == null ||
+                !attacker.UsesMeteorHammerOverride ||
+                attacker.characterConfig == null ||
+                !MeteorHammerRules.IsMeteorHammerAssassin(attacker.characterConfig))
+            {
+                return false;
+            }
+
+            var chance = target.bossConfig != null && target == _boss
+                ? MeteorHammerRules.AssassinBossStunChance
+                : MeteorHammerRules.AssassinMinionStunChance;
+            return
+                   Random.value <= chance;
+        }
+
+        public bool TryApplyHammerAssassinStun(CombatUnitController attacker, CombatUnitController target)
+        {
+            if (!ShouldApplyAssassinStun(attacker, target))
+            {
+                return false;
+            }
+
+            return target.TryApplyStun(MeteorHammerRules.AssassinStunDuration);
         }
 
         private bool ShouldBlockBossDamage(CombatUnitController target)
@@ -1167,6 +1419,34 @@ namespace ProjectHunt.Battle
                    target.characterConfig != null &&
                    MeteorHammerRules.IsMeteorHammerSwordsman(target.characterConfig) &&
                    Random.value <= MeteorHammerRules.SwordsmanBlockChance;
+        }
+
+        private void TryTriggerHolyCupSwordsmanWeaken(CombatUnitController player)
+        {
+            if (player == null || player.characterConfig == null ||
+                player.characterConfig.roleType != RoleType.Swordsman ||
+                string.IsNullOrWhiteSpace(player.characterConfig.id) ||
+                !player.characterConfig.id.EndsWith("_cup") ||
+                Random.value > HolyCupRules.SwordsmanWeakenChance)
+            {
+                return;
+            }
+
+            BattleSfx.PlayBell();
+            var affectedIds = new HashSet<int>();
+            if (_boss != null && _boss.IsAlive && affectedIds.Add(_boss.GetInstanceID()))
+            {
+                _boss.ApplyWeaken(HolyCupRules.SwordsmanWeakenDuration);
+            }
+
+            for (var i = 0; i < _enemies.Count; i++)
+            {
+                var enemy = _enemies[i];
+                if (enemy != null && enemy.IsAlive && affectedIds.Add(enemy.GetInstanceID()))
+                {
+                    enemy.ApplyWeaken(HolyCupRules.SwordsmanWeakenDuration);
+                }
+            }
         }
 
         private bool IsMeteorHammerArcher(CombatUnitController attacker)
@@ -1202,6 +1482,46 @@ namespace ProjectHunt.Battle
                    attacker.characterConfig != null &&
                    attacker.characterConfig.roleType == RoleType.Mage &&
                    attacker.characterConfig.id == "mage_none";
+        }
+
+        private static bool IsHolyCupMage(CombatUnitController attacker)
+        {
+            return attacker != null &&
+                   attacker.team == CombatUnitController.TeamType.Player &&
+                   attacker.characterConfig != null &&
+                   attacker.characterConfig.id == "mage_holycup";
+        }
+
+        private static bool IsGiantKeyMage(CombatUnitController attacker)
+        {
+            return attacker != null &&
+                   attacker.team == CombatUnitController.TeamType.Player &&
+                   attacker.characterConfig != null &&
+                   attacker.characterConfig.id == "mage_giantkey";
+        }
+
+        private CombatUnitController GetHealingTarget(CombatUnitController healer)
+        {
+            CombatUnitController result = null;
+            var lowestHealthRatio = 1f;
+            for (var i = 0; i < _players.Count; i++)
+            {
+                var candidate = _players[i];
+                if (candidate == null || candidate == healer || !candidate.IsAlive ||
+                    candidate.currentHp >= candidate.maxHp)
+                {
+                    continue;
+                }
+
+                var healthRatio = candidate.currentHp / (float)Mathf.Max(1, candidate.maxHp);
+                if (result == null || healthRatio < lowestHealthRatio)
+                {
+                    result = candidate;
+                    lowestHealthRatio = healthRatio;
+                }
+            }
+
+            return result;
         }
 
         private bool IsMeteorHammerSwordsman(CombatUnitController attacker)

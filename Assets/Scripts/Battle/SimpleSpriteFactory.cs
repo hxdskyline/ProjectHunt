@@ -11,6 +11,7 @@ namespace ProjectHunt.Battle
         private static Sprite _hitSparkSprite;
         private static Sprite _heartIconSprite;
         private static Sprite _crossedSwordsIconSprite;
+        private static Sprite _prohibitedIconSprite;
 
         public static Sprite GetMeteorHammerSprite()
         {
@@ -326,6 +327,41 @@ namespace ProjectHunt.Battle
             };
             _crossedSwordsIconSprite = CreatePixelIcon(pixels, new Color32(226, 226, 218, 255), new Color32(188, 132, 56, 255));
             return _crossedSwordsIconSprite;
+        }
+
+        public static Sprite GetProhibitedIconSprite()
+        {
+            if (_prohibitedIconSprite != null)
+            {
+                return _prohibitedIconSprite;
+            }
+
+            const int size = 32;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            texture.filterMode = FilterMode.Point;
+            var red = new Color32(238, 66, 58, 255);
+            var dark = new Color32(92, 20, 22, 255);
+            var center = new Vector2(15.5f, 15.5f);
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    var distance = Vector2.Distance(new Vector2(x, y), center);
+                    var ring = distance >= 11f && distance <= 14f;
+                    var slash = Mathf.Abs((x + y) - 31f) <= 2f && distance <= 14f;
+                    var shadow = distance >= 14f && distance <= 15f;
+                    texture.SetPixel(x, y, ring || slash ? red : shadow ? dark : Color.clear);
+                }
+            }
+            texture.Apply();
+            _prohibitedIconSprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, size, size),
+                new Vector2(0.5f, 0.5f),
+                size,
+                0,
+                SpriteMeshType.FullRect);
+            return _prohibitedIconSprite;
         }
 
         private static Sprite CreatePixelIcon(string[] pixels, Color light, Color dark)

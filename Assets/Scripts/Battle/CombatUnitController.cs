@@ -23,6 +23,7 @@ namespace ProjectHunt.Battle
         public bool IsAlive => currentHp > 0;
         public bool UsesMeteorHammerOverride => _usesMeteorHammerOverride;
         public bool IsStunned => _stunTimer > 0f;
+        public bool IsWeakened => _weakenTimer > 0f;
 
         private PixelUnitAnimator _animator;
         private BattleDirector _director;
@@ -35,7 +36,12 @@ namespace ProjectHunt.Battle
         private Vector3 _baseVisualScale = Vector3.one;
         private Coroutine _hitFeedbackRoutine;
         private Coroutine _attackFeedbackRoutine;
+        private Coroutine _stunRoutine;
+        private GameObject _stunStars;
+        private bool _resumeCombatAfterStun;
         private float _stunTimer;
+        private float _keySwordsmanHasteTimer;
+        private float _weakenTimer;
         private int _bossNormalAttackCount;
 
         private void Awake()
@@ -54,6 +60,28 @@ namespace ProjectHunt.Battle
             {
                 _stunTimer = Mathf.Max(0f, _stunTimer - Time.deltaTime);
             }
+            if (_keySwordsmanHasteTimer > 0f)
+            {
+                _keySwordsmanHasteTimer = Mathf.Max(0f, _keySwordsmanHasteTimer - Time.deltaTime);
+            }
+            if (_weakenTimer > 0f)
+            {
+                _weakenTimer = Mathf.Max(0f, _weakenTimer - Time.deltaTime);
+            }
+
+            UpdateGiantKeyWindingVisual();
+        }
+
+        private void UpdateGiantKeyWindingVisual()
+        {
+            if (!IsGiantKeySwordsman() || _equippedWeaponRenderer == null || !_equippedWeaponRenderer.enabled)
+            {
+                return;
+            }
+
+            // Rotate into and out of the screen around its horizontal axis, like winding a key.
+            var windingAngle = Mathf.Repeat(Time.time * 240f, 360f);
+            _equippedWeaponRenderer.transform.localRotation = Quaternion.Euler(windingAngle, 0f, 0f);
         }
 
         private void OnDestroy()
@@ -161,7 +189,8 @@ namespace ProjectHunt.Battle
 
             if (currentHp <= 0)
             {
-                BattleSfx.PlayDeath(bossConfig != null);
+                var deathVolumeScale = _director != null && _director.IsWaveEnemy(this) ? 0.5f : 1f;
+                BattleSfx.PlayDeath(bossConfig != null, deathVolumeScale);
                 CleanupHpBar();
                 StopCombat();
                 if (bossConfig != null)
@@ -175,6 +204,23 @@ namespace ProjectHunt.Battle
 
                 _director?.NotifyUnitDied(this);
             }
+        }
+
+        public int RestoreHp(int amount)
+        {
+            if (!IsAlive || amount <= 0 || currentHp >= maxHp)
+            {
+                return 0;
+            }
+
+            var previousHp = currentHp;
+            currentHp = Mathf.Min(maxHp, currentHp + amount);
+            if (_hpBarView != null)
+            {
+                _hpBarView.SetValue(currentHp);
+            }
+            _director?.NotifyHpChanged(this);
+            return currentHp - previousHp;
         }
 
         public float GetMaxHp()
@@ -212,7 +258,7 @@ namespace ProjectHunt.Battle
             return _animator != null ? _animator.GetDuration(actionName) : 0f;
         }
 
-        public bool TryApplyStun(float duration)
+        public bool TryApplyStun(float duration, string label = "已眩晕", bool showStars = true)
         {
             if (!IsAlive || duration <= 0f)
             {
@@ -220,14 +266,122 @@ namespace ProjectHunt.Battle
             }
 
             _stunTimer = Mathf.Max(_stunTimer, duration);
-            PlayMoveLoop();
-            ShowStatusText("\u7729\u6655", new Color(0.72f, 0.9f, 1f, 1f));
+            if (_combatRoutine != null)
+            {
+                StopCoroutine(_combatRoutine);
+                _combatRoutine = null;
+                _resumeCombatAfterStun = true;
+            }
+            if (_attackFeedbackRoutine != null)
+            {
+                StopCoroutine(_attackFeedbackRoutine);
+                _attackFeedbackRoutine = null;
+                transform.localScale = _baseVisualScale;
+            }
+
+            PlayStand();
+            ShowCombatText(label, showStars
+                ? new Color(1f, 0.82f, 0.2f, 1f)
+                : new Color(0.55f, 0.84f, 1f, 1f));
+            if (showStars && _stunStars == null)
+            {
+                _stunStars = CreateStunStars();
+            }
+            if (_stunRoutine == null)
+            {
+                _stunRoutine = StartCoroutine(StunRoutine());
+            }
             return true;
+        }
+
+        private IEnumerator StunRoutine()
+        {
+            while (IsAlive && _stunTimer > 0f)
+            {
+                PlayStand();
+                UpdateStunStars();
+                yield return null;
+            }
+
+            if (_stunStars != null)
+            {
+                Destroy(_stunStars);
+                _stunStars = null;
+            }
+            _stunRoutine = null;
+            if (_resumeCombatAfterStun && IsAlive && _director != null && !_director.IsBattleResolved)
+            {
+                _resumeCombatAfterStun = false;
+                BeginCombat();
+            }
+        }
+
+        private GameObject CreateStunStars()
+        {
+            var root = new GameObject("StunStars");
+            for (var i = 0; i < 3; i++)
+            {
+                var star = new GameObject("Star_" + i);
+                star.transform.SetParent(root.transform, false);
+                var text = star.AddComponent<TextMesh>();
+                text.text = "★";
+                text.fontSize = 28;
+                text.characterSize = 0.08f;
+                text.anchor = TextAnchor.MiddleCenter;
+                text.alignment = TextAlignment.Center;
+                text.color = new Color(1f, 0.78f, 0.12f, 1f);
+                var renderer = star.GetComponent<MeshRenderer>();
+                if (renderer != null)
+                {
+                    renderer.sortingOrder = 32;
+                }
+            }
+            return root;
+        }
+
+        private void UpdateStunStars()
+        {
+            if (_stunStars == null)
+            {
+                return;
+            }
+
+            _stunStars.transform.position = transform.position + Vector3.up * 1.35f;
+            for (var i = 0; i < _stunStars.transform.childCount; i++)
+            {
+                var angle = Time.time * 5f + i * Mathf.PI * 2f / 3f;
+                _stunStars.transform.GetChild(i).localPosition = new Vector3(
+                    Mathf.Cos(angle) * 0.38f,
+                    Mathf.Sin(angle) * 0.12f,
+                    0f);
+            }
         }
 
         public void ShowStatusText(string label, Color textColor)
         {
             StartCoroutine(FloatingStatusRoutine(label, textColor));
+        }
+
+        public void ShowCombatText(string label, Color textColor)
+        {
+            CreateFloatingCombatText(label, textColor);
+        }
+
+        public void ApplyWeaken(float duration)
+        {
+            if (!IsAlive || duration <= 0f)
+            {
+                return;
+            }
+
+            _weakenTimer = Mathf.Max(_weakenTimer, duration);
+            ShowCombatText("削弱", new Color(0.72f, 0.82f, 1f, 1f));
+        }
+
+        public int ModifyOutgoingDamage(int damage)
+        {
+            var multiplier = IsWeakened ? HolyCupRules.WeakenedDamageMultiplier : 1f;
+            return Mathf.Max(1, Mathf.RoundToInt(damage * multiplier));
         }
 
         public void PlayAttackFeedback()
@@ -242,6 +396,7 @@ namespace ProjectHunt.Battle
 
         public void PlayMoveLoop()
         {
+            _animator.playbackSpeed = 1f;
             if (characterConfig != null)
             {
                 _animator.PlayLoop(characterConfig.moveAction);
@@ -252,6 +407,38 @@ namespace ProjectHunt.Battle
             }
         }
 
+        public void PlayStand()
+        {
+            if (_animator == null)
+            {
+                return;
+            }
+
+            if (_animator.GetDuration("idle") > 0f)
+            {
+                _animator.PlayLoop("idle");
+                return;
+            }
+
+            if (_animator.GetDuration("stand") > 0f)
+            {
+                _animator.PlayLoop("stand");
+                return;
+            }
+
+            // Units without an authored idle use the first walk frame as a stable standing pose.
+            var moveAction = characterConfig != null
+                ? characterConfig.moveAction
+                : bossConfig != null ? bossConfig.moveAction : null;
+            _animator.PlayOnce(moveAction);
+            _animator.Stop();
+        }
+
+        public void BeginWaveEffects()
+        {
+            _keySwordsmanHasteTimer = IsGiantKeySwordsman() ? 4f : 0f;
+        }
+
         public IEnumerator MoveToPosition(Vector3 targetPosition, float moveSpeed)
         {
             PlayMoveLoop();
@@ -260,6 +447,11 @@ namespace ProjectHunt.Battle
 
             while (this != null && transform != null && Vector3.Distance(transform.position, targetPosition) > 0.02f)
             {
+                if (IsStunned)
+                {
+                    yield return null;
+                    continue;
+                }
                 transform.position = Vector3.MoveTowards(
                     transform.position,
                     targetPosition,
@@ -287,11 +479,15 @@ namespace ProjectHunt.Battle
 
                 var attackAction = GetAttackAction();
                 var moveAction = characterConfig != null ? characterConfig.moveAction : bossConfig.moveAction;
-                var attackDuration = Mathf.Max(0.2f, _animator.GetDuration(attackAction));
+                var attackSpeedMultiplier = GetAttackSpeedMultiplier();
+                var attackDuration = Mathf.Max(
+                    0.1f,
+                    _animator.GetDuration(attackAction) / attackSpeedMultiplier);
                 var cooldown = GetAttackInterval();
                 var impactSchedule = GetImpactSchedule(attackAction, attackDuration);
                 var targetSnapshot = _director.CaptureAttackTarget(this);
 
+                _animator.playbackSpeed = attackSpeedMultiplier;
                 _animator.PlayOnce(attackAction);
                 var previousImpactTime = 0f;
                 for (var i = 0; i < impactSchedule.Count; i++)
@@ -319,6 +515,7 @@ namespace ProjectHunt.Battle
                     yield return new WaitForSeconds(remaining);
                 }
 
+                _animator.playbackSpeed = 1f;
                 _animator.PlayLoop(moveAction);
                 yield return new WaitForSeconds(cooldown);
             }
@@ -350,15 +547,32 @@ namespace ProjectHunt.Battle
         private float GetAttackInterval()
         {
             var tempo = characterConfig != null ? characterConfig.attackTempo : bossConfig.attackTempo;
+            var interval = 0.7f;
             switch (tempo)
             {
                 case AttackTempo.Fast:
-                    return 0.45f;
+                    interval = 0.45f;
+                    break;
                 case AttackTempo.Slow:
-                    return 1.0f;
-                default:
-                    return 0.7f;
+                    interval = 1.0f;
+                    break;
             }
+
+
+            return interval / GetAttackSpeedMultiplier();
+        }
+
+        private float GetAttackSpeedMultiplier()
+        {
+            return IsGiantKeySwordsman() && _keySwordsmanHasteTimer > 0f ? 2f : 1f;
+        }
+
+        private bool IsGiantKeySwordsman()
+        {
+            return characterConfig != null &&
+                   characterConfig.roleType == RoleType.Swordsman &&
+                   !string.IsNullOrWhiteSpace(characterConfig.id) &&
+                   characterConfig.id.EndsWith("_key");
         }
 
         private List<float> GetImpactSchedule(string attackAction, float attackDuration)
@@ -431,9 +645,34 @@ namespace ProjectHunt.Battle
                 _equippedWeaponRenderer.sortingOrder = 6;
             }
 
-            if (_equippedWeaponRenderer != null)
+            if (_equippedWeaponRenderer == null)
             {
-                _equippedWeaponRenderer.enabled = false;
+                return;
+            }
+
+            _equippedWeaponRenderer.enabled = false;
+            if (characterConfig == null || string.IsNullOrWhiteSpace(characterConfig.id))
+            {
+                return;
+            }
+
+            if (characterConfig.roleType == RoleType.Swordsman && characterConfig.id.EndsWith("_key"))
+            {
+                _equippedWeaponRenderer.sprite = SimpleSpriteFactory.GetGiantKeySprite();
+                _equippedWeaponRenderer.sortingOrder = 4;
+                _equippedWeaponRenderer.transform.localPosition = new Vector3(-0.2f, 0.2f, 0f);
+                _equippedWeaponRenderer.transform.localEulerAngles = Vector3.zero;
+                _equippedWeaponRenderer.transform.localScale = Vector3.one * 0.58f;
+                _equippedWeaponRenderer.enabled = true;
+            }
+            else if (characterConfig.roleType == RoleType.Swordsman && characterConfig.id.EndsWith("_cup"))
+            {
+                _equippedWeaponRenderer.sprite = SimpleSpriteFactory.GetHolyCupSprite();
+                _equippedWeaponRenderer.sortingOrder = 7;
+                _equippedWeaponRenderer.transform.localPosition = new Vector3(0.0658f, 0.2585f, 0f);
+                _equippedWeaponRenderer.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+                _equippedWeaponRenderer.transform.localScale = new Vector3(0.5719084f, 0.29298f, 0.3f);
+                _equippedWeaponRenderer.enabled = true;
             }
         }
 
@@ -568,16 +807,21 @@ namespace ProjectHunt.Battle
 
         private void FloatingDamageRoutine(int damage)
         {
+            CreateFloatingCombatText(damage.ToString(), new Color(1f, 0.92f, 0.72f, 1f));
+        }
+
+        private void CreateFloatingCombatText(string label, Color textColor)
+        {
             var textGo = new GameObject("DamageText");
             textGo.transform.position = transform.position + new Vector3(0f, 1.1f, 0f);
 
             var textMesh = textGo.AddComponent<TextMesh>();
-            textMesh.text = damage.ToString();
+            textMesh.text = label;
             textMesh.fontSize = 36;
             textMesh.characterSize = 0.16f;
             textMesh.anchor = TextAnchor.MiddleCenter;
             textMesh.alignment = TextAlignment.Center;
-            textMesh.color = new Color(1f, 0.92f, 0.72f, 1f);
+            textMesh.color = textColor;
 
             var meshRenderer = textGo.GetComponent<MeshRenderer>();
             if (meshRenderer != null)

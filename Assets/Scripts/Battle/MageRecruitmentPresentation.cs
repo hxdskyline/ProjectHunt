@@ -78,13 +78,34 @@ namespace ProjectHunt.Battle
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.pivot = new Vector2(0.5f, 0.5f);
             panelRect.anchoredPosition = new Vector2(0f, 205f);
-            panelRect.sizeDelta = new Vector2(980f, 154f);
+            panelRect.sizeDelta = new Vector2(980f, 184f);
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
-            panelImage.color = new Color(0.04f, 0.04f, 0.06f, 0.9f);
+            panelImage.color = new Color(0.035f, 0.04f, 0.06f, 0.97f);
+            var outline = panel.AddComponent<Outline>();
+            outline.effectColor = new Color(0.88f, 0.58f, 0.2f, 0.95f);
+            outline.effectDistance = new Vector2(4f, -4f);
 
-            var line = CreateText(panel.transform, "Text", new Vector2(900f, 126f), 28, Vector2.zero);
-            line.text = "\u6cd5\u5e08\uff1a\u8fd9\u4e00\u5e26\u88ab\u4e00\u4e2a\u62b1\u7740\u5de8\u5927\u94a5\u5319\u7684\u602a\u7269\u5360\u9886\u4e86\uff0c\u5feb\u968f\u6211\u53bb\u6d88\u706d\u5b83\uff01";
+            var speakerTag = CreateImage(
+                panel.transform,
+                "SpeakerTag",
+                new Vector2(142f, 48f),
+                new Color(0.78f, 0.4f, 0.12f, 1f));
+            var tagRect = speakerTag.GetComponent<RectTransform>();
+            tagRect.anchorMin = tagRect.anchorMax = new Vector2(0f, 1f);
+            tagRect.pivot = new Vector2(0f, 1f);
+            tagRect.anchoredPosition = new Vector2(28f, -20f);
+            speakerTag.GetComponent<Outline>().enabled = false;
+            var speaker = CreateText(speakerTag.transform, "SpeakerName", new Vector2(142f, 48f), 26, Vector2.zero);
+            speaker.fontStyle = FontStyle.Bold;
+            speaker.color = new Color(1f, 0.94f, 0.78f, 1f);
+            speaker.text = "法师";
+
+            var line = CreateText(panel.transform, "Text", new Vector2(896f, 92f), 29, new Vector2(0f, -26f));
+            line.alignment = TextAnchor.MiddleLeft;
+            line.horizontalOverflow = HorizontalWrapMode.Wrap;
+            line.verticalOverflow = VerticalWrapMode.Truncate;
+            line.text = "这一带被一个抱着巨大钥匙的怪物占领了，快随我去消灭它！";
             yield return new WaitForSeconds(2.7f);
             Destroy(_dialogueCanvas);
             _dialogueCanvas = null;
@@ -128,7 +149,7 @@ namespace ProjectHunt.Battle
 
         private void ShowReplacement()
         {
-            _title.text = "\u7b2c 1 \u6b65\uff1a\u6cd5\u5e08\u52a0\u5165\uff0c\u66ff\u6362\u8c01\u4e0b\u573a\uff1f";
+            _title.text = "\u6cd5\u5e08\u52a0\u5165\uff0c\u66ff\u6362\u8c01\u4e0b\u573a\uff1f";
             _line.text = "\u9009\u62e9\u4e00\u540d\u961f\u5458\u66ff\u6362\uff0c\u6216\u9009\u62e9\u4e0d\u66ff\u6362\u3002";
             ClearButtons();
             var formation = _context.defaultBattleFormation;
@@ -136,19 +157,6 @@ namespace ProjectHunt.Battle
             AddButton(formation.midCharacter, 215f, 70f);
             AddButton(formation.backCharacter, -215f, -65f);
             AddButton("\u4e0d\u66ff\u6362", 215f, -65f, () => Complete(null, RewardType.None));
-        }
-
-        private void ShowRewardChoice(CharacterConfig replaced)
-        {
-            Debug.Log($"[MageRecruitment] Replacing {replaced.displayName}; showing equipment choice.");
-            _title.text = "\u7b2c 2 \u6b65\uff1a\u6cd5\u5e08\u4f7f\u7528\u54ea\u4ef6\u7269\u54c1\uff1f";
-            _line.text = "\u53ef\u7a7a\u624b\u53c2\u6218\uff0c\u4e5f\u53ef\u4f7f\u7528\u6d41\u661f\u9524\u6216\u9152\u795e\u5723\u676f\u3002";
-            ClearButtons();
-            if (_context.buildSelection.hasClaimedMeteorHammer)
-                AddButton("\u63a5\u89e6\u6d41\u661f\u9524", 0f, 90f, () => ShowDiscoverReward(replaced, RewardType.MeteorHammer));
-            AddButton("\u7a7a\u624b\u52a0\u5165", 0f, -30f, () => ShowDiscoverReward(replaced, RewardType.None));
-            if (_context.buildSelection.hasClaimedHolyCup)
-                AddButton("\u63a5\u89e6\u9152\u795e\u5723\u676f", 0f, -150f, () => ShowDiscoverReward(replaced, RewardType.HolyCup));
         }
 
         private void ShowDiscoverReward(CharacterConfig replaced, RewardType reward)
@@ -171,18 +179,18 @@ namespace ProjectHunt.Battle
                 mage,
                 result,
                 reward,
-                () => ReturnToRewardChoice(replaced),
+                ReturnToReplacementChoice,
                 () => Complete(replaced, reward));
         }
 
-        private void ReturnToRewardChoice(CharacterConfig replaced)
+        private void ReturnToReplacementChoice()
         {
             if (_selectionPanel != null)
             {
                 _selectionPanel.SetActive(true);
             }
 
-            ShowRewardChoice(replaced);
+            ShowReplacement();
         }
 
         private void Complete(CharacterConfig replaced, RewardType reward)
@@ -196,7 +204,7 @@ namespace ProjectHunt.Battle
 
         private void AddButton(CharacterConfig config, float x, float y)
         {
-            AddButton("\u66ff\u6362" + config.displayName, x, y, () => ShowRewardChoice(config));
+            AddButton("\u66ff\u6362" + config.displayName, x, y, () => ShowDiscoverReward(config, RewardType.None));
         }
 
         private void AddButton(string label, float x, float y, UnityEngine.Events.UnityAction action)

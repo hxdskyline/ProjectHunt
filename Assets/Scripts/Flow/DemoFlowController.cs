@@ -80,6 +80,9 @@ namespace ProjectHunt.Flow
             EnsureContext();
             gameContext.buildSelection.selectedCharacter = selectedCharacter;
             gameContext.buildSelection.selectedHammerCharacter = HammerCharacterFactory.GetHammerVariant(selectedCharacter);
+            gameContext.buildSelection.MarkUnitDiscovered(gameContext.buildSelection.selectedHammerCharacter != null
+                ? gameContext.buildSelection.selectedHammerCharacter.id
+                : null);
             gameContext.buildSelection.selectedHammerTargetId = selectedCharacter != null ? selectedCharacter.id : null;
             gameContext.buildSelection.isSelectionConfirmed = selectedCharacter != null;
             gameContext.buildSelection.hasClaimedMeteorHammer = selectedCharacter != null;
@@ -119,6 +122,9 @@ namespace ProjectHunt.Flow
             EnsureContext();
             gameContext.buildSelection.selectedCharacter = selectedCharacter;
             gameContext.buildSelection.selectedCupCharacter = HolyCupCharacterFactory.GetCupVariant(selectedCharacter);
+            gameContext.buildSelection.MarkUnitDiscovered(gameContext.buildSelection.selectedCupCharacter != null
+                ? gameContext.buildSelection.selectedCupCharacter.id
+                : null);
             gameContext.buildSelection.selectedCupTargetId = selectedCharacter != null ? selectedCharacter.id : null;
             gameContext.buildSelection.pendingRewardType = RewardType.None;
             StartBattlePhase(GamePhase.Battle04);
@@ -139,6 +145,7 @@ namespace ProjectHunt.Flow
             gameContext.runState.hasRecruitedMage = !string.IsNullOrWhiteSpace(replacedCharacterId);
             gameContext.runState.mageReplacedCharacterId = replacedCharacterId;
             gameContext.runState.mageRewardType = rewardType;
+            gameContext.buildSelection.MarkUnitDiscovered(MageCharacterFactory.GetMageVariant(rewardType).id);
             gameContext.runState.isMageValidationStarted = true;
             StartBattlePhase(GamePhase.Battle04);
         }
@@ -167,6 +174,9 @@ namespace ProjectHunt.Flow
             EnsureContext();
             gameContext.buildSelection.selectedCharacter = selectedCharacter;
             gameContext.buildSelection.selectedKeyCharacter = GiantKeyCharacterFactory.GetKeyVariant(selectedCharacter);
+            gameContext.buildSelection.MarkUnitDiscovered(gameContext.buildSelection.selectedKeyCharacter != null
+                ? gameContext.buildSelection.selectedKeyCharacter.id
+                : null);
             gameContext.buildSelection.selectedKeyTargetId = selectedCharacter != null ? selectedCharacter.id : null;
             gameContext.buildSelection.pendingRewardType = RewardType.None;
             StartBattlePhase(GamePhase.Battle06);

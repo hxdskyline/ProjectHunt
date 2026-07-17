@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectHunt.Battle
@@ -13,10 +14,15 @@ namespace ProjectHunt.Battle
         public float areaImpactRadius;
         public bool alignToVelocity = true;
         public float spinSpeed;
+        public float spinAccelerationDelay = -1f;
+        public float spinAccelerationMultiplier = 1f;
         public Sprite[] animationFrames;
         public float animationFps = 12f;
         public Vector3 staticEulerAngles;
         public bool returnToSender;
+        public bool pierceAllEnemiesByX;
+        public CombatUnitController attacker;
+        public bool appliesHammerAssassinStun;
 
         public void Launch(
             Vector3 startPosition,
@@ -51,6 +57,8 @@ namespace ProjectHunt.Battle
             BattleDirector director)
         {
             var elapsed = 0f;
+            var previousX = startPosition.x;
+            var outwardHits = pierceAllEnemiesByX ? new HashSet<int>() : null;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
@@ -58,6 +66,11 @@ namespace ProjectHunt.Battle
                 var position = Vector3.Lerp(startPosition, targetPosition, t);
                 position.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
                 transform.position = position;
+                if (pierceAllEnemiesByX && director != null)
+                {
+                    director.ApplyPlayerCrossingDamage(previousX, position.x, damage, outwardHits);
+                    previousX = position.x;
+                }
                 UpdateAnimationFrame(elapsed);
 
                 if (spinSpeed != 0f)
@@ -65,7 +78,7 @@ namespace ProjectHunt.Battle
                     transform.rotation = Quaternion.Euler(
                         staticEulerAngles.x,
                         staticEulerAngles.y,
-                        staticEulerAngles.z + spinSpeed * elapsed);
+                        staticEulerAngles.z + GetAccumulatedSpin(elapsed));
                 }
                 else if (alignToVelocity)
                 {
@@ -80,7 +93,7 @@ namespace ProjectHunt.Battle
             }
 
             transform.position = targetPosition;
-            if (director != null && !director.IsBattleResolved)
+            if (!pierceAllEnemiesByX && director != null && !director.IsBattleResolved)
             {
                 if (isMeteorHammerProjectile && areaImpactRadius > 0f)
                 {
@@ -93,6 +106,10 @@ namespace ProjectHunt.Battle
                     BattleSfx.PlayImpact(false, spinSpeed != 0f);
                     director.SpawnHitSpark(targetPosition, 0.5f);
                     target.ApplyDamage(damage);
+                    if (appliesHammerAssassinStun && target.IsAlive)
+                    {
+                        director.TryApplyHammerAssassinStun(attacker, target);
+                    }
                 }
                 else
                 {
@@ -103,27 +120,53 @@ namespace ProjectHunt.Battle
 
             if (returnToSender)
             {
-                yield return StartCoroutine(FlyBack(targetPosition, startPosition));
+                yield return StartCoroutine(FlyBack(targetPosition, startPosition, damage, director));
             }
 
             Destroy(gameObject);
         }
 
-        private IEnumerator FlyBack(Vector3 startPosition, Vector3 endPosition)
+        private IEnumerator FlyBack(
+            Vector3 startPosition,
+            Vector3 endPosition,
+            int damage,
+            BattleDirector director)
         {
             var elapsed = 0f;
+            var previousX = startPosition.x;
+            var returnHits = pierceAllEnemiesByX ? new HashSet<int>() : null;
             var returnDuration = Mathf.Max(0.12f, duration * 0.8f);
             while (elapsed < returnDuration)
             {
                 elapsed += Time.deltaTime;
                 var t = Mathf.Clamp01(elapsed / returnDuration);
                 transform.position = Vector3.Lerp(startPosition, endPosition, t);
+                if (pierceAllEnemiesByX && director != null)
+                {
+                    director.ApplyPlayerCrossingDamage(previousX, transform.position.x, damage, returnHits);
+                    previousX = transform.position.x;
+                }
                 if (spinSpeed != 0f)
                 {
-                    transform.Rotate(0f, 0f, spinSpeed * Time.deltaTime);
+                    var returnSpinSpeed = spinAccelerationDelay >= 0f
+                        ? spinSpeed * spinAccelerationMultiplier
+                        : spinSpeed;
+                    transform.Rotate(0f, 0f, returnSpinSpeed * Time.deltaTime);
                 }
                 yield return null;
             }
+        }
+
+        private float GetAccumulatedSpin(float elapsed)
+        {
+            if (spinAccelerationDelay < 0f || spinAccelerationMultiplier <= 1f || elapsed <= spinAccelerationDelay)
+            {
+                return spinSpeed * elapsed;
+            }
+
+            var normalSpin = spinSpeed * spinAccelerationDelay;
+            var acceleratedSpin = spinSpeed * spinAccelerationMultiplier * (elapsed - spinAccelerationDelay);
+            return normalSpin + acceleratedSpin;
         }
 
         private void UpdateAnimationFrame(float elapsed)

@@ -98,43 +98,59 @@ namespace ProjectHunt.Battle
 
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.referenceResolution = new Vector2(1080f, 1920f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 1f;
 
             _dialogueRoot = new GameObject("DialoguePanel", typeof(RectTransform), typeof(Image));
             _dialogueRoot.transform.SetParent(canvasGo.transform, false);
             var panelRect = _dialogueRoot.GetComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(0.5f, 0f);
-            panelRect.anchorMax = new Vector2(0.5f, 0f);
-            panelRect.pivot = new Vector2(0.5f, 0f);
-            panelRect.anchoredPosition = new Vector2(0f, 7f);
-            panelRect.sizeDelta = new Vector2(820f, 112f);
+            panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            panelRect.pivot = new Vector2(0.5f, 0.5f);
+            panelRect.anchoredPosition = new Vector2(0f, 205f);
+            panelRect.sizeDelta = new Vector2(980f, 184f);
             var panel = _dialogueRoot.GetComponent<Image>();
             panel.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
-            panel.color = new Color(0.04f, 0.04f, 0.06f, 0.9f);
+            panel.color = new Color(0.035f, 0.04f, 0.06f, 0.97f);
             var outline = _dialogueRoot.AddComponent<Outline>();
-            outline.effectColor = new Color(0.72f, 0.56f, 0.28f, 0.7f);
-            outline.effectDistance = new Vector2(1f, -1f);
-            outline.enabled = false;
+            outline.effectColor = new Color(0.88f, 0.58f, 0.2f, 0.95f);
+            outline.effectDistance = new Vector2(4f, -4f);
 
-            _speakerText = CreateText("Speaker", new Vector2(760f, 34f), 25);
-            _speakerText.transform.SetParent(_dialogueRoot.transform, false);
-            _speakerText.rectTransform.anchoredPosition = new Vector2(0f, 33f);
-            _speakerText.color = new Color(1f, 0.84f, 0.48f, 1f);
+            var speakerTag = new GameObject("SpeakerTag", typeof(RectTransform), typeof(Image));
+            speakerTag.transform.SetParent(_dialogueRoot.transform, false);
+            var tagRect = speakerTag.GetComponent<RectTransform>();
+            tagRect.anchorMin = tagRect.anchorMax = new Vector2(0f, 1f);
+            tagRect.pivot = new Vector2(0f, 1f);
+            tagRect.anchoredPosition = new Vector2(28f, -20f);
+            tagRect.sizeDelta = new Vector2(142f, 48f);
+            speakerTag.GetComponent<Image>().color = new Color(0.78f, 0.4f, 0.12f, 1f);
+
+            _speakerText = CreateText("Speaker", new Vector2(142f, 48f), 26);
+            _speakerText.transform.SetParent(speakerTag.transform, false);
+            _speakerText.rectTransform.anchorMin = Vector2.zero;
+            _speakerText.rectTransform.anchorMax = Vector2.one;
+            _speakerText.rectTransform.offsetMin = Vector2.zero;
+            _speakerText.rectTransform.offsetMax = Vector2.zero;
+            _speakerText.fontStyle = FontStyle.Bold;
+            _speakerText.color = new Color(1f, 0.94f, 0.78f, 1f);
             _speakerText.text = "铁匠";
 
-            _speakerText.gameObject.SetActive(false);
-
-            _lineText = CreateText("Line", new Vector2(820f, 112f), 28);
+            _lineText = CreateText("Line", new Vector2(896f, 92f), 29);
             _lineText.transform.SetParent(_dialogueRoot.transform, false);
-            _lineText.rectTransform.anchoredPosition = Vector2.zero;
-            _lineText.alignment = TextAnchor.MiddleCenter;
+            _lineText.rectTransform.anchorMin = Vector2.zero;
+            _lineText.rectTransform.anchorMax = Vector2.one;
+            _lineText.rectTransform.offsetMin = new Vector2(42f, 20f);
+            _lineText.rectTransform.offsetMax = new Vector2(-42f, -72f);
+            _lineText.alignment = TextAnchor.MiddleLeft;
+            _lineText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _lineText.verticalOverflow = VerticalWrapMode.Truncate;
             _lineText.color = Color.white;
         }
 
         private IEnumerator ShowLine(string line, float duration)
         {
             _dialogueRoot.SetActive(true);
-            _lineText.text = "\u94c1\u5320\uff1a" + line;
+            _lineText.text = line;
             yield return new WaitForSeconds(duration);
         }
 

@@ -4,8 +4,9 @@ namespace ProjectHunt.Data
     {
         public const float SwordsmanBonusDamage = 4f;
         public const float SwordsmanBlockChance = 0.3f;
-        public const float AssassinStunChance = 0.35f;
-        public const float AssassinStunDuration = 0.9f;
+        public const float AssassinMinionStunChance = 0.6f;
+        public const float AssassinBossStunChance = 0.1f;
+        public const float AssassinStunDuration = 1.5f;
         public const float ArcherImpactRadius = 1.35f;
         public const int ArcherAreaDamageBonus = 3;
 
@@ -45,6 +46,10 @@ namespace ProjectHunt.Data
 
     public static class HolyCupRules
     {
+        public const float SwordsmanWeakenChance = 0.1f;
+        public const float SwordsmanWeakenDuration = 5f;
+        public const float WeakenedDamageMultiplier = 0.8f;
+
         public static string GetEffectDescription(RoleType roleType)
         {
             switch (roleType)
@@ -72,7 +77,7 @@ namespace ProjectHunt.Data
                 case RoleType.Assassin:
                     return "\u676f\u523a\u5ba2";
                 default:
-                    return "\u676f\u5251\u58eb";
+                    return "\u949f\u9e23\u9a91\u58eb";
             }
         }
     }
@@ -106,11 +111,11 @@ namespace ProjectHunt.Data
                 case RoleType.Archer:
                     return "\u94a5\u5f13\u624b";
                 case RoleType.Assassin:
-                    return "\u94a5\u523a\u5ba2";
+                    return "\u56de\u65cb\u9556\u523a\u5ba2";
                 case RoleType.Mage:
                     return "\u94a5\u6cd5\u5e08";
                 default:
-                    return "\u94a5\u5251\u58eb";
+                    return "\u53d1\u6761\u5251\u58eb";
             }
         }
     }
