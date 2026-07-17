@@ -218,7 +218,7 @@ namespace ProjectHunt.Battle
 
                 if (IsHolyCupMage(attacker))
                 {
-                    var healingTarget = GetHealingTarget(attacker);
+                    var healingTarget = GetHealingTarget();
                     if (healingTarget != null)
                     {
                         attacker.PlayAttackFeedback();
@@ -1500,14 +1500,14 @@ namespace ProjectHunt.Battle
                    attacker.characterConfig.id == "mage_giantkey";
         }
 
-        private CombatUnitController GetHealingTarget(CombatUnitController healer)
+        private CombatUnitController GetHealingTarget()
         {
             CombatUnitController result = null;
             var lowestHealthRatio = 1f;
             for (var i = 0; i < _players.Count; i++)
             {
                 var candidate = _players[i];
-                if (candidate == null || candidate == healer || !candidate.IsAlive ||
+                if (candidate == null || !candidate.IsAlive ||
                     candidate.currentHp >= candidate.maxHp)
                 {
                     continue;

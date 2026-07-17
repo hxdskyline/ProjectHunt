@@ -661,6 +661,7 @@ namespace ProjectHunt.Build
         private Image _rightHammerImage;
         private Image _centerResultImage;
         private Image _resultHolyCupImage;
+        private Image _resultGiantKeyImage;
         private Image _glowImage;
         private Text _resultNameText;
         private Button _backButton;
@@ -688,6 +689,15 @@ namespace ProjectHunt.Build
         {
             _canvas = canvas;
             CreateOverlay();
+        }
+
+        private void Update()
+        {
+            if (_resultGiantKeyImage != null && _resultGiantKeyImage.gameObject.activeSelf)
+            {
+                var windingAngle = Mathf.Repeat(Time.unscaledTime * 240f, 360f);
+                _resultGiantKeyImage.rectTransform.localRotation = Quaternion.Euler(windingAngle, 0f, 0f);
+            }
         }
 
         public void PlayDiscoverSequence(CharacterConfig baseCharacter, CharacterConfig hammerCharacter, RewardType rewardType, Action onBack, Action onConfirm)
@@ -729,6 +739,7 @@ namespace ProjectHunt.Build
             _centerResultImage.enabled = _centerResultImage.sprite != null;
             _resultPortraitPixelsToUi = ApplyPresentationPortrait(_centerResultImage, _centerResultImage.sprite, 168f);
             ConfigureResultHolyCup(hammerCharacter, rewardType);
+            ConfigureResultGiantKey(hammerCharacter, rewardType);
             _previewProjectileImage.gameObject.SetActive(false);
             _impactFlashImage.gameObject.SetActive(false);
 
@@ -765,6 +776,26 @@ namespace ProjectHunt.Build
             _resultHolyCupImage.rectTransform.localScale = new Vector3(0.5719084f, 0.29298f, 0.3f);
         }
 
+        private void ConfigureResultGiantKey(CharacterConfig resultCharacter, RewardType rewardType)
+        {
+            var showKey = resultCharacter != null &&
+                          resultCharacter.roleType == RoleType.Swordsman &&
+                          rewardType == RewardType.GiantKey;
+            _resultGiantKeyImage.gameObject.SetActive(showKey);
+            if (!showKey)
+            {
+                return;
+            }
+
+            var keySprite = SimpleSpriteFactory.GetGiantKeySprite();
+            _resultGiantKeyImage.sprite = keySprite;
+            _resultGiantKeyImage.preserveAspect = true;
+            _resultGiantKeyImage.rectTransform.sizeDelta = keySprite.rect.size * _resultPortraitPixelsToUi;
+            _resultGiantKeyImage.rectTransform.anchoredPosition =
+                new Vector2(-0.2f, 0.2f) * (16f * _resultPortraitPixelsToUi);
+            _resultGiantKeyImage.rectTransform.localScale = Vector3.one * 0.58f;
+        }
+
         private IEnumerator PlayRoutine()
         {
             if (!_acknowledgementOnly)
@@ -779,6 +810,10 @@ namespace ProjectHunt.Build
             if (_resultHolyCupImage.gameObject.activeSelf)
             {
                 _resultHolyCupImage.color = new Color(1f, 1f, 1f, 0f);
+            }
+            if (_resultGiantKeyImage.gameObject.activeSelf)
+            {
+                _resultGiantKeyImage.color = new Color(1f, 1f, 1f, 0f);
             }
             _resultNameText.color = new Color(1f, 0.94f, 0.82f, 0f);
 
@@ -855,6 +890,10 @@ namespace ProjectHunt.Build
                 if (_resultHolyCupImage.gameObject.activeSelf)
                 {
                     _resultHolyCupImage.color = new Color(1f, 1f, 1f, ease);
+                }
+                if (_resultGiantKeyImage.gameObject.activeSelf)
+                {
+                    _resultGiantKeyImage.color = new Color(1f, 1f, 1f, ease);
                 }
                 resultRect.localScale = Vector3.Lerp(Vector3.one * 0.76f, Vector3.one, ease);
                 _resultNameText.color = new Color(1f, 0.94f, 0.82f, Mathf.Clamp01((t - 0.25f) / 0.75f));
@@ -1060,6 +1099,13 @@ namespace ProjectHunt.Build
                 new Color(1f, 1f, 1f, 0f));
             _resultHolyCupImage.raycastTarget = false;
             _resultHolyCupImage.gameObject.SetActive(false);
+            _resultGiantKeyImage = CreateAnchoredImage(
+                _centerResultImage.transform,
+                "ResultGiantKey",
+                new Vector2(16f, 16f),
+                new Color(1f, 1f, 1f, 0f));
+            _resultGiantKeyImage.raycastTarget = false;
+            _resultGiantKeyImage.gameObject.SetActive(false);
 
             _previewProjectileImage = CreateAnchoredImage(_root, "ProjectilePreview", new Vector2(68f, 68f), Color.white);
             _previewProjectileImage.gameObject.SetActive(false);

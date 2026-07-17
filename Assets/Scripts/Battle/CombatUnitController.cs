@@ -660,7 +660,7 @@ namespace ProjectHunt.Battle
             {
                 _equippedWeaponRenderer.sprite = SimpleSpriteFactory.GetGiantKeySprite();
                 _equippedWeaponRenderer.sortingOrder = 4;
-                _equippedWeaponRenderer.transform.localPosition = new Vector3(-0.2f, 0.2f, 0f);
+                _equippedWeaponRenderer.transform.localPosition = new Vector3(-0.2f, 0f, 0f);
                 _equippedWeaponRenderer.transform.localEulerAngles = Vector3.zero;
                 _equippedWeaponRenderer.transform.localScale = Vector3.one * 0.58f;
                 _equippedWeaponRenderer.enabled = true;
@@ -669,9 +669,9 @@ namespace ProjectHunt.Battle
             {
                 _equippedWeaponRenderer.sprite = SimpleSpriteFactory.GetHolyCupSprite();
                 _equippedWeaponRenderer.sortingOrder = 7;
-                _equippedWeaponRenderer.transform.localPosition = new Vector3(0.0658f, 0.2585f, 0f);
-                _equippedWeaponRenderer.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
-                _equippedWeaponRenderer.transform.localScale = new Vector3(0.5719084f, 0.29298f, 0.3f);
+                _equippedWeaponRenderer.transform.localPosition = new Vector3(0f, 0.2214f, 0f);
+                _equippedWeaponRenderer.transform.localEulerAngles = new Vector3(0f, 0f, -180f);
+                _equippedWeaponRenderer.transform.localScale = new Vector3(0.2495461f, 0.1284407f, 0.3f);
                 _equippedWeaponRenderer.enabled = true;
             }
         }

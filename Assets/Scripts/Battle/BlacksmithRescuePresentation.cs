@@ -70,7 +70,7 @@ namespace ProjectHunt.Battle
             var rect = panel.GetComponent<RectTransform>();
             rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = new Vector2(0f, 205f);
+            rect.anchoredPosition = new Vector2(0f, -88f);
             rect.sizeDelta = new Vector2(980f, 184f);
             var image = panel.GetComponent<Image>();
             image.sprite = SimpleSpriteFactory.GetWhitePixelSprite();

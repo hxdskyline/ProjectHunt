@@ -1449,7 +1449,11 @@ namespace ProjectHunt.UI
             }
 
             var selection = _director.gameContext.buildSelection;
-            var shouldShow = selection.hasClaimedMeteorHammer && !selection.hasCompletedRelicDragTip;
+            // Battle02 is the blacksmith rescue stage. Defer this tutorial until Battle03,
+            // and skip it entirely when the player already reassigned equipment on their own.
+            var shouldShow = _director.IsBattle03 &&
+                             selection.hasClaimedMeteorHammer &&
+                             !selection.hasCompletedRelicDragTip;
             _relicDragTipRoot.SetActive(shouldShow);
             if (shouldShow && _relicDragTipRoutine == null)
             {
@@ -1582,6 +1586,7 @@ namespace ProjectHunt.UI
             StartRelicCooldown(rewardType);
             StartCoroutine(PlayRelicTossAboveUnit(unit, rewardType));
             _partyCooldowns[partyIndex] = StartCoroutine(TemporaryRelicRoutine(partyIndex, unit, rewardType));
+            CompleteRelicDragTip();
             return true;
         }
 
@@ -2173,18 +2178,22 @@ namespace ProjectHunt.UI
                 : SimpleSpriteFactory.GetGiantKeySprite();
             overlay.gameObject.SetActive(overlay.sprite != null);
             var rect = overlay.rectTransform;
+            overlay.type = Image.Type.Simple;
             rect.localEulerAngles = Vector3.zero;
             rect.localScale = Vector3.one;
             rect.anchorMin = rect.anchorMax = new Vector2(0.78f, 0.78f);
+            rect.anchoredPosition3D = Vector3.zero;
             rect.sizeDelta = new Vector2(48f, 48f);
 
             if (config != null && config.roleType == RoleType.Swordsman && reward == RewardType.HolyCup)
             {
                 // Match the bell knight's cup-on-head silhouette used in battle.
-                rect.anchorMin = rect.anchorMax = new Vector2(0.54f, 0.67f);
-                rect.sizeDelta = new Vector2(58f, 58f);
+                overlay.type = Image.Type.Sliced;
+                rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition3D = new Vector3(-1.721f, 71.444f, 0f);
+                rect.sizeDelta = new Vector2(79.036f, 37.627f);
                 rect.localEulerAngles = new Vector3(0f, 0f, 180f);
-                rect.localScale = new Vector3(0.5719084f, 0.29298f, 1f);
+                rect.localScale = Vector3.one;
             }
             else if (config != null && config.roleType == RoleType.Swordsman && reward == RewardType.GiantKey)
             {

@@ -77,7 +77,7 @@ namespace ProjectHunt.Battle
             var panelRect = panel.GetComponent<RectTransform>();
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.anchoredPosition = new Vector2(0f, 205f);
+            panelRect.anchoredPosition = new Vector2(0f, -88f);
             panelRect.sizeDelta = new Vector2(980f, 184f);
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = SimpleSpriteFactory.GetWhitePixelSprite();
