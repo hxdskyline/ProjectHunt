@@ -209,27 +209,39 @@ namespace ProjectHunt.Build
             if (portraitImage != null)
             {
                 var portraitRect = portraitImage.rectTransform;
-                portraitRect.anchoredPosition = new Vector2(0f, -18f);
+                portraitRect.anchoredPosition = new Vector2(-235f, -8f);
             }
 
             if (nameText != null)
             {
                 var nameRect = nameText.rectTransform;
-                nameRect.anchoredPosition = new Vector2(0f, 96f);
-                nameRect.sizeDelta = new Vector2(180f, 34f);
-                nameText.fontSize = 24;
+                nameRect.anchoredPosition = new Vector2(105f, 92f);
+                nameRect.sizeDelta = new Vector2(430f, 48f);
+                nameText.fontSize = 30;
                 nameText.alignment = TextAnchor.MiddleCenter;
             }
 
             if (effectText != null)
             {
                 var effectRect = effectText.rectTransform;
-                effectRect.anchoredPosition = new Vector2(0f, 54f);
-                effectRect.sizeDelta = new Vector2(176f, 54f);
-                effectText.fontSize = 16;
+                effectRect.anchoredPosition = new Vector2(105f, 28f);
+                effectRect.sizeDelta = new Vector2(430f, 76f);
+                effectText.fontSize = 24;
                 effectText.alignment = TextAnchor.MiddleCenter;
                 effectText.horizontalOverflow = HorizontalWrapMode.Wrap;
                 effectText.verticalOverflow = VerticalWrapMode.Overflow;
+            }
+
+            if (assignButton != null)
+            {
+                var buttonRect = assignButton.GetComponent<RectTransform>();
+                buttonRect.anchoredPosition = new Vector2(105f, -91f);
+                buttonRect.sizeDelta = new Vector2(330f, 64f);
+            }
+
+            if (assignButtonText != null)
+            {
+                assignButtonText.fontSize = 24;
             }
         }
 

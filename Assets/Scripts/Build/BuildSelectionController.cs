@@ -293,6 +293,19 @@ namespace ProjectHunt.Build
                 }
             }
 
+            var buildCanvas = titleText != null ? titleText.canvas : FindObjectOfType<Canvas>();
+            if (buildCanvas != null)
+            {
+                var scaler = buildCanvas.GetComponent<CanvasScaler>();
+                if (scaler != null)
+                {
+                    scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                    scaler.referenceResolution = new Vector2(1080f, 1920f);
+                    scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                    scaler.matchWidthOrHeight = 0.5f;
+                }
+            }
+
             if (titleText != null)
             {
                 titleText.font = BuildUiRuntimeStyle.GetChineseFont();
@@ -303,8 +316,8 @@ namespace ProjectHunt.Build
                 titleText.lineSpacing = 1f;
 
                 var rect = titleText.rectTransform;
-                rect.anchoredPosition = new Vector2(0f, 205f);
-                rect.sizeDelta = new Vector2(820f, 48f);
+                rect.anchoredPosition = new Vector2(0f, 680f);
+                rect.sizeDelta = new Vector2(900f, 72f);
             }
         }
 
@@ -512,8 +525,8 @@ namespace ProjectHunt.Build
 
         private void ArrangeCharacterSlots()
         {
-            var anchoredXs = new[] { -225f, 0f, 225f };
-            for (var i = 0; i < characterSlots.Count && i < anchoredXs.Length; i++)
+            var anchoredYs = new[] { 360f, 0f, -360f };
+            for (var i = 0; i < characterSlots.Count && i < anchoredYs.Length; i++)
             {
                 var slot = characterSlots[i];
                 if (slot == null || slot.transform is not RectTransform rect)
@@ -521,7 +534,11 @@ namespace ProjectHunt.Build
                     continue;
                 }
 
-                rect.anchoredPosition = new Vector2(anchoredXs[i], 10f);
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = new Vector2(0f, anchoredYs[i]);
+                rect.sizeDelta = new Vector2(780f, 310f);
             }
         }
 
@@ -1071,8 +1088,15 @@ namespace ProjectHunt.Build
 
         private void CreateOverlay()
         {
-            var rootGo = new GameObject("DiscoverUnitOverlay", typeof(RectTransform));
+            var rootGo = new GameObject(
+                "DiscoverUnitOverlay",
+                typeof(RectTransform),
+                typeof(Canvas),
+                typeof(GraphicRaycaster));
             rootGo.transform.SetParent(_canvas.transform, false);
+            var overlayCanvas = rootGo.GetComponent<Canvas>();
+            overlayCanvas.overrideSorting = true;
+            overlayCanvas.sortingOrder = 300;
             _root = rootGo.GetComponent<RectTransform>();
             _root.anchorMin = Vector2.zero;
             _root.anchorMax = Vector2.one;
